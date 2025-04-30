@@ -3,6 +3,7 @@ package com.zephyr.train.member.service;
 import cn.hutool.core.collection.CollUtil;
 import com.zephyr.train.common.exception.BusinessException;
 import com.zephyr.train.common.exception.BusinessExceptionEnum;
+import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.member.domain.Member;
 import com.zephyr.train.member.domain.MemberExample;
 import com.zephyr.train.member.mapper.MemberMapper;
@@ -33,7 +34,7 @@ public class MemberService {
       throw new BusinessException(BusinessExceptionEnum.MEMBER_MOBILE_REGISTERED);
     }
     Member member = new Member();
-    member.setId(System.currentTimeMillis());
+    member.setId(SnowUtil.getSnowflakeNextId());
     member.setMobile(mobile);
     memberMapper.insert(member);
     return member.getId();
