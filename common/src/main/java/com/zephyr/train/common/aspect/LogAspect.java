@@ -70,7 +70,7 @@ public class LogAspect {
       arguments[i] = args[i];
     }
     // Exclude fields that are sensitive or too long, such as ID numbers, phone numbers, email addresses, and passwords.
-    String[] excludeProperties = {"mobile"};
+    String[] excludeProperties = {};
     PropertyPreFilters filters = new PropertyPreFilters();
     PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
     excludefilter.addExcludes(excludeProperties);
@@ -82,7 +82,7 @@ public class LogAspect {
     long startTime = System.currentTimeMillis();
     Object result = proceedingJoinPoint.proceed();
     // Exclude fields that are sensitive or too long, such as ID card numbers, phone numbers, email addresses, and passwords.
-    String[] excludeProperties = {"mobile"};
+    String[] excludeProperties = {};
     PropertyPreFilters filters = new PropertyPreFilters();
     PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
     excludefilter.addExcludes(excludeProperties);
