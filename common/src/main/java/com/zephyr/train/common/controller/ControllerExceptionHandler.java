@@ -4,6 +4,7 @@ import com.zephyr.train.common.exception.BusinessException;
 import com.zephyr.train.common.resp.CommonResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,6 +34,17 @@ public class ControllerExceptionHandler {
     commonResp.setSuccess(false);
 //    commonResp.setMessage("System error occurred. Please contact admin");
     commonResp.setMessage(e.getE().getDesc());
+    return commonResp;
+  }
+
+  @ExceptionHandler(value = BindException.class)
+  @ResponseBody
+  public CommonResp handlerException(BindException e) throws Exception {
+    CommonResp commonResp = new CommonResp();
+    log.error("Validation exception: {}", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    commonResp.setSuccess(false);
+//    commonResp.setMessage("System error occurred. Please contact admin");
+    commonResp.setMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     return commonResp;
   }
 }

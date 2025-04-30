@@ -1,6 +1,9 @@
 package com.zephyr.train.member.req;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class MemberRegisterReq {
+  @NotBlank(message="mobile cannot be blank")
   private String mobile;
 
   public String getMobile() {
