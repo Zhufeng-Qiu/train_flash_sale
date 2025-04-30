@@ -1,5 +1,6 @@
 package com.zephyr.train.common.controller;
 
+import com.zephyr.train.common.exception.BusinessException;
 import com.zephyr.train.common.resp.CommonResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,20 @@ public class ControllerExceptionHandler {
   @ResponseBody
   public CommonResp handlerException(Exception e) throws Exception {
     CommonResp commonResp = new CommonResp();
-    log.error("System error", e);
+    log.error("System exception: ", e);
+    commonResp.setSuccess(false);
+    commonResp.setMessage("System error occurred. Please contact admin");
+    return commonResp;
+  }
+
+  @ExceptionHandler(value = BusinessException.class)
+  @ResponseBody
+  public CommonResp handlerException(BusinessException e) throws Exception {
+    CommonResp commonResp = new CommonResp();
+    log.error("Business exception: {}", e.getE().getDesc());
     commonResp.setSuccess(false);
 //    commonResp.setMessage("System error occurred. Please contact admin");
-    commonResp.setMessage(e.getMessage());
+    commonResp.setMessage(e.getE().getDesc());
     return commonResp;
   }
 }
