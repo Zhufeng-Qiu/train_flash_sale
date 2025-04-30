@@ -28,7 +28,7 @@ public class MemberService {
 
     if (CollUtil.isNotEmpty(list)) {
 //      return list.get(0).getId();
-      throw new RuntimeException("mobile has been registered");
+      throw new RuntimeException("Mobile has been registered");
     }
     Member member = new Member();
     member.setId(System.currentTimeMillis());
