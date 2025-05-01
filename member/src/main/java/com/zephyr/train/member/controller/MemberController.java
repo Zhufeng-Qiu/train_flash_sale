@@ -1,7 +1,10 @@
 package com.zephyr.train.member.controller;
 
 import com.zephyr.train.common.resp.CommonResp;
+import com.zephyr.train.member.req.MemberLoginReq;
 import com.zephyr.train.member.req.MemberRegisterReq;
+import com.zephyr.train.member.req.MemberSendCodeReq;
+import com.zephyr.train.member.resp.MemberLoginResp;
 import com.zephyr.train.member.service.MemberService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -31,5 +34,18 @@ public class MemberController {
     CommonResp<Long> commonResp = new CommonResp<>();
     commonResp.setContent(register);
     return commonResp;
+  }
+
+  @PostMapping("/send-code")
+  public CommonResp<Long> sendCode(@Valid MemberSendCodeReq req) {
+    memberService.sendCode(req);
+    CommonResp<Long> commonResp = new CommonResp<>();
+    return commonResp;
+  }
+
+  @PostMapping("/login")
+  public CommonResp<MemberLoginResp> login(@Valid MemberLoginReq req) {
+    MemberLoginResp resp = memberService.login(req);
+    return new CommonResp<>(resp);
   }
 }

@@ -1,7 +1,9 @@
 package com.zephyr.train.common.exception;
 
 public enum BusinessExceptionEnum {
-  MEMBER_MOBILE_REGISTERED("Mobile has been registered");
+  MEMBER_MOBILE_REGISTERED("Mobile has been registered"),
+  MEMBER_MOBILE_NOT_REGISTERED("Please get SMS verification code first"),
+  MEMBER_MOBILE_CODE_ERROR("SMS verification code does not match");
 
   private String desc;
 

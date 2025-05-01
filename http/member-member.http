@@ -9,3 +9,17 @@ Content-Type: application/x-www-form-urlencoded
 mobile=4300614
 
 ###
+
+POST http://localhost:8000/member/member/send-code
+Content-Type: application/x-www-form-urlencoded
+
+mobile=206-670-8647
+
+###
+
+POST http://localhost:8000/member/member/login
+Content-Type: application/x-www-form-urlencoded
+
+mobile=206-670-8645&code=123456
+
+###
