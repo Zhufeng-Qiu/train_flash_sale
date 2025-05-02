@@ -128,6 +128,15 @@ public class MemberService {
       return "Invalid number";
     }
 
-    return digits;
+    if (digits.length() >= 7) {
+      return digits.substring(0, 3) + "-" +
+          digits.substring(3, 6) + "-" +
+          digits.substring(6);
+    } else if (digits.length() >= 4) {
+      return digits.substring(0, 3) + "-" +
+          digits.substring(3);
+    } else {
+      return digits;
+    }
   }
 }
