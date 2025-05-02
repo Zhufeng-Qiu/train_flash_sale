@@ -1,7 +1,7 @@
 <template>
   <a-row class="login">
     <a-col :span="8" :offset="8" class="login-main">
-      <h1 style="text-align: center"><rocket-two-tone />&nbsp;Train Flash Sale Platform</h1>
+      <h1 style="text-align: center"><ThunderboltTwoTone />&nbsp;Train Flash Sale Platform</h1>
       <h2 style="text-align: center">&nbsp;ZephyrQiu</h2>
       <a-form
           :model="loginForm"
@@ -36,6 +36,21 @@
       </a-form>
     </a-col>
   </a-row>
+  <a-row>
+    <a-col :span="12" :offset="6">
+      <div style="margin-top: 20px; color: gray;">
+        <p>
+          ⚠️ This is a demo project focused on the ticket-related feature, so
+          <strong>SMS verification is not functional</strong> by default.<br><br>
+          The backend verification value is preset to
+          <code>'123456'</code>, so that when you click the <strong>"Send Code"</strong> button, the code is automatically filled as
+          <code>'123456'</code> to pass the validation. Using any other value will trigger a failure notification.<br><br>
+          To enable real SMS verification, update the
+          <code><strong>TO-DO: Generate verification code</strong></code> section in the backend logic.
+        </p>
+      </div>
+    </a-col>
+  </a-row>
 </template>
 
 <script>
@@ -43,6 +58,7 @@ import { defineComponent, reactive } from 'vue';
 import axios from 'axios';
 import { notification } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
+import store from "@/store";
 
 export default defineComponent({
   name: "login-view",
@@ -75,6 +91,7 @@ export default defineComponent({
           notification.success({ description: 'Login successfully!'});
           // Login successfully, then jump to console main page
           router.push("/");
+          store.commit("setMember", data.content);
         } else {
           notification.error({ description: data.message});
         }
