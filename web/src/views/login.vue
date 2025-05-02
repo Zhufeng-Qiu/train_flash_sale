@@ -46,7 +46,8 @@
           <code>'123456'</code>, so that when you click the <strong>"Send Code"</strong> button, the code is automatically filled as
           <code>'123456'</code> to pass the validation. Using any other value will trigger a failure notification.<br><br>
           To enable real SMS verification, update the
-          <code><strong>TO-DO: Generate verification code</strong></code> section in the backend logic.
+          <code><strong>TO-DO: Generate verification code</strong></code> section in the backend logic.<br><br>
+          Another option is to modify <code><strong>register</strong></code> and <code><strong>login</strong></code> function in <code><strong>MemberService</strong></code> class to implement any custom or third-party login component.
         </p>
       </div>
     </a-col>
@@ -66,7 +67,7 @@ export default defineComponent({
     const router = useRouter();
 
     const loginForm = reactive({
-      mobile: '206-000-0000',
+      mobile: '206-123-4567',
       code: '',
     });
 

@@ -2,8 +2,8 @@
   <a-layout-header class="header">
     <div class="logo" />
     <div style="float: right; color: white;">
-      Hello, {{member.mobile}} &nbsp;&nbsp;
-      <router-link to="/login">
+      Hello, {{member.mobile}} &nbsp;&nbsp; / &nbsp;&nbsp;
+      <router-link to="/login" style="color: white;">
         Sign out
       </router-link>
     </div>
