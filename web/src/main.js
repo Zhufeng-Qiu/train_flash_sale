@@ -17,7 +17,7 @@ for (const i in icons) {
 }
 
 /**
- * axios interceptor
+ * axios interceptor for back-end
  */
 axios.interceptors.request.use(function (config) {
   console.log('Request parameter：', config);
