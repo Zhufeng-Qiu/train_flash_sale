@@ -10,6 +10,22 @@ Accept-Encoding: br,deflate,gzip,x-gzip
   "code": "123456"
 }
 
+<> 2025-05-02T010037.200.json
+
+###
+
+POST http://localhost:8000/member/member/login
+Content-Type: application/json
+Content-Length: 50
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "mobile": "206-670-8647",
+  "code": "123456"
+}
+
 <> 2025-05-01T210926.200.json
 
 ###
@@ -604,16 +620,6 @@ User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2025-04-29T223236.200.json
-
-###
-
-GET http://localhost:8000/member/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-04-29T210231.200.json
 
 ###
 
