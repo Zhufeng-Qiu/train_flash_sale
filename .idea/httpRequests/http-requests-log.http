@@ -12,6 +12,24 @@ Accept-Encoding: br,deflate,gzip,x-gzip
   "type": "1"
 }
 
+<> 2025-05-03T014042.200.json
+
+###
+
+POST http://localhost:8000/member/passenger/save
+Content-Type: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDYyNjEyOTcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4MjI5NTQ3NjEwOTM1Mjk2LCJleHAiOjE3NDYzNDc2OTcsImlhdCI6MTc0NjI2MTI5N30.t1CqzwOcFeeVGAtUBGvB99c_sRMR4TuCCy6cIXOT6hI
+Content-Length: 54
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "name": "test",
+  "idCard": "123",
+  "type": "1"
+}
+
 <> 2025-05-03T013507.200.json
 
 ###
@@ -736,19 +754,6 @@ Accept-Encoding: br,deflate,gzip,x-gzip
 mobile=206-670-8647
 
 <> 2025-04-30T210634.200.json
-
-###
-
-POST http://localhost:8000/member/member/send-code
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 19
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-mobile=206-670-8645
-
-<> 2025-04-30T210622.200.json
 
 ###
 
