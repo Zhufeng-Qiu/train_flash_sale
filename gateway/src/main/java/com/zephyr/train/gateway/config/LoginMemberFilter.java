@@ -53,7 +53,7 @@ public class LoginMemberFilter implements Ordered, GlobalFilter {
   }
 
   /**
-   * 优先级设置  值越小  优先级越高
+   * Order setting: less value, higher priority
    *
    * @return
    */

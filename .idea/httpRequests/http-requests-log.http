@@ -1,3 +1,37 @@
+POST http://localhost:8001/member/passenger/save
+Content-Type: application/json
+Content-Length: 74
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "memberId": "17",
+  "name": "test",
+  "idCard": "123",
+  "type": "1"
+}
+
+<> 2025-05-03T004530.200.json
+
+###
+
+POST http://localhost:8000/member/passenger/save
+Content-Type: application/json
+Content-Length: 74
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "memberId": "17",
+  "name": "test",
+  "idCard": "123",
+  "type": "1"
+}
+
+###
+
 GET http://localhost:8000/member/member/count
 Accept: application/json
 token: 123
@@ -612,29 +646,6 @@ Accept-Encoding: br,deflate,gzip,x-gzip
 mobile=456
 
 <> 2025-04-30T044210.500.json
-
-###
-
-POST http://localhost:8000/member/member/register
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 10
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-mobile=456
-
-<> 2025-04-30T043304.200.json
-
-###
-
-GET http://localhost:8000/member/member/count
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-04-30T014539.200.json
 
 ###
 
