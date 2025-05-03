@@ -27,8 +27,14 @@ POST http://localhost:8000/member/member/login
 Content-Type: application/json
 
 {
-  "mobile": "206-670-8647",
+  "mobile": "206-123-4567",
   "code": "123456"
 }
+
+> {%
+  client.log(JSON.stringify(response.body));
+  client.log(JSON.stringify(response.body.content.token));
+  client.global.set("token", response.body.content.token);
+  %}
 
 ###
