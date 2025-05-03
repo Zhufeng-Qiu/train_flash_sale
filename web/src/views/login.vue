@@ -91,7 +91,7 @@ export default defineComponent({
         if (data.success) {
           notification.success({ description: 'Login successfully!'});
           // Login successfully, then jump to console main page
-          router.push("/");
+          router.push("/welcome");
           store.commit("setMember", data.content);
         } else {
           notification.error({ description: data.message});
