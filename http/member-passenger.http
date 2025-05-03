@@ -2,8 +2,8 @@ POST http://localhost:8001/member/passenger/save
 Content-Type: application/json
 
 {
-  "memberId": "17",
-  "name": "test",
+  "memberId": "1",
+  "name": "",
   "idCard": "123",
   "type": "1"
 }

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public class MemberSendCodeReq {
-  @NotBlank(message = "Mobile cannot be blank")
+  @NotBlank(message = "[Mobile] cannot be blank")
   @Pattern(regexp = "^(\\+1\\s?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}$", message = "Mobile format is not correct")
   private String mobile;
 

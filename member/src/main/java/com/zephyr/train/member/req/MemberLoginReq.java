@@ -4,11 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public class MemberLoginReq {
-  @NotBlank(message = "Mobile cannot be blank")
+  @NotBlank(message = "[Mobile] cannot be blank")
   @Pattern(regexp = "^(\\+1\\s?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}$", message = "Mobile format is not correct")
   private String mobile;
 
-  @NotBlank(message = "Verification code cannot be blank")
+  @NotBlank(message = "[Verification code] cannot be blank")
   private String code;
 
   public String getMobile() {

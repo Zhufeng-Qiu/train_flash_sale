@@ -1,5 +1,23 @@
 POST http://localhost:8001/member/passenger/save
 Content-Type: application/json
+Content-Length: 69
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "memberId": "1",
+  "name": "",
+  "idCard": "123",
+  "type": "1"
+}
+
+<> 2025-05-03T005200.200.json
+
+###
+
+POST http://localhost:8001/member/passenger/save
+Content-Type: application/json
 Content-Length: 74
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
@@ -633,19 +651,6 @@ Accept-Encoding: br,deflate,gzip,x-gzip
 mobile=789
 
 <> 2025-04-30T045006.200.json
-
-###
-
-POST http://localhost:8000/member/member/register
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 10
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-mobile=456
-
-<> 2025-04-30T044210.500.json
 
 ###
 
