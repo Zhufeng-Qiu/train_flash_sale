@@ -1,14 +1,13 @@
 package com.zephyr.train.member.req;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 public class PassengerSaveReq {
     private Long id;
-    @NotNull(message = "[Member ID] cannot be null")
+
     private Long memberId;
-    @NotBlank(message = "[User name] cannot be blank")
+    @NotBlank(message = "[Member name] cannot be blank")
     private String name;
     @NotBlank(message = "[ID card] cannot be blank")
     private String idCard;

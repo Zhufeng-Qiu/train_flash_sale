@@ -2,6 +2,7 @@ package com.zephyr.train.member.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
+import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.member.domain.Passenger;
 import com.zephyr.train.member.mapper.PassengerMapper;
@@ -17,6 +18,7 @@ public class PassengerService {
   public void save(PassengerSaveReq req) {
     DateTime now = DateTime.now();
     Passenger passenger = BeanUtil.copyProperties(req, Passenger.class);
+    passenger.setMemberId(LoginMemberContext.getId());
     passenger.setId(SnowUtil.getSnowflakeNextId());
     passenger.setCreateTime(now);
     passenger.setUpdateTime(now);
