@@ -17,6 +17,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <!-- Template Engine freemarker -->
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <!-- mybatis auto-generator plugin -->
