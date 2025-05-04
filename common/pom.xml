@@ -46,7 +46,6 @@
     <dependency>
         <groupId>org.mybatis.spring.boot</groupId>
         <artifactId>mybatis-spring-boot-starter</artifactId>
-        <version>3.0.2</version>
     </dependency>
     <!--  Integrate mysql connection -->
     <dependency>
@@ -57,6 +56,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.pagehelper</groupId>
+      <artifactId>pagehelper-spring-boot-starter</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -3,6 +3,7 @@ package com.zephyr.train.member.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
+import com.github.pagehelper.PageHelper;
 import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.member.domain.Passenger;
@@ -36,6 +37,7 @@ public class PassengerService {
     if (ObjectUtil.isNotNull(req.getMemberId())) {
       criteria.andMemberIdEqualTo(req.getMemberId());
     }
+    PageHelper.startPage(2, 2);
     List<Passenger> passengerList = passengerMapper.selectByExample(passengerExample);
     return BeanUtil.copyToList(passengerList, PassengerQueryResp.class);
   }
