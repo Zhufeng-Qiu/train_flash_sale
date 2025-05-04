@@ -22,6 +22,13 @@
           <a @click="onEdit(record)">Edit</a>
         </a-space>
       </template>
+      <template v-else-if="column.dataIndex === 'type'">
+        <span v-for="item in PASSENGER_TYPE_ARRAY" :key="item.key">
+          <span v-if="item.key === record.type">
+            {{item.value}}
+          </span>
+        </span>
+      </template>
     </template>
   </a-table>
   <a-modal v-model:visible="visible" title="Passenger Info" @ok="handleOk"
@@ -35,9 +42,7 @@
       </a-form-item>
       <a-form-item label="Type">
         <a-select v-model:value="passenger.type">
-          <a-select-option value="1">Adult</a-select-option>
-          <a-select-option value="2">Child</a-select-option>
-          <a-select-option value="3">Student</a-select-option>
+          <a-select-option v-for="item in PASSENGER_TYPE_ARRAY" :key="item.key" :value="item.key">{{item.value}}</a-select-option>
         </a-select>
       </a-form-item>
     </a-form>
@@ -51,6 +56,7 @@ import axios from "axios";
 
 export default defineComponent({
   setup() {
+    const PASSENGER_TYPE_ARRAY = window.PASSENGER_TYPE_ARRAY;
     const visible = ref(false);
 
     let passenger = ref({
@@ -68,7 +74,7 @@ export default defineComponent({
     const pagination = ref({
       total: 0,
       current: 1,
-      pageSize: 2,
+      pageSize: 3,
     });
     let loading = ref(false);
     const columns = [{
@@ -177,6 +183,7 @@ export default defineComponent({
       pagination,
       columns,
       loading,
+      PASSENGER_TYPE_ARRAY,
       onAdd,
       onEdit,
       onDelete,
