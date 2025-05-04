@@ -13,6 +13,12 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
+          <a-popconfirm
+              title="Once deleted, it cannot be recovered. Are you sure you want to delete?"
+              @confirm="onDelete(record)"
+              ok-text="Confirm" cancel-text="Cancel">
+            <a style="color: red">Delete</a>
+          </a-popconfirm>
           <a @click="onEdit(record)">Edit</a>
         </a-space>
       </template>
@@ -92,6 +98,21 @@ export default defineComponent({
       visible.value = true;
     };
 
+    const onDelete = (record) => {
+      axios.delete("/member/passenger/delete/" + record.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          notification.success({description: "Delete successfully！"});
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize,
+          });
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
     const handleOk = () => {
       axios.post("/member/passenger/save", passenger.value).then((response) => {
         let data = response.data;
@@ -158,6 +179,7 @@ export default defineComponent({
       loading,
       onAdd,
       onEdit,
+      onDelete,
       handleOk,
       handleTableChange,
       handleQuery
