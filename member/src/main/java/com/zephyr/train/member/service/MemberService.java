@@ -16,7 +16,6 @@ import com.zephyr.train.member.req.MemberSendCodeReq;
 import com.zephyr.train.member.resp.MemberLoginResp;
 import jakarta.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -95,8 +94,6 @@ public class MemberService {
     }
 
     MemberLoginResp memberLoginResp = BeanUtil.copyProperties(memberDB, MemberLoginResp.class);
-    Map<String, Object> map = BeanUtil.beanToMap(memberLoginResp);
-    String key = "zephyr123456";
     String token = JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile());
     memberLoginResp.setToken(token);
     return memberLoginResp;
