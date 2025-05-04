@@ -2,7 +2,7 @@ package com.zephyr.train.member.req;
 
 import com.zephyr.train.common.req.PageReq;
 
-public class PassengerQueryReq extends PageReq {
+public class PassengerQueryReq extends PageReq  {
 
     private Long memberId;
 

@@ -1,5 +1,6 @@
 package com.zephyr.train.member.req;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Date;
 
@@ -14,8 +15,10 @@ public class PassengerSaveReq {
     @NotBlank(message = "[Passenger Type] cannot be blank")
     private String type;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-7")
     private Date createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-7")
     private Date updateTime;
 
     public Long getId() {
