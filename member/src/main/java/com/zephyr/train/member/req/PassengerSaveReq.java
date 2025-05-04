@@ -2,6 +2,7 @@ package com.zephyr.train.member.req;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 
 public class PassengerSaveReq {
@@ -9,8 +10,10 @@ public class PassengerSaveReq {
 
     private Long memberId;
     @NotBlank(message = "[Member name] cannot be blank")
+    @Size(max = 20, message = "[Name] cannot exceed 20 characters")
     private String name;
-    @NotBlank(message = "[ID card] cannot be blank")
+    @NotBlank(message = "[ID number] cannot be blank")
+    @Size(max = 18, message = "[ID number] cannot exceed 18 characters")
     private String idCard;
     @NotBlank(message = "[Passenger Type] cannot be blank")
     private String type;
