@@ -1,4 +1,4 @@
-package com.zephyr.train.generator.server;
+package com.zephyr.train.generator.gen;
 
 import com.zephyr.train.generator.util.DbUtil;
 import com.zephyr.train.generator.util.Field;

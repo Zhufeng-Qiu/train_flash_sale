@@ -1,1 +1,3 @@
-PASSENGER_TYPE_ARRAY = [{key: "1", value: "Adult"}, {key: "2", value: "Child"}, {key: "3", value: "Student"}];
+PASSENGER_TYPE={ADULT:{code:"1", desc:"Adult"},CHILD:{code:"2", desc:"Child"},STUDENT:{code:"3", desc:"Student"}};
+
+PASSENGER_TYPE_ARRAY=[{code:"1", desc:"Adult"},{code:"2", desc:"Child"},{code:"3", desc:"Student"}];
