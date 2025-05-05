@@ -3,6 +3,7 @@ package com.zephyr.train.generator.util;
 
 import cn.hutool.core.util.StrUtil;
 
+import cn.hutool.json.JSONUtil;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +111,7 @@ public class DbUtil {
     rs.close();
     stmt.close();
     conn.close();
-    System.out.println("Column info: " + fieldList);
+    System.out.println("Column info: " + JSONUtil.toJsonPrettyStr(fieldList));
     return fieldList;
   }
 

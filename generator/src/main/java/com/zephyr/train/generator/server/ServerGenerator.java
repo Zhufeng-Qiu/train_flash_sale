@@ -7,8 +7,10 @@ import freemarker.template.TemplateException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
@@ -65,25 +67,27 @@ public class ServerGenerator {
     // table name
     String tableNameEn = DbUtil.getTableComment(tableName.getText());
     List<Field> fieldList = DbUtil.getColumnByTableName(tableName.getText());
-
-    System.out.println(tableNameEn);
-    System.out.println(fieldList);
+    Set<String> typeSet = getJavaTypes(fieldList);
 
     // Assemble parameters
     Map<String, Object> param = new HashMap<>();
     param.put("Domain", Domain);
     param.put("domain", domain);
     param.put("do_main", do_main);
+    param.put("tableNameEn", tableNameEn);
+    param.put("fieldList", fieldList);
+    param.put("typeSet", typeSet);
     System.out.println("Assemble parameters: " + param);
 
-    generateOnTemplate(Domain, param, "service");
-    generateOnTemplate(Domain, param, "controller");
+    generateOnTemplate(Domain, param, "service", "service");
+    generateOnTemplate(Domain, param, "controller", "controller");
+    generateOnTemplate(Domain, param, "req", "saveReq");
   }
 
-  private static void generateOnTemplate(String Domain, Map<String, Object> param, String target)
+  private static void generateOnTemplate(String Domain, Map<String, Object> param, String packageName, String target)
       throws IOException, TemplateException {
     FreemarkerUtil.initConfig(target + ".ftl");
-    String toPath = serverPath + target + "/";
+    String toPath = serverPath + packageName + "/";
     new File(toPath).mkdirs();
     String Target = target.substring(0, 1).toUpperCase() + target.substring(1);
     String fileName = toPath + Domain + Target + ".java";
@@ -100,5 +104,17 @@ public class ServerGenerator {
     Node node = document.selectSingleNode("//pom:configurationFile");
     System.out.println(node.getText());
     return node.getText();
+  }
+
+  /**
+   * Get all Java type, and deduplicate using Set
+   */
+  private static Set<String> getJavaTypes(List<Field> fieldList) {
+    Set<String> set = new HashSet<>();
+    for (int i = 0; i < fieldList.size(); i++) {
+      Field field = fieldList.get(i);
+      set.add(field.getJavaType());
+    }
+    return set;
   }
 }
