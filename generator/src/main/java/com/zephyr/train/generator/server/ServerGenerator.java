@@ -80,9 +80,11 @@ public class ServerGenerator {
     param.put("typeSet", typeSet);
     System.out.println("Assemble parameters: " + param);
 
-    generateOnTemplate(Domain, param, "service", "service");
-    generateOnTemplate(Domain, param, "controller", "controller");
-    generateOnTemplate(Domain, param, "req", "saveReq");
+//    generateOnTemplate(Domain, param, "service", "service");
+//    generateOnTemplate(Domain, param, "controller", "controller");
+//    generateOnTemplate(Domain, param, "req", "saveReq");
+    generateOnTemplate(Domain, param, "req", "queryReq");
+    generateOnTemplate(Domain, param, "resp", "queryResp");
   }
 
   private static void generateOnTemplate(String Domain, Map<String, Object> param, String packageName, String target)

@@ -1,26 +1,48 @@
 package com.zephyr.train.member.resp;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class PassengerQueryResp {
 
+    /**
+     * id
+     */
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
+
+    /**
+     * member id
+     */
     @JsonSerialize(using= ToStringSerializer.class)
     private Long memberId;
 
+    /**
+     * name
+     */
     private String name;
 
+    /**
+     * id card
+     */
     private String idCard;
 
+    /**
+     * Passenger Type|Enum[PassengerTypeEnum]
+     */
     private String type;
 
+    /**
+     * create time
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-7")
     private Date createTime;
 
+    /**
+     * update time
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-7")
     private Date updateTime;
 
