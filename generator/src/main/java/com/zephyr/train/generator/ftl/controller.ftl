@@ -1,12 +1,12 @@
-package com.zephyr.train.member.controller;
+package com.zephyr.train.${module}.controller;
 
 import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.resp.CommonResp;
 import com.zephyr.train.common.resp.PageResp;
-import com.zephyr.train.member.req.${Domain}QueryReq;
-import com.zephyr.train.member.req.${Domain}SaveReq;
-import com.zephyr.train.member.resp.${Domain}QueryResp;
-import com.zephyr.train.member.service.${Domain}Service;
+import com.zephyr.train.${module}.req.${Domain}QueryReq;
+import com.zephyr.train.${module}.req.${Domain}SaveReq;
+import com.zephyr.train.${module}.resp.${Domain}QueryResp;
+import com.zephyr.train.${module}.service.${Domain}Service;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.bouncycastle.cert.ocsp.Req;

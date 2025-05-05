@@ -1,4 +1,4 @@
-package com.zephyr.train.member.service;
+package com.zephyr.train.${module}.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
@@ -8,12 +8,12 @@ import com.github.pagehelper.PageInfo;
 import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.common.util.SnowUtil;
-import com.zephyr.train.member.domain.${Domain};
-import com.zephyr.train.member.domain.${Domain}Example;
-import com.zephyr.train.member.mapper.${Domain}Mapper;
-import com.zephyr.train.member.req.${Domain}QueryReq;
-import com.zephyr.train.member.req.${Domain}SaveReq;
-import com.zephyr.train.member.resp.${Domain}QueryResp;
+import com.zephyr.train.${module}.domain.${Domain};
+import com.zephyr.train.${module}.domain.${Domain}Example;
+import com.zephyr.train.${module}.mapper.${Domain}Mapper;
+import com.zephyr.train.${module}.req.${Domain}QueryReq;
+import com.zephyr.train.${module}.req.${Domain}SaveReq;
+import com.zephyr.train.${module}.resp.${Domain}QueryResp;
 import jakarta.annotation.Resource;
 import java.util.List;
 import org.slf4j.Logger;

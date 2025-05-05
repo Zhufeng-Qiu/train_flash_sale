@@ -71,6 +71,7 @@ public class ServerGenerator {
 
     // Assemble parameters
     Map<String, Object> param = new HashMap<>();
+    param.put("module", module);
     param.put("Domain", Domain);
     param.put("domain", domain);
     param.put("do_main", do_main);
