@@ -81,9 +81,9 @@ public class DbUtil {
         field.setJavaType(DbUtil.sqlTypeToJavaType(rs.getString("Type")));
         field.setComment(comment);
         if (comment.contains("|")) {
-          field.setNameEn(comment.substring(0, comment.indexOf("|")));
+          field.setNameEn(titleCase(comment.substring(0, comment.indexOf("|"))));
         } else {
-          field.setNameEn(comment);
+          field.setNameEn(titleCase(comment));
         }
         field.setNullAble("YES".equals(nullAble));
         if (type.toUpperCase().contains("varchar".toUpperCase())) {
@@ -113,6 +113,24 @@ public class DbUtil {
     conn.close();
     System.out.println("Column info: " + JSONUtil.toJsonPrettyStr(fieldList));
     return fieldList;
+  }
+
+  /**
+   * lowercase to title case：member id to Member Id
+   */
+  public static String titleCase(String str){
+    String[] words = str.toLowerCase().split("\\s+");
+    StringBuilder titleCase = new StringBuilder();
+
+    for (String word : words) {
+      if (word.length() > 0) {
+        titleCase.append(Character.toUpperCase(word.charAt(0)))
+            .append(word.substring(1))
+            .append(" ");
+      }
+    }
+
+    return titleCase.toString().trim();
   }
 
   /**

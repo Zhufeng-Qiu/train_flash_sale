@@ -17,7 +17,8 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 public class ServerGenerator {
-
+  static boolean readOnly = false;
+  static String vuePath = "web/src/views/main/";
   // windows
   // static String toPath = "generator\\src\\main\\java\\com\\zephyr\\train\\generator\\test\\";
   // mac
@@ -78,13 +79,15 @@ public class ServerGenerator {
     param.put("tableNameEn", tableNameEn);
     param.put("fieldList", fieldList);
     param.put("typeSet", typeSet);
+    param.put("readOnly", readOnly);
     System.out.println("Assemble parameters: " + param);
 
 //    generateOnTemplate(Domain, param, "service", "service");
 //    generateOnTemplate(Domain, param, "controller", "controller");
 //    generateOnTemplate(Domain, param, "req", "saveReq");
-    generateOnTemplate(Domain, param, "req", "queryReq");
-    generateOnTemplate(Domain, param, "resp", "queryResp");
+//    generateOnTemplate(Domain, param, "req", "queryReq");
+//    generateOnTemplate(Domain, param, "resp", "queryResp");
+    genVue(do_main, param);
   }
 
   private static void generateOnTemplate(String Domain, Map<String, Object> param, String packageName, String target)
@@ -94,6 +97,14 @@ public class ServerGenerator {
     new File(toPath).mkdirs();
     String Target = target.substring(0, 1).toUpperCase() + target.substring(1);
     String fileName = toPath + Domain + Target + ".java";
+    System.out.println("Start to generate: " + fileName);
+    FreemarkerUtil.generator(fileName, param);
+  }
+
+  private static void genVue(String do_main, Map<String, Object> param) throws IOException, TemplateException {
+    FreemarkerUtil.initConfig("vue.ftl");
+    new File(vuePath).mkdirs();
+    String fileName = vuePath + do_main + ".vue";
     System.out.println("Start to generate: " + fileName);
     FreemarkerUtil.generator(fileName, param);
   }
