@@ -23,7 +23,7 @@
 
     <!-- Configure data source -->
     <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-      connectionURL="jdbc:mysql://rm-bp15dx607u54hq7j6uo.rwlb.rds.aliyuncs.com/train_member?serverTimezone=America/Los_Angeles"
+      connectionURL="jdbc:mysql://rm-rj9u3y7tz61w5r81b6o.mysql.rds.aliyuncs.com/train_member?serverTimezone=America/Los_Angeles"
       userId="train_member"
       password="NoCC4ftfzgdfdp">
     </jdbcConnection>

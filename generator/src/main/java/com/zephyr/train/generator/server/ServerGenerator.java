@@ -1,10 +1,13 @@
 package com.zephyr.train.generator.server;
 
+import com.zephyr.train.generator.util.DbUtil;
+import com.zephyr.train.generator.util.Field;
 import com.zephyr.train.generator.util.FreemarkerUtil;
 import freemarker.template.TemplateException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -41,6 +44,17 @@ public class ServerGenerator {
     Node domainObjectName = table.selectSingleNode("@domainObjectName");
     System.out.println(tableName.getText() + "/" + domainObjectName.getText());
 
+    // Set data source for DbUtil
+    Node connectionURL = document.selectSingleNode("//@connectionURL");
+    Node userId = document.selectSingleNode("//@userId");
+    Node password = document.selectSingleNode("//@password");
+    System.out.println("url: " + connectionURL.getText());
+    System.out.println("user: " + userId.getText());
+    System.out.println("password: " + password.getText());
+    DbUtil.url = connectionURL.getText();
+    DbUtil.user = userId.getText();
+    DbUtil.password = password.getText();
+
     // Example: table name: zephyr_test
     // Domain = ZephyrTest
     String Domain = domainObjectName.getText();
@@ -48,6 +62,12 @@ public class ServerGenerator {
     String domain = Domain.substring(0, 1).toLowerCase() + Domain.substring(1);
     // do_main = zephyr-test
     String do_main = tableName.getText().replaceAll("_", "-");
+    // table name
+    String tableNameEn = DbUtil.getTableComment(tableName.getText());
+    List<Field> fieldList = DbUtil.getColumnByTableName(tableName.getText());
+
+    System.out.println(tableNameEn);
+    System.out.println(fieldList);
 
     // Assemble parameters
     Map<String, Object> param = new HashMap<>();
