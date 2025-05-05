@@ -5,7 +5,6 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.${module}.domain.${Domain};
@@ -33,7 +32,6 @@ public class ${Domain}Service {
     ${Domain} ${domain} = BeanUtil.copyProperties(req, ${Domain}.class);
     if (ObjectUtil.isNull(${domain}.getId())) {
       ${domain}.setId(SnowUtil.getSnowflakeNextId());
-      ${domain}.setMemberId(LoginMemberContext.getId());
       ${domain}.setCreateTime(now);
       ${domain}.setUpdateTime(now);
       ${domain}Mapper.insert(${domain});
@@ -47,9 +45,7 @@ public class ${Domain}Service {
     ${Domain}Example ${domain}Example = new ${Domain}Example();
     ${domain}Example.setOrderByClause("id desc");
     ${Domain}Example.Criteria criteria = ${domain}Example.createCriteria();
-    if (ObjectUtil.isNotNull(req.getMemberId())) {
-      criteria.andMemberIdEqualTo(req.getMemberId());
-    }
+
     LOG.info("Query page: {}", req.getPage());
     LOG.info("Query page size: {}", req.getSize());
     PageHelper.startPage(req.getPage(), req.getSize());
