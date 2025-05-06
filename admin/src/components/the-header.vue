@@ -4,15 +4,12 @@
       <router-link to="/welcome" style="color: white; font-size: 18px">
         <div style="display: flex; align-items: center;">
           <img src="@/assets/logo.png" alt="logo" style="height: 35px; margin-right: 10px;" />
-          <span>Train Flash Sale</span>
+          <span>Train Flash Sale Admin Console</span>
         </div>
       </router-link>
     </div>
     <div style="float: right; color: white;">
-      Hello, {{member.mobile}} &nbsp;&nbsp; / &nbsp;&nbsp;
-      <router-link to="/login" style="color: white;">
-        Sign out
-      </router-link>
+      Welcome to admin console
     </div>
     <a-menu
         v-model:selectedKeys="selectedKeys"
@@ -25,9 +22,9 @@
           <coffee-outlined /> &nbsp; Welcome
         </router-link>
       </a-menu-item>
-      <a-menu-item key="/passenger">
-        <router-link to="/passenger">
-          <user-outlined /> &nbsp; Passenger
+      <a-menu-item key="/about">
+        <router-link to="/about">
+          <user-outlined /> &nbsp; About
         </router-link>
       </a-menu-item>
     </a-menu>
@@ -36,13 +33,11 @@
 
 <script>
 import {defineComponent, ref, watch} from 'vue';
-import store from "@/store";
 import router from '@/router'
 
 export default defineComponent({
   name: "the-header-view",
   setup() {
-    let member = store.state.member;
     const selectedKeys = ref([]);
 
     watch(() => router.currentRoute.value.path, (newValue) => {
@@ -51,7 +46,6 @@ export default defineComponent({
       selectedKeys.value.push(newValue);
     }, {immediate: true});
     return {
-      member,
       selectedKeys
     };
   },
@@ -62,8 +56,8 @@ export default defineComponent({
 <style scoped>
 .logo {
   float: left;
-  height: 64px;
-  width: 235px;
+  height: 31px;
+  width: 360px;
   color: white;
   font-size: 20px;
 }
