@@ -51,7 +51,7 @@
         <a-input v-model:value="train.startPinyin" />
       </a-form-item>
       <a-form-item label="Start Time">
-        <a-input v-model:value="train.startTime" />
+        <a-time-picker v-model:value="train.startTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
       </a-form-item>
       <a-form-item label="Arrival Station">
         <a-input v-model:value="train.end" />
@@ -60,7 +60,7 @@
         <a-input v-model:value="train.endPinyin" />
       </a-form-item>
       <a-form-item label="End Time">
-        <a-input v-model:value="train.endTime" />
+        <a-time-picker v-model:value="train.endTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
       </a-form-item>
     </a-form>
   </a-modal>

@@ -40,8 +40,9 @@ public class TrainSaveReq {
     /**
      * Start Time
      */
-    @NotBlank(message = "[Start Time] cannot be blank")
-    private String startTime;
+    @JsonFormat(pattern = "HH:mm:ss", timezone = "GMT-7")
+    @NotNull(message = "[Start Time] cannot be null")
+    private Date startTime;
 
     /**
      * Arrival Station
@@ -58,8 +59,9 @@ public class TrainSaveReq {
     /**
      * End Time
      */
-    @NotBlank(message = "[End Time] cannot be blank")
-    private String endTime;
+    @JsonFormat(pattern = "HH:mm:ss", timezone = "GMT-7")
+    @NotNull(message = "[End Time] cannot be null")
+    private Date endTime;
 
     /**
      * Create Time
@@ -113,11 +115,11 @@ public class TrainSaveReq {
         this.startPinyin = startPinyin;
     }
 
-    public String getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
@@ -137,11 +139,11 @@ public class TrainSaveReq {
         this.endPinyin = endPinyin;
     }
 
-    public String getEndTime() {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(String endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 

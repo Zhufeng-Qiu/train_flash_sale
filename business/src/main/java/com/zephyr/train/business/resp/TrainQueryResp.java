@@ -36,7 +36,8 @@ public class TrainQueryResp {
     /**
      * Start Time
      */
-    private String startTime;
+    @JsonFormat(pattern = "HH:mm:ss", timezone = "GMT-7")
+    private Date startTime;
 
     /**
      * Arrival Station
@@ -51,7 +52,8 @@ public class TrainQueryResp {
     /**
      * End Time
      */
-    private String endTime;
+    @JsonFormat(pattern = "HH:mm:ss", timezone = "GMT-7")
+    private Date endTime;
 
     /**
      * Create Time
@@ -105,11 +107,11 @@ public class TrainQueryResp {
         this.startPinyin = startPinyin;
     }
 
-    public String getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
@@ -129,11 +131,11 @@ public class TrainQueryResp {
         this.endPinyin = endPinyin;
     }
 
-    public String getEndTime() {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(String endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 
