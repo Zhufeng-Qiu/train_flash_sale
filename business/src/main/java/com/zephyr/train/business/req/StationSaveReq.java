@@ -20,15 +20,15 @@ public class StationSaveReq {
     private String name;
 
     /**
-     * Station(Spell)
+     * Station Alias
      */
-    @NotBlank(message = "[Station(spell)] cannot be blank")
+    @NotBlank(message = "[Station Alias] cannot be blank")
     private String namePinyin;
 
     /**
-     * Station(Initial)
+     * Station Initial
      */
-    @NotBlank(message = "[Station(initial)] cannot be blank")
+    @NotBlank(message = "[Station Initial] cannot be blank")
     private String namePy;
 
     /**

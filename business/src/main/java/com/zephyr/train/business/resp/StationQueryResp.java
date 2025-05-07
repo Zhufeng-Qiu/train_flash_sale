@@ -19,12 +19,12 @@ public class StationQueryResp {
     private String name;
 
     /**
-     * Station(Spell)
+     * Station Alias
      */
     private String namePinyin;
 
     /**
-     * Station(Initial)
+     * Station Initial
      */
     private String namePy;
 

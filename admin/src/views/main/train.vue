@@ -5,7 +5,7 @@
       <a-button type="primary" @click="onAdd">Add</a-button>
     </a-space>
   </p>
-  <a-table :dataSource="stations"
+  <a-table :dataSource="trains"
            :columns="columns"
            :pagination="pagination"
            @change="handleTableChange"
@@ -22,19 +22,45 @@
           <a @click="onEdit(record)">Edit</a>
         </a-space>
       </template>
+      <template v-else-if="column.dataIndex === 'type'">
+        <span v-for="item in TRAIN_TYPE_ARRAY" :key="item.code">
+          <span v-if="item.code === record.type">
+            {{item.desc}}
+          </span>
+        </span>
+      </template>
     </template>
   </a-table>
-  <a-modal v-model:visible="visible" title="Station" @ok="handleOk"
+  <a-modal v-model:visible="visible" title="Train" @ok="handleOk"
            ok-text="Confirm" cancel-text="Cancel">
-    <a-form :model="station" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
-      <a-form-item label="Station">
-        <a-input v-model:value="station.name" />
+    <a-form :model="train" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
+      <a-form-item label="Train Number">
+        <a-input v-model:value="train.code" />
       </a-form-item>
-      <a-form-item label="Station Alias">
-        <a-input v-model:value="station.namePinyin" />
+      <a-form-item label="Train Type">
+        <a-select v-model:value="train.type">
+          <a-select-option v-for="item in TRAIN_TYPE_ARRAY" :key="item.code" :value="item.code">
+            {{item.desc}}
+          </a-select-option>
+        </a-select>
       </a-form-item>
-      <a-form-item label="Station Initial">
-        <a-input v-model:value="station.namePy" />
+      <a-form-item label="Departure Station">
+        <a-input v-model:value="train.start" />
+      </a-form-item>
+      <a-form-item label="Departure Station Alias">
+        <a-input v-model:value="train.startPinyin" />
+      </a-form-item>
+      <a-form-item label="Start Time">
+        <a-input v-model:value="train.startTime" />
+      </a-form-item>
+      <a-form-item label="Arrival Station">
+        <a-input v-model:value="train.end" />
+      </a-form-item>
+      <a-form-item label="Arrival Station Alias">
+        <a-input v-model:value="train.endPinyin" />
+      </a-form-item>
+      <a-form-item label="End Time">
+        <a-input v-model:value="train.endTime" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -46,18 +72,24 @@ import {notification} from "ant-design-vue";
 import axios from "axios";
 
 export default defineComponent({
-  name: "station-view",
+  name: "train-view",
   setup() {
+    const TRAIN_TYPE_ARRAY = window.TRAIN_TYPE_ARRAY;
     const visible = ref(false);
-    let station = ref({
+    let train = ref({
       id: undefined,
-      name: undefined,
-      namePinyin: undefined,
-      namePy: undefined,
+      code: undefined,
+      type: undefined,
+      start: undefined,
+      startPinyin: undefined,
+      startTime: undefined,
+      end: undefined,
+      endPinyin: undefined,
+      endTime: undefined,
       createTime: undefined,
       updateTime: undefined,
     });
-    const stations = ref([]);
+    const trains = ref([]);
     // The name of three fields of pagination is fixed
     const pagination = ref({
       total: 0,
@@ -67,19 +99,44 @@ export default defineComponent({
     let loading = ref(false);
     const columns = [
     {
-      title: 'Station',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'Train Number',
+      dataIndex: 'code',
+      key: 'code',
     },
     {
-      title: 'Station Alias',
-      dataIndex: 'namePinyin',
-      key: 'namePinyin',
+      title: 'Train Type',
+      dataIndex: 'type',
+      key: 'type',
     },
     {
-      title: 'Station Initial',
-      dataIndex: 'namePy',
-      key: 'namePy',
+      title: 'Departure Station',
+      dataIndex: 'start',
+      key: 'start',
+    },
+    {
+      title: 'Departure Station Alias',
+      dataIndex: 'startPinyin',
+      key: 'startPinyin',
+    },
+    {
+      title: 'Start Time',
+      dataIndex: 'startTime',
+      key: 'startTime',
+    },
+    {
+      title: 'Arrival Station',
+      dataIndex: 'end',
+      key: 'end',
+    },
+    {
+      title: 'Arrival Station Alias',
+      dataIndex: 'endPinyin',
+      key: 'endPinyin',
+    },
+    {
+      title: 'End Time',
+      dataIndex: 'endTime',
+      key: 'endTime',
     },
     {
       title: 'Operation',
@@ -88,17 +145,17 @@ export default defineComponent({
     ];
 
     const onAdd = () => {
-      station.value = {};
+      train.value = {};
       visible.value = true;
     };
 
     const onEdit = (record) => {
-      station.value = window.Tool.copy(record);
+      train.value = window.Tool.copy(record);
       visible.value = true;
     };
 
     const onDelete = (record) => {
-      axios.delete("/business/admin/station/delete/" + record.id).then((response) => {
+      axios.delete("/business/admin/train/delete/" + record.id).then((response) => {
         const data = response.data;
         if (data.success) {
           notification.success({description: "Delete successfully!"});
@@ -113,7 +170,7 @@ export default defineComponent({
     };
 
     const handleOk = () => {
-      axios.post("/business/admin/station/save", station.value).then((response) => {
+      axios.post("/business/admin/train/save", train.value).then((response) => {
         let data = response.data;
         if (data.success) {
           notification.success({description: "Save successfully!"});
@@ -136,7 +193,7 @@ export default defineComponent({
         };
       }
       loading.value = true;
-      axios.get("/business/admin/station/query-list", {
+      axios.get("/business/admin/train/query-list", {
         params: {
           page: param.page,
           size: param.size
@@ -145,7 +202,7 @@ export default defineComponent({
         loading.value = false;
         let data = response.data;
         if (data.success) {
-          stations.value = data.content.list;
+          trains.value = data.content.list;
           // Set the value of the pagination component
           pagination.value.current = param.page;
           pagination.value.total = data.content.total;
@@ -170,9 +227,10 @@ export default defineComponent({
     });
 
     return {
-      station,
+      TRAIN_TYPE_ARRAY,
+      train,
       visible,
-      stations,
+      trains,
       pagination,
       columns,
       handleTableChange,

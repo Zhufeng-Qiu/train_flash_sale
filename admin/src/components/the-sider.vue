@@ -20,6 +20,11 @@
           <user-outlined /> &nbsp; Station Management
         </router-link>
       </a-menu-item>
+      <a-menu-item key="/train">
+        <router-link to="/train">
+          <user-outlined /> &nbsp; Train Management
+        </router-link>
+      </a-menu-item>
     </a-menu>
   </a-layout-sider>
 </template>
