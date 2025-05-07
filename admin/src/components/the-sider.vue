@@ -15,6 +15,11 @@
           <user-outlined /> &nbsp; About
         </router-link>
       </a-menu-item>
+      <a-menu-item key="/station">
+        <router-link to="/station">
+          <user-outlined /> &nbsp; Station Management
+        </router-link>
+      </a-menu-item>
     </a-menu>
   </a-layout-sider>
 </template>
