@@ -83,7 +83,7 @@ public class ServerGenerator {
     System.out.println("Assemble parameters: " + param);
 
     generateOnTemplate(Domain, param, "service", "service");
-    generateOnTemplate(Domain, param, "controller", "controller");
+    generateOnTemplate(Domain, param, "controller/admin", "adminController");
     generateOnTemplate(Domain, param, "req", "saveReq");
     generateOnTemplate(Domain, param, "req", "queryReq");
     generateOnTemplate(Domain, param, "resp", "queryResp");
