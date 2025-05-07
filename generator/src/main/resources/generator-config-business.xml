@@ -23,22 +23,22 @@
 
     <!-- Configure data source -->
     <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-      connectionURL="jdbc:mysql://rm-rj9u3y7tz61w5r81b6o.mysql.rds.aliyuncs.com/train_member?serverTimezone=America/Los_Angeles"
-      userId="train_member"
+      connectionURL="jdbc:mysql://rm-rj9u3y7tz61w5r81b6o.mysql.rds.aliyuncs.com/train_business?serverTimezone=America/Los_Angeles"
+      userId="train_business"
       password="NoCC4ftfzgdfdp">
     </jdbcConnection>
 
     <!-- The location of the domain class. targetProject is the path relative to the pom.xml file.-->
-    <javaModelGenerator targetProject="..\member\src\main\java"
-      targetPackage="com.zephyr.train.member.domain"/>
+    <javaModelGenerator targetProject="../business/src/main/java"
+      targetPackage="com.zephyr.train.business.domain"/>
 
     <!-- The location of the mapper xml. targetProject is the path relative to the pom.xml file. -->
-    <sqlMapGenerator targetProject="..\member\src\main\resources"
+    <sqlMapGenerator targetProject="../business/src/main/resources"
       targetPackage="mapper"/>
 
     <!-- The location of the mapper. targetProject is the path relative to the pom.xml file. -->
-    <javaClientGenerator targetProject="..\member\src\main\java"
-      targetPackage="com.zephyr.train.member.mapper"
+    <javaClientGenerator targetProject="../business/src/main/java"
+      targetPackage="com.zephyr.train.business.mapper"
       type="XMLMAPPER"/>
 
     <table tableName="member" domainObjectName="Member"/>
