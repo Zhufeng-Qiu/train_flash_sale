@@ -2,6 +2,7 @@ package com.zephyr.train.generator.gen;
 
 
 import cn.hutool.core.util.StrUtil;
+import com.zephyr.train.business.enums.SeatColEnum;
 import com.zephyr.train.business.enums.SeatTypeEnum;
 import com.zephyr.train.business.enums.TrainTypeEnum;
 import com.zephyr.train.member.enums.PassengerTypeEnum;
@@ -21,6 +22,7 @@ public class EnumGenerator {
       toJson(PassengerTypeEnum.class, bufferObject, bufferArray);
       toJson(TrainTypeEnum.class, bufferObject, bufferArray);
       toJson(SeatTypeEnum.class, bufferObject, bufferArray);
+      toJson(SeatColEnum.class, bufferObject, bufferArray);
 
       StringBuffer buffer = bufferObject.append("\n").append(bufferArray);
       writeJs(buffer);

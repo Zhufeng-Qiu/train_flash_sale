@@ -35,6 +35,11 @@
           <user-outlined /> &nbsp; Train-Carriage
         </router-link>
       </a-menu-item>
+      <a-menu-item key="/train-seat">
+        <router-link to="/train-seat">
+          <user-outlined /> &nbsp; Train-Seat
+        </router-link>
+      </a-menu-item>
     </a-menu>
   </a-layout-sider>
 </template>
