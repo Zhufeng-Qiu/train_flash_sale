@@ -48,7 +48,7 @@
         <a-input v-model:value="train.start" />
       </a-form-item>
       <a-form-item label="Departure Station Alias">
-        <a-input v-model:value="train.startPinyin" />
+        <a-input v-model:value="train.startPinyin" disabled/>
       </a-form-item>
       <a-form-item label="Start Time">
         <a-time-picker v-model:value="train.startTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
@@ -57,7 +57,7 @@
         <a-input v-model:value="train.end" />
       </a-form-item>
       <a-form-item label="Arrival Station Alias">
-        <a-input v-model:value="train.endPinyin" />
+        <a-input v-model:value="train.endPinyin" disabled/>
       </a-form-item>
       <a-form-item label="End Time">
         <a-time-picker v-model:value="train.endTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
@@ -67,9 +67,10 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, watch } from 'vue';
 import {notification} from "ant-design-vue";
 import axios from "axios";
+import {pinyin} from "pinyin-pro";
 
 export default defineComponent({
   name: "train-view",
@@ -143,6 +144,21 @@ export default defineComponent({
       dataIndex: 'operation'
     }
     ];
+
+    watch(() => train.value.start, ()=>{
+      if (Tool.isNotEmpty(train.value.start)) {
+        train.value.startPinyin = pinyin(train.value.start, { toneType: 'none'}).replaceAll(" ", "");
+      } else {
+        train.value.startPinyin = "";
+      }
+    }, {immediate: true});
+    watch(() => train.value.end, ()=>{
+      if (Tool.isNotEmpty(train.value.end)) {
+        train.value.endPinyin = pinyin(train.value.end, { toneType: 'none'}).replaceAll(" ", "");
+      } else {
+        train.value.endPinyin = "";
+      }
+    }, {immediate: true});
 
     const onAdd = () => {
       train.value = {};
