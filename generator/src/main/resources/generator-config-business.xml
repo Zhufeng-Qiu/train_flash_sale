@@ -23,8 +23,8 @@
 
     <!-- Configure data source -->
     <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-      connectionURL="jdbc:mysql://rm-rj9u3y7tz61w5r81b6o.mysql.rds.aliyuncs.com/train_business?serverTimezone=Asia/Shanghai"
-      userId="train_business"
+      connectionURL="jdbc:mysql://rm-rj9u3y7tz61w5r81b6o.mysql.rds.aliyuncs.com/train_member?serverTimezone=America/Los_Angeles"
+      userId="train_member"
       password="NoCC4ftfzgdfdp">
     </jdbcConnection>
 
@@ -41,7 +41,6 @@
       targetPackage="com.zephyr.train.member.mapper"
       type="XMLMAPPER"/>
 
-    <!--<table tableName="member" domainObjectName="Member"/>-->
-    <table tableName="passenger" domainObjectName="Passenger"/>
+    <table tableName="member" domainObjectName="Member"/>
   </context>
 </generatorConfiguration>
