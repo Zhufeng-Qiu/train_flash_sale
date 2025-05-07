@@ -88,11 +88,36 @@ export default defineComponent({
     }
     ];
 
+    function containsChinese(str) {
+      return /[\u4e00-\u9fa5]/.test(str);
+    }
+
+    function transferEnglishCityName(station, origin, relate) {
+      const words = station.value[origin].trim().split(/\s+/);
+      let res;
+
+      if (words.length > 1) {
+        res = words.map(word => word.charAt(0).toUpperCase()).join('');
+      } else {
+        res =  station.value[origin].slice(0, 3).toUpperCase();
+      }
+      station.value[relate] = res;
+    }
+
+    function transferChineseCityName(station) {
+      station.value.namePinyin = pinyin(station.value.name, { toneType: 'none'}).replaceAll(" ", "");
+      station.value.namePy = pinyin(station.value.name, { pattern: 'first', toneType: 'none'}).replaceAll(" ", "");
+    }
+
     // http://pinyin-pro.cn/
     watch(() => station.value.name, ()=>{
       if (Tool.isNotEmpty(station.value.name)) {
-        station.value.namePinyin = pinyin(station.value.name, { toneType: 'none'}).replaceAll(" ", "");
-        station.value.namePy = pinyin(station.value.name, { pattern: 'first', toneType: 'none'}).replaceAll(" ", "");
+        if (containsChinese(station.value.name)) {
+          transferChineseCityName(station);
+        } else {
+          transferEnglishCityName(station, "name", "namePinyin");
+          transferEnglishCityName(station, "name", "namePy");
+        }
       } else {
         station.value.namePinyin = "";
         station.value.namePy = "";

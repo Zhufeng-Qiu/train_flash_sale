@@ -145,16 +145,44 @@ export default defineComponent({
     }
     ];
 
+    function containsChinese(str) {
+      return /[\u4e00-\u9fa5]/.test(str);
+    }
+
+    function transferEnglishCityName(station, origin, relate) {
+      const words = station.value[origin].trim().split(/\s+/);
+      let res;
+
+      if (words.length > 1) {
+        res = words.map(word => word.charAt(0).toUpperCase()).join('');
+      } else {
+        res =  station.value[origin].slice(0, 3).toUpperCase();
+      }
+      station.value[relate] = res;
+    }
+
+    function transferChineseCityName(station, origin, relate) {
+      train.value[relate] = pinyin(train.value[origin], { toneType: 'none'}).replaceAll(" ", "");
+    }
+
     watch(() => train.value.start, ()=>{
       if (Tool.isNotEmpty(train.value.start)) {
-        train.value.startPinyin = pinyin(train.value.start, { toneType: 'none'}).replaceAll(" ", "");
+        if (containsChinese(train.value.start)) {
+          transferChineseCityName(train, "start", "startPinyin");
+        } else {
+          transferEnglishCityName(train, "start", "startPinyin");
+        }
       } else {
         train.value.startPinyin = "";
       }
     }, {immediate: true});
     watch(() => train.value.end, ()=>{
       if (Tool.isNotEmpty(train.value.end)) {
-        train.value.endPinyin = pinyin(train.value.end, { toneType: 'none'}).replaceAll(" ", "");
+        if (containsChinese(train.value.end)) {
+          transferChineseCityName(train, "end", "endPinyin");
+        } else {
+          transferEnglishCityName(train, "end", "endPinyin");
+        }
       } else {
         train.value.endPinyin = "";
       }

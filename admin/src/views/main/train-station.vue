@@ -133,9 +133,33 @@ export default defineComponent({
     }
     ];
 
+    function containsChinese(str) {
+      return /[\u4e00-\u9fa5]/.test(str);
+    }
+
+    function transferEnglishCityName(trainStation, origin, relate) {
+      const words = trainStation.value[origin].trim().split(/\s+/);
+      let res;
+
+      if (words.length > 1) {
+        res = words.map(word => word.charAt(0).toUpperCase()).join('');
+      } else {
+        res =  trainStation.value[origin].slice(0, 3).toUpperCase();
+      }
+      trainStation.value[relate] = res;
+    }
+
+    function transferChineseCityName(trainStation, origin, relate) {
+      trainStation.value[relate] = pinyin(trainStation.value[origin], { toneType: 'none'}).replaceAll(" ", "");
+    }
+
     watch(() => trainStation.value.name, ()=>{
       if (Tool.isNotEmpty(trainStation.value.name)) {
-        trainStation.value.namePinyin = pinyin(trainStation.value.name, { toneType: 'none'}).replaceAll(" ", "");
+        if (containsChinese(trainStation.value.name)) {
+          transferChineseCityName(trainStation, "name", "namePinyin");
+        } else {
+          transferEnglishCityName(trainStation, "name", "namePinyin");
+        }
       } else {
         trainStation.value.namePinyin = "";
       }
