@@ -1,14 +1,14 @@
 package com.zephyr.train.business.controller.admin;
 
-import com.zephyr.train.common.resp.CommonResp;
-import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.business.req.StationQueryReq;
 import com.zephyr.train.business.req.StationSaveReq;
 import com.zephyr.train.business.resp.StationQueryResp;
 import com.zephyr.train.business.service.StationService;
+import com.zephyr.train.common.resp.CommonResp;
+import com.zephyr.train.common.resp.PageResp;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.bouncycastle.cert.ocsp.Req;
+import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,5 +40,11 @@ public class StationAdminController {
   public CommonResp<Object> delete(@PathVariable Long id) {
     stationService.delete(id);
     return new CommonResp<>();
+  }
+
+  @GetMapping("/query-all")
+  public CommonResp<List<StationQueryResp>> queryList() {
+    List<StationQueryResp> list = stationService.queryAll();
+    return new CommonResp<>(list);
   }
 }
