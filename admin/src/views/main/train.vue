@@ -43,7 +43,7 @@
            ok-text="Confirm" cancel-text="Cancel">
     <a-form :model="train" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
       <a-form-item label="Train Number">
-        <a-input v-model:value="train.code" />
+        <a-input v-model:value="train.code" :disabled="!!train.id"/>
       </a-form-item>
       <a-form-item label="Train Type">
         <a-select v-model:value="train.type">
