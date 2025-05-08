@@ -1,7 +1,8 @@
 <template>
   <p>
     <a-space>
-      <a-button type="primary" @click="handleQuery()">Refresh</a-button>
+      <train-select-view v-model="params.trainCode" width="200px"></train-select-view>
+      <a-button type="primary" @click="handleQuery()">Search</a-button>
       <a-button type="primary" @click="onAdd">Add</a-button>
     </a-space>
   </p>
@@ -88,9 +89,12 @@ export default defineComponent({
     const pagination = ref({
       total: 0,
       current: 1,
-      pageSize: 10,
+      pageSize: 3,
     });
     let loading = ref(false);
+    let params = ref({
+      trainCode: null
+    });
     const columns = [
     {
       title: 'Train Number',
@@ -146,6 +150,7 @@ export default defineComponent({
           handleQuery({
             page: pagination.value.current,
             size: pagination.value.pageSize,
+            trainCode: params.value.trainCode
           });
         } else {
           notification.error({description: data.message});
@@ -161,7 +166,8 @@ export default defineComponent({
           visible.value = false;
           handleQuery({
             page: pagination.value.current,
-            size: pagination.value.pageSize
+            size: pagination.value.pageSize,
+            trainCode: params.value.trainCode
           });
         } else {
           notification.error({description: data.message});
@@ -180,7 +186,8 @@ export default defineComponent({
       axios.get("/business/admin/train-carriage/query-list", {
         params: {
           page: param.page,
-          size: param.size
+          size: param.size,
+          trainCode: params.value.trainCode
         }
       }).then((response) => {
         loading.value = false;
@@ -199,14 +206,16 @@ export default defineComponent({
     const handleTableChange = (pagination) => {
       handleQuery({
         page: pagination.current,
-        size: pagination.pageSize
+        size: pagination.pageSize,
+        trainCode: params.value.trainCode
       });
     };
 
     onMounted(() => {
       handleQuery({
         page: 1,
-        size: pagination.value.pageSize
+        size: pagination.value.pageSize,
+        trainCode: params.value.trainCode
       });
     });
 
@@ -217,9 +226,10 @@ export default defineComponent({
       trainCarriages,
       pagination,
       columns,
+      loading,
+      params,
       handleTableChange,
       handleQuery,
-      loading,
       onAdd,
       handleOk,
       onEdit,
