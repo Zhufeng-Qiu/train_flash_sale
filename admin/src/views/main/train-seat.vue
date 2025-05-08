@@ -14,15 +14,6 @@
            :loading="loading">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
-        <a-space>
-          <a-popconfirm
-              title="Once deleted, it cannot be recovered. Are you sure you want to delete?"
-              @confirm="onDelete(record)"
-              ok-text="Confirm" cancel-text="Cancel">
-            <a style="color: red">Delete</a>
-          </a-popconfirm>
-          <a @click="onEdit(record)">Edit</a>
-        </a-space>
       </template>
       <template v-else-if="column.dataIndex === 'col'">
         <span v-for="item in SEAT_COL_ARRAY" :key="item.code">
@@ -40,37 +31,6 @@
       </template>
     </template>
   </a-table>
-  <a-modal v-model:visible="visible" title="Seat" @ok="handleOk"
-           ok-text="Confirm" cancel-text="Cancel">
-    <a-form :model="trainSeat" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
-      <a-form-item label="Train Number">
-        <train-select-view v-model="trainSeat.trainCode"></train-select-view>
-      </a-form-item>
-      <a-form-item label="Carriage Index">
-        <a-input v-model:value="trainSeat.carriageIndex" />
-      </a-form-item>
-      <a-form-item label="Row">
-        <a-input v-model:value="trainSeat.row" />
-      </a-form-item>
-      <a-form-item label="Column">
-        <a-select v-model:value="trainSeat.col">
-          <a-select-option v-for="item in SEAT_COL_ARRAY" :key="item.code" :value="item.code">
-            {{item.desc}}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="Seat Type">
-        <a-select v-model:value="trainSeat.seatType">
-          <a-select-option v-for="item in SEAT_TYPE_ARRAY" :key="item.code" :value="item.code">
-            {{item.desc}}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="In-carriage Seat Index">
-        <a-input v-model:value="trainSeat.carriageSeatIndex" />
-      </a-form-item>
-    </a-form>
-  </a-modal>
 </template>
 
 <script>
@@ -139,54 +99,8 @@ export default defineComponent({
       dataIndex: 'carriageSeatIndex',
       key: 'carriageSeatIndex',
     },
-    {
-      title: 'Operation',
-      dataIndex: 'operation'
-    }
     ];
 
-    const onAdd = () => {
-      trainSeat.value = {};
-      visible.value = true;
-    };
-
-    const onEdit = (record) => {
-      trainSeat.value = window.Tool.copy(record);
-      visible.value = true;
-    };
-
-    const onDelete = (record) => {
-      axios.delete("/business/admin/train-seat/delete/" + record.id).then((response) => {
-        const data = response.data;
-        if (data.success) {
-          notification.success({description: "Delete successfully!"});
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize,
-            trainCode: params.value.trainCode
-          });
-        } else {
-          notification.error({description: data.message});
-        }
-      });
-    };
-
-    const handleOk = () => {
-      axios.post("/business/admin/train-seat/save", trainSeat.value).then((response) => {
-        let data = response.data;
-        if (data.success) {
-          notification.success({description: "Save successfully!"});
-          visible.value = false;
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize,
-            trainCode: params.value.trainCode
-          });
-        } else {
-          notification.error({description: data.message});
-        }
-      });
-    };
 
     const handleQuery = (param) => {
       if (!param) {
@@ -243,11 +157,7 @@ export default defineComponent({
       loading,
       params,
       handleTableChange,
-      handleQuery,
-      onAdd,
-      handleOk,
-      onEdit,
-      onDelete
+      handleQuery
     };
   },
 });

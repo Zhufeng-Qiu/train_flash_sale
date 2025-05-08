@@ -17,7 +17,7 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 public class ServerGenerator {
-  static boolean readOnly = false;
+  static boolean readOnly = true;
   static String vuePath = "admin/src/views/main/";
   // windows
   // static String toPath = "generator\\src\\main\\java\\com\\zephyr\\train\\generator\\test\\";
@@ -82,11 +82,11 @@ public class ServerGenerator {
     param.put("readOnly", readOnly);
     System.out.println("Assemble parameters: " + param);
 
-    generateOnTemplate(Domain, param, "service", "service");
-    generateOnTemplate(Domain, param, "controller/admin", "adminController");
-    generateOnTemplate(Domain, param, "req", "saveReq");
-    generateOnTemplate(Domain, param, "req", "queryReq");
-    generateOnTemplate(Domain, param, "resp", "queryResp");
+//    generateOnTemplate(Domain, param, "service", "service");
+//    generateOnTemplate(Domain, param, "controller/admin", "adminController");
+//    generateOnTemplate(Domain, param, "req", "saveReq");
+//    generateOnTemplate(Domain, param, "req", "queryReq");
+//    generateOnTemplate(Domain, param, "resp", "queryResp");
     genVue(do_main, param);
   }
 
