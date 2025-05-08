@@ -19,6 +19,7 @@
               ok-text="Confirm" cancel-text="Cancel">
             <a style="color: red">Delete</a>
           </a-popconfirm>
+          |
           <a @click="onEdit(record)">Edit</a>
         </a-space>
       </template>

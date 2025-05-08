@@ -8,7 +8,12 @@ import com.zephyr.train.business.enums.TrainTypeEnum;
 import com.zephyr.train.member.enums.PassengerTypeEnum;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EnumGenerator {
   static String path = "admin/src/assets/js/enums.js";
@@ -39,14 +44,24 @@ public class EnumGenerator {
         .toUpperCase().replace("_ENUM", "");
     Object[] objects = clazz.getEnumConstants();
     Method name = clazz.getMethod("name");
-    Method getDesc = clazz.getMethod("getDesc");
-    Method getCode = clazz.getMethod("getCode");
+    // Exclude enum fields and $VALUES, only get code, desc, etc.
+    List<Field> targetFields = new ArrayList<>();
+    Field[] fields = clazz.getDeclaredFields();
+    for (Field field : fields) {
+      if (!Modifier.isPrivate(field.getModifiers()) || "$VALUES".equals(field.getName())) {
+        continue;
+      }
+      targetFields.add(field);
+    }
 
     // Generate object
     bufferObject.append(enumConst).append("={");
     for (int i = 0; i < objects.length; i++) {
       Object obj = objects[i];
-      bufferObject.append(name.invoke(obj)).append(":{code:\"").append(getCode.invoke(obj)).append("\", desc:\"").append(getDesc.invoke(obj)).append("\"}");
+      bufferObject.append(name.invoke(obj)).append(":");
+
+      // convert an enum value to JSON object string
+      formatJsonObj(bufferObject, targetFields, clazz, obj);
       if (i < objects.length - 1) {
         bufferObject.append(",");
       }
@@ -57,12 +72,32 @@ public class EnumGenerator {
     bufferArray.append(enumConst).append("_ARRAY=[");
     for (int i = 0; i < objects.length; i++) {
       Object obj = objects[i];
-      bufferArray.append("{code:\"").append(getCode.invoke(obj)).append("\", desc:\"").append(getDesc.invoke(obj)).append("\"}");
+      // convert an enum value to JSON object string
+      formatJsonObj(bufferArray, targetFields, clazz, obj);
       if (i < objects.length - 1) {
         bufferArray.append(",");
       }
     }
     bufferArray.append("];\n");
+  }
+
+  /**
+   * Convert an enum value to JSON object string
+   * For example：SeatColEnum.YDZ_A("A", "A", "1")
+   * convert to：{code:"A",desc:"A",type:"1"}
+   */
+  private static void formatJsonObj(StringBuffer bufferObject, List<Field> targetFields, Class clazz, Object obj) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    bufferObject.append("{");
+    for (int j = 0; j < targetFields.size(); j++) {
+      Field field = targetFields.get(j);
+      String fieldName = field.getName();
+      String getMethod = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+      bufferObject.append(fieldName).append(":\"").append(clazz.getMethod(getMethod).invoke(obj)).append("\"");
+      if (j < targetFields.size() - 1) {
+        bufferObject.append(",");
+      }
+    }
+    bufferObject.append("}");
   }
 
   /**
