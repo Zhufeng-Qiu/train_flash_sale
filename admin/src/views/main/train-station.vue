@@ -28,7 +28,12 @@
            ok-text="Confirm" cancel-text="Cancel">
     <a-form :model="trainStation" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
       <a-form-item label="Train Number">
-        <a-input v-model:value="trainStation.trainCode" />
+        <a-select v-model:value="trainStation.trainCode" show-search
+                  :filterOption="filterTrainCodeOption">
+          <a-select-option v-for="item in trains" :key="item.code" :value="item.code" :label="item.code + item.start + item.end">
+            {{item.code}} | {{item.startPinyin}} ~ {{item.endPinyin }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
       <a-form-item label="Station Index">
         <a-input v-model:value="trainStation.index" />
@@ -240,11 +245,37 @@ export default defineComponent({
       });
     };
 
+    // ----------------- Train Number/Code drop-down box -----------------
+    const trains = ref([]);
+
+    /**
+     * Query all the train number for drop-down box
+     */
+    const queryTrainCode = () => {
+      axios.get("/business/admin/train/query-all").then((response) => {
+        let data = response.data;
+        if (data.success) {
+          trains.value = data.content;
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
+    /**
+     * Filter for drop-down box
+     */
+    const filterTrainCodeOption = (input, option) => {
+      console.log(input, option);
+      return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+    };
+
     onMounted(() => {
       handleQuery({
         page: 1,
         size: pagination.value.pageSize
       });
+      queryTrainCode();
     });
 
     return {
@@ -253,13 +284,15 @@ export default defineComponent({
       trainStations,
       pagination,
       columns,
+      loading,
+      trains,
       handleTableChange,
       handleQuery,
-      loading,
       onAdd,
       handleOk,
       onEdit,
-      onDelete
+      onDelete,
+      filterTrainCodeOption
     };
   },
 });

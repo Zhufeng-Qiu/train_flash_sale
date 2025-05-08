@@ -176,6 +176,7 @@ export default defineComponent({
         train.value.startPinyin = "";
       }
     }, {immediate: true});
+
     watch(() => train.value.end, ()=>{
       if (Tool.isNotEmpty(train.value.end)) {
         if (containsChinese(train.value.end)) {
