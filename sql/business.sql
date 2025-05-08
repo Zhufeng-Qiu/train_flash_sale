@@ -42,7 +42,7 @@ create table `train_station` (
     `update_time` datetime(3) comment 'Update Time',
     primary key (`id`),
     unique key `train_code_index_unique` (`train_code`, `index`),
-     unique key `train_code_name_unique` (`train_code`, `name`)
+    unique key `train_code_name_unique` (`train_code`, `name`)
 ) engine=innodb default charset=utf8mb4 comment='Train Station';
 
 drop table if exists `train_carriage`;

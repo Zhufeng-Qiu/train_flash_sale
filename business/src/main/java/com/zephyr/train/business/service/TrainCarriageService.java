@@ -1,6 +1,7 @@
 package com.zephyr.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
@@ -12,6 +13,8 @@ import com.zephyr.train.business.mapper.TrainCarriageMapper;
 import com.zephyr.train.business.req.TrainCarriageQueryReq;
 import com.zephyr.train.business.req.TrainCarriageSaveReq;
 import com.zephyr.train.business.resp.TrainCarriageQueryResp;
+import com.zephyr.train.common.exception.BusinessException;
+import com.zephyr.train.common.exception.BusinessExceptionEnum;
 import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
@@ -37,7 +40,15 @@ public class TrainCarriageService {
     req.setSeatCount(req.getColCount() * req.getRowCount());
 
     TrainCarriage trainCarriage = BeanUtil.copyProperties(req, TrainCarriage.class);
+
     if (ObjectUtil.isNull(trainCarriage.getId())) {
+
+      // Check whether unique key exists before saving
+      TrainCarriage trainCarriageDB = selectByUnique(req.getTrainCode(), req.getIndex());
+      if (ObjectUtil.isNotEmpty(trainCarriageDB)) {
+        throw new BusinessException(BusinessExceptionEnum.BUSINESS_TRAIN_CARRIAGE_INDEX_UNIQUE_ERROR);
+      }
+
       trainCarriage.setId(SnowUtil.getSnowflakeNextId());
       trainCarriage.setCreateTime(now);
       trainCarriage.setUpdateTime(now);
@@ -82,5 +93,18 @@ public class TrainCarriageService {
     TrainCarriageExample.Criteria criteria = trainCarriageExample.createCriteria();
     criteria.andTrainCodeEqualTo(trainCode);
     return trainCarriageMapper.selectByExample(trainCarriageExample);
+  }
+
+  private TrainCarriage selectByUnique(String trainCode, Integer index) {
+    TrainCarriageExample trainCarriageExample = new TrainCarriageExample();
+    trainCarriageExample.createCriteria()
+        .andTrainCodeEqualTo(trainCode)
+        .andIndexEqualTo(index);
+    List<TrainCarriage> list = trainCarriageMapper.selectByExample(trainCarriageExample);
+    if (CollUtil.isNotEmpty(list)) {
+      return list.get(0);
+    } else {
+      return null;
+    }
   }
 }

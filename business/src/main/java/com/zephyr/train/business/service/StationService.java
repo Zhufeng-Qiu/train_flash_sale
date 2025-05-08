@@ -1,6 +1,7 @@
 package com.zephyr.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
@@ -11,6 +12,8 @@ import com.zephyr.train.business.mapper.StationMapper;
 import com.zephyr.train.business.req.StationQueryReq;
 import com.zephyr.train.business.req.StationSaveReq;
 import com.zephyr.train.business.resp.StationQueryResp;
+import com.zephyr.train.common.exception.BusinessException;
+import com.zephyr.train.common.exception.BusinessExceptionEnum;
 import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
@@ -30,6 +33,12 @@ public class StationService {
   public void save(StationSaveReq req) {
     DateTime now = DateTime.now();
     Station station = BeanUtil.copyProperties(req, Station.class);
+
+    // Check whether unique key exists before saving
+    Station stationDB = selectByUnique(req.getName());
+    if (ObjectUtil.isNotEmpty(stationDB)) {
+      throw new BusinessException(BusinessExceptionEnum.BUSINESS_STATION_NAME_UNIQUE_ERROR);
+    }
     if (ObjectUtil.isNull(station.getId())) {
       station.setId(SnowUtil.getSnowflakeNextId());
       station.setCreateTime(now);
@@ -39,6 +48,16 @@ public class StationService {
       station.setUpdateTime(now);
       stationMapper.updateByPrimaryKey(station);
     }
+  }
+
+  private Station selectByUnique(String name) {
+    StationExample stationExample = new StationExample();
+    stationExample.createCriteria().andNameEqualTo(name);
+    List<Station> list = stationMapper.selectByExample(stationExample);
+    if (CollUtil.isNotEmpty(list)) {
+      return list.get(0);
+    }
+    return null;
   }
 
   public PageResp<StationQueryResp> queryList(StationQueryReq req) {

@@ -1,18 +1,21 @@
 package com.zephyr.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zephyr.train.common.resp.PageResp;
-import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.business.domain.Train;
 import com.zephyr.train.business.domain.TrainExample;
 import com.zephyr.train.business.mapper.TrainMapper;
 import com.zephyr.train.business.req.TrainQueryReq;
 import com.zephyr.train.business.req.TrainSaveReq;
 import com.zephyr.train.business.resp.TrainQueryResp;
+import com.zephyr.train.common.exception.BusinessException;
+import com.zephyr.train.common.exception.BusinessExceptionEnum;
+import com.zephyr.train.common.resp.PageResp;
+import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
 import java.util.List;
 import org.slf4j.Logger;
@@ -31,6 +34,13 @@ public class TrainService {
     DateTime now = DateTime.now();
     Train train = BeanUtil.copyProperties(req, Train.class);
     if (ObjectUtil.isNull(train.getId())) {
+
+      // Check whether unique key exists before saving
+      Train trainDB = selectByUnique(req.getCode());
+      if (ObjectUtil.isNotEmpty(trainDB)) {
+        throw new BusinessException(BusinessExceptionEnum.BUSINESS_TRAIN_CODE_UNIQUE_ERROR);
+      }
+
       train.setId(SnowUtil.getSnowflakeNextId());
       train.setCreateTime(now);
       train.setUpdateTime(now);
@@ -71,5 +81,17 @@ public class TrainService {
     trainExample.setOrderByClause("code asc");
     List<Train> trainList = trainMapper.selectByExample(trainExample);
     return BeanUtil.copyToList(trainList, TrainQueryResp.class);
+  }
+
+  private Train selectByUnique(String code) {
+    TrainExample trainExample = new TrainExample();
+    trainExample.createCriteria()
+        .andCodeEqualTo(code);
+    List<Train> list = trainMapper.selectByExample(trainExample);
+    if (CollUtil.isNotEmpty(list)) {
+      return list.get(0);
+    } else {
+      return null;
+    }
   }
 }
