@@ -3,8 +3,11 @@ package com.zephyr.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zephyr.train.business.domain.TrainCarriage;
+import com.zephyr.train.business.enums.SeatColEnum;
 import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.business.domain.TrainSeat;
@@ -18,6 +21,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TrainSeatService {
@@ -26,6 +30,10 @@ public class TrainSeatService {
 
   @Resource
   private TrainSeatMapper trainSeatMapper;
+
+  @Resource
+  private TrainCarriageService trainCarriageService;
+
 
   public void save(TrainSeatSaveReq req) {
     DateTime now = DateTime.now();
@@ -67,5 +75,51 @@ public class TrainSeatService {
 
   public void delete(Long id) {
     trainSeatMapper.deleteByPrimaryKey(id);
+  }
+
+  @Transactional
+  public void genTrainSeat(String trainCode) {
+    DateTime now = DateTime.now();
+
+    // Clean all seat records
+    TrainSeatExample trainSeatExample = new TrainSeatExample();
+    TrainSeatExample.Criteria criteria = trainSeatExample.createCriteria();
+    criteria.andTrainCodeEqualTo(trainCode);
+    trainSeatMapper.deleteByExample(trainSeatExample);
+
+    // Search all carriage info for current train code
+    List<TrainCarriage> carriageList = trainCarriageService.selectByTrainCode(trainCode);
+    LOG.info("Carriage number of current train code：{}", carriageList.size());
+
+    // Generate seats recursively
+    for (TrainCarriage trainCarriage : carriageList) {
+      // Get carriage info: [rows], [seat type]
+      Integer rowCount = trainCarriage.getRowCount();
+      String seatType = trainCarriage.getSeatType();
+      int seatIndex = 1;
+
+      // Get the [columns] based on seat type of carriage. For example, if the seat type of carriage is first class seat, columnList={ACDF}
+      List<SeatColEnum> colEnumList = SeatColEnum.getColsByType(seatType);
+      LOG.info("Get the columns based on seat type of carriage：{}", colEnumList);
+
+      // Recurse rows
+      for (int row = 1; row <= rowCount; row++) {
+        // Recurse columns
+        for (SeatColEnum seatColEnum : colEnumList) {
+          // Construct seat data and save to database
+          TrainSeat trainSeat = new TrainSeat();
+          trainSeat.setId(SnowUtil.getSnowflakeNextId());
+          trainSeat.setTrainCode(trainCode);
+          trainSeat.setCarriageIndex(trainCarriage.getIndex());
+          trainSeat.setRow(StrUtil.fillBefore(String.valueOf(row), '0', 2));
+          trainSeat.setCol(seatColEnum.getCode());
+          trainSeat.setSeatType(seatType);
+          trainSeat.setCarriageSeatIndex(seatIndex++);
+          trainSeat.setCreateTime(now);
+          trainSeat.setUpdateTime(now);
+          trainSeatMapper.insert(trainSeat);
+        }
+      }
+    }
   }
 }

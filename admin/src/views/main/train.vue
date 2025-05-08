@@ -14,12 +14,20 @@
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
           <a-popconfirm
-              title="Once deleted, it cannot be recovered. Are you sure you want to delete?"
+              title="Once deleted, it cannot be recovered. Confirm to delete?"
               @confirm="onDelete(record)"
               ok-text="Confirm" cancel-text="Cancel">
             <a style="color: red">Delete</a>
           </a-popconfirm>
+          |
           <a @click="onEdit(record)">Edit</a>
+          |
+          <a-popconfirm
+              title="Existing seat records will be deleted. Confirm to generate new seats?"
+              @confirm="genSeat(record)"
+              ok-text="Confirm" cancel-text="Cancel">
+            <a>Generate seat</a>
+          </a-popconfirm>
         </a-space>
       </template>
       <template v-else-if="column.dataIndex === 'type'">
@@ -266,6 +274,19 @@ export default defineComponent({
       });
     };
 
+    const genSeat = (record) => {
+      loading.value = true;
+      axios.get("/business/admin/train/gen-seat/" + record.code).then((response) => {
+        loading.value = false;
+        const data = response.data;
+        if (data.success) {
+          notification.success({description: "Generate successfully！"});
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
     onMounted(() => {
       handleQuery({
         page: 1,
@@ -280,13 +301,14 @@ export default defineComponent({
       trains,
       pagination,
       columns,
+      loading,
       handleTableChange,
       handleQuery,
-      loading,
       onAdd,
       handleOk,
       onEdit,
-      onDelete
+      onDelete,
+      genSeat
     };
   },
 });

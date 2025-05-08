@@ -5,14 +5,14 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zephyr.train.common.resp.PageResp;
-import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.business.domain.TrainCarriage;
 import com.zephyr.train.business.domain.TrainCarriageExample;
 import com.zephyr.train.business.mapper.TrainCarriageMapper;
 import com.zephyr.train.business.req.TrainCarriageQueryReq;
 import com.zephyr.train.business.req.TrainCarriageSaveReq;
 import com.zephyr.train.business.resp.TrainCarriageQueryResp;
+import com.zephyr.train.common.resp.PageResp;
+import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
 import java.util.List;
 import org.slf4j.Logger;
@@ -67,5 +67,13 @@ public class TrainCarriageService {
 
   public void delete(Long id) {
     trainCarriageMapper.deleteByPrimaryKey(id);
+  }
+
+  public List<TrainCarriage> selectByTrainCode(String trainCode) {
+    TrainCarriageExample trainCarriageExample = new TrainCarriageExample();
+    trainCarriageExample.setOrderByClause("`index` asc");
+    TrainCarriageExample.Criteria criteria = trainCarriageExample.createCriteria();
+    criteria.andTrainCodeEqualTo(trainCode);
+    return trainCarriageMapper.selectByExample(trainCarriageExample);
   }
 }

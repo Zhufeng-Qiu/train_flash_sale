@@ -3,6 +3,7 @@ package com.zephyr.train.business.controller.admin;
 import com.zephyr.train.business.req.TrainQueryReq;
 import com.zephyr.train.business.req.TrainSaveReq;
 import com.zephyr.train.business.resp.TrainQueryResp;
+import com.zephyr.train.business.service.TrainSeatService;
 import com.zephyr.train.business.service.TrainService;
 import com.zephyr.train.common.resp.CommonResp;
 import com.zephyr.train.common.resp.PageResp;
@@ -23,6 +24,10 @@ public class TrainAdminController {
 
   @Resource
   private TrainService trainService;
+
+  @Resource
+  private TrainSeatService trainSeatService;
+
 
   @PostMapping("/save")
   public CommonResp<Object> save(@Valid @RequestBody TrainSaveReq req) {
@@ -46,5 +51,11 @@ public class TrainAdminController {
   public CommonResp<List<TrainQueryResp>> queryList() {
     List<TrainQueryResp> list = trainService.queryAll();
     return new CommonResp<>(list);
+  }
+
+  @GetMapping("/gen-seat/{trainCode}")
+  public CommonResp<Object> genSeat(@PathVariable String trainCode) {
+    trainSeatService.genTrainSeat(trainCode);
+    return new CommonResp<>();
   }
 }
