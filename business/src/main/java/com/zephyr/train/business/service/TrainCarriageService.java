@@ -7,6 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zephyr.train.business.domain.TrainCarriage;
 import com.zephyr.train.business.domain.TrainCarriageExample;
+import com.zephyr.train.business.enums.SeatColEnum;
 import com.zephyr.train.business.mapper.TrainCarriageMapper;
 import com.zephyr.train.business.req.TrainCarriageQueryReq;
 import com.zephyr.train.business.req.TrainCarriageSaveReq;
@@ -29,6 +30,12 @@ public class TrainCarriageService {
 
   public void save(TrainCarriageSaveReq req) {
     DateTime now = DateTime.now();
+
+    // Calculate cols and total seat number automatically
+    List<SeatColEnum> seatColEnums = SeatColEnum.getColsByType(req.getSeatType());
+    req.setColCount(seatColEnums.size());
+    req.setSeatCount(req.getColCount() * req.getRowCount());
+
     TrainCarriage trainCarriage = BeanUtil.copyProperties(req, TrainCarriage.class);
     if (ObjectUtil.isNull(trainCarriage.getId())) {
       trainCarriage.setId(SnowUtil.getSnowflakeNextId());

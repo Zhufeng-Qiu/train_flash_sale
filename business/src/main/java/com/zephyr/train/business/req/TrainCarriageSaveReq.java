@@ -34,7 +34,7 @@ public class TrainCarriageSaveReq {
     /**
      * Seat Count
      */
-    @NotNull(message = "[Seat Count] cannot be null")
+//    @NotNull(message = "[Seat Count] cannot be null")
     private Integer seatCount;
 
     /**
@@ -46,7 +46,7 @@ public class TrainCarriageSaveReq {
     /**
      * Column Count
      */
-    @NotNull(message = "[Column Count] cannot be null")
+//    @NotNull(message = "[Column Count] cannot be null")
     private Integer colCount;
 
     /**
