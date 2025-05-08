@@ -48,7 +48,7 @@
         <a-time-picker v-model:value="trainStation.outTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
       </a-form-item>
       <a-form-item label="Stop Duration">
-        <a-time-picker v-model:value="trainStation.stopTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
+        <a-time-picker v-model:value="trainStation.stopTime" valueFormat="HH:mm:ss" placeholder="Please select time" disabled/>
       </a-form-item>
       <a-form-item label="Mileage(km)">
         <a-input v-model:value="trainStation.km" />
@@ -64,6 +64,7 @@ import axios from "axios";
 import {pinyin} from "pinyin-pro";
 import TrainSelectView from "@/components/train-select";
 import StationSelectView from "@/components/station-select.vue";
+import dayjs from 'dayjs';
 
 export default defineComponent({
   name: "train-station-view",
@@ -171,6 +172,18 @@ export default defineComponent({
       } else {
         trainStation.value.namePinyin = "";
       }
+    }, {immediate: true});
+
+    // Calculate stop duration automatically
+    watch(() => trainStation.value.inTime, ()=>{
+      let diff = dayjs(trainStation.value.outTime, 'HH:mm:ss').diff(dayjs(trainStation.value.inTime, 'HH:mm:ss'), 'seconds');
+      trainStation.value.stopTime = dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss');
+    }, {immediate: true});
+
+    // Calculate stop duration automatically
+    watch(() => trainStation.value.outTime, ()=>{
+      let diff = dayjs(trainStation.value.outTime, 'HH:mm:ss').diff(dayjs(trainStation.value.inTime, 'HH:mm:ss'), 'seconds');
+      trainStation.value.stopTime = dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss');
     }, {immediate: true});
 
     const onAdd = () => {
