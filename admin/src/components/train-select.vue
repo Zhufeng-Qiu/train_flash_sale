@@ -2,7 +2,7 @@
   <a-select v-model:value="trainCode" show-search allowClear
             :filterOption="filterTrainCodeOption"
             @change="onChange" placeholder="Please select train number"
-            :style="'width: ' + _width">
+            :style="'width: ' + localWidth">
     <a-select-option v-for="item in trains" :key="item.code" :value="item.code" :label="item.code + item.startPinyin + item.endPinyin">
       {{item.code}} | {{item.startPinyin}} ~ {{item.endPinyin}}
     </a-select-option>
@@ -21,9 +21,9 @@ export default defineComponent({
   setup(props, {emit}) {
     const trainCode = ref();
     const trains = ref([]);
-    const _width = ref(props.width);
+    const localWidth = ref(props.width);
     if (Tool.isEmpty(props.width)) {
-      _width.value = "100%";
+      localWidth.value = "100%";
     }
 
     // Use watch() to get the value of parent component dynamically.
@@ -75,7 +75,7 @@ export default defineComponent({
     return {
       trainCode,
       trains,
-      _width,
+      localWidth,
       filterTrainCodeOption,
       onChange,
     };

@@ -2,7 +2,7 @@
   <a-select v-model:value="name" show-search allowClear
             :filterOption="filterNameOption"
             @change="onChange" placeholder="Please select station"
-            :style="'width: ' + _width">
+            :style="'width: ' + localWidth">
     <a-select-option v-for="item in stations" :key="item.name" :value="item.name" :label="item.name + item.namePinyin + item.namePy">
       {{item.name}} | {{item.namePinyin}} | {{item.namePy}}
     </a-select-option>
@@ -21,9 +21,9 @@ export default defineComponent({
   setup(props, {emit}) {
     const name = ref();
     const stations = ref([]);
-    const _width = ref(props.width);
+    const localWidth = ref(props.width);
     if (Tool.isEmpty(props.width)) {
-      _width.value = "100%";
+      localWidth.value = "100%";
     }
 
     // Use watch() to get the value of parent component dynamically.
@@ -75,7 +75,7 @@ export default defineComponent({
     return {
       name,
       stations,
-      _width,
+      localWidth,
       filterNameOption,
       onChange,
     };
