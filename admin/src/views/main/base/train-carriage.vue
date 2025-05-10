@@ -15,7 +15,7 @@
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
           <a-popconfirm
-              title="Once deleted, it cannot be recovered. Are you sure you want to delete?"
+              title="Once deleted, it cannot be recovered. Confirm to delete?"
               @confirm="onDelete(record)"
               ok-text="Confirm" cancel-text="Cancel">
             <a style="color: red">Delete</a>
@@ -66,7 +66,7 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import {notification} from "ant-design-vue";
 import axios from "axios";
-import TrainSelectView from "@/components/train-select";
+import TrainSelectView from "@/components/train-select.vue";
 
 export default defineComponent({
   name: "train-carriage-view",

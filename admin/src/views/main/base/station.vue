@@ -14,7 +14,7 @@
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
           <a-popconfirm
-              title="Once deleted, it cannot be recovered. Are you sure you want to delete?"
+              title="Once deleted, it cannot be recovered. Confirm to delete?"
               @confirm="onDelete(record)"
               ok-text="Confirm" cancel-text="Cancel">
             <a style="color: red">Delete</a>
