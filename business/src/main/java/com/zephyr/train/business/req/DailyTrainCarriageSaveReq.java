@@ -41,7 +41,7 @@ public class DailyTrainCarriageSaveReq {
     /**
      * Seat Count
      */
-    @NotNull(message = "[Seat Count] cannot be null")
+//    @NotNull(message = "[Seat Count] cannot be null")
     private Integer seatCount;
 
     /**
@@ -53,7 +53,7 @@ public class DailyTrainCarriageSaveReq {
     /**
      * Column Count
      */
-    @NotNull(message = "[Column Count] cannot be null")
+//    @NotNull(message = "[Column Count] cannot be null")
     private Integer colCount;
 
     /**

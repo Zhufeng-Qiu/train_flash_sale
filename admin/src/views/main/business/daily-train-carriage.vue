@@ -1,6 +1,8 @@
 <template>
   <p>
     <a-space>
+      <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="Please select date" />
+      <train-select-view v-model="params.trainCode" width="200px"></train-select-view>
       <a-button type="primary" @click="handleQuery()">Refresh</a-button>
       <a-button type="primary" @click="onAdd">Add</a-button>
     </a-space>
@@ -38,7 +40,7 @@
         <a-date-picker v-model:value="dailyTrainCarriage.date" valueFormat="YYYY-MM-DD" placeholder="Please select date" />
       </a-form-item>
       <a-form-item label="Train Number">
-        <a-input v-model:value="dailyTrainCarriage.trainCode" />
+        <train-select-view v-model="dailyTrainCarriage.trainCode" width="200px"></train-select-view>
       </a-form-item>
       <a-form-item label="Carriage Index">
         <a-input v-model:value="dailyTrainCarriage.index" />
@@ -50,15 +52,15 @@
           </a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="Seat Count">
-        <a-input v-model:value="dailyTrainCarriage.seatCount" />
-      </a-form-item>
+<!--      <a-form-item label="Seat Count">-->
+<!--        <a-input v-model:value="dailyTrainCarriage.seatCount" />-->
+<!--      </a-form-item>-->
       <a-form-item label="Row Count">
         <a-input v-model:value="dailyTrainCarriage.rowCount" />
       </a-form-item>
-      <a-form-item label="Column Count">
-        <a-input v-model:value="dailyTrainCarriage.colCount" />
-      </a-form-item>
+<!--      <a-form-item label="Column Count">-->
+<!--        <a-input v-model:value="dailyTrainCarriage.colCount" />-->
+<!--      </a-form-item>-->
     </a-form>
   </a-modal>
 </template>
@@ -67,9 +69,11 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import {notification} from "ant-design-vue";
 import axios from "axios";
+import TrainSelectView from "@/components/train-select.vue";
 
 export default defineComponent({
   name: "daily-train-carriage-view",
+  components: {TrainSelectView},
   setup() {
     const SEAT_TYPE_ARRAY = window.SEAT_TYPE_ARRAY;
     const visible = ref(false);
@@ -93,6 +97,10 @@ export default defineComponent({
       pageSize: 10,
     });
     let loading = ref(false);
+    let params = ref({
+      trainCode: null,
+      date: null
+    });
     const columns = [
     {
       title: 'Date',
@@ -153,6 +161,8 @@ export default defineComponent({
           handleQuery({
             page: pagination.value.current,
             size: pagination.value.pageSize,
+            trainCode: params.value.trainCode,
+            date: params.value.date
           });
         } else {
           notification.error({description: data.message});
@@ -168,7 +178,9 @@ export default defineComponent({
           visible.value = false;
           handleQuery({
             page: pagination.value.current,
-            size: pagination.value.pageSize
+            size: pagination.value.pageSize,
+            trainCode: params.value.trainCode,
+            date: params.value.date
           });
         } else {
           notification.error({description: data.message});
@@ -187,7 +199,9 @@ export default defineComponent({
       axios.get("/business/admin/daily-train-carriage/query-list", {
         params: {
           page: param.page,
-          size: param.size
+          size: param.size,
+          trainCode: params.value.trainCode,
+          date: params.value.date
         }
       }).then((response) => {
         loading.value = false;
@@ -206,7 +220,9 @@ export default defineComponent({
     const handleTableChange = (pagination) => {
       handleQuery({
         page: pagination.current,
-        size: pagination.pageSize
+        size: pagination.pageSize,
+        trainCode: params.value.trainCode,
+        date: params.value.date
       });
     };
 
@@ -224,6 +240,7 @@ export default defineComponent({
       dailyTrainCarriages,
       pagination,
       columns,
+      params,
       handleTableChange,
       handleQuery,
       loading,
