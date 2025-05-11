@@ -43,8 +43,14 @@ public class DailyTrainStationService {
 
   public PageResp<DailyTrainStationQueryResp> queryList(DailyTrainStationQueryReq req) {
     DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
-    dailyTrainStationExample.setOrderByClause("id desc");
+    dailyTrainStationExample.setOrderByClause("date desc, train_code asc, `index` asc");
     DailyTrainStationExample.Criteria criteria = dailyTrainStationExample.createCriteria();
+    if (ObjectUtil.isNotNull(req.getDate())) {
+      criteria.andDateEqualTo(req.getDate());
+    }
+    if (ObjectUtil.isNotEmpty(req.getTrainCode())) {
+      criteria.andTrainCodeEqualTo(req.getTrainCode());
+    }
 
     LOG.info("Query page: {}", req.getPage());
     LOG.info("Query page size: {}", req.getSize());

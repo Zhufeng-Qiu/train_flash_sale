@@ -1,6 +1,8 @@
 <template>
   <p>
     <a-space>
+      <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="Please select date" />
+      <train-select-view v-model="params.trainCode" width="200px"></train-select-view>
       <a-button type="primary" @click="handleQuery()">Refresh</a-button>
       <a-button type="primary" @click="onAdd">Add</a-button>
     </a-space>
@@ -31,7 +33,7 @@
         <a-date-picker v-model:value="dailyTrainStation.date" valueFormat="YYYY-MM-DD" placeholder="Please select date" />
       </a-form-item>
       <a-form-item label="Train Number">
-        <a-input v-model:value="dailyTrainStation.trainCode" />
+        <train-select-view v-model="dailyTrainStation.trainCode"></train-select-view>
       </a-form-item>
       <a-form-item label="Station Index">
         <a-input v-model:value="dailyTrainStation.index" />
@@ -49,7 +51,7 @@
         <a-time-picker v-model:value="dailyTrainStation.outTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
       </a-form-item>
       <a-form-item label="Stop Duration">
-        <a-time-picker v-model:value="dailyTrainStation.stopTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
+        <a-time-picker v-model:value="dailyTrainStation.stopTime" valueFormat="HH:mm:ss" placeholder="Please select time" disabled/>
       </a-form-item>
       <a-form-item label="Mileage(km)">
         <a-input v-model:value="dailyTrainStation.km" />
@@ -59,12 +61,16 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, watch } from 'vue';
 import {notification} from "ant-design-vue";
 import axios from "axios";
+import TrainSelectView from "@/components/train-select.vue";
+import {pinyin} from "pinyin-pro";
+import dayjs from "dayjs";
 
 export default defineComponent({
   name: "daily-train-station-view",
+  components: {TrainSelectView},
   setup() {
     const visible = ref(false);
     let dailyTrainStation = ref({
@@ -89,6 +95,10 @@ export default defineComponent({
       pageSize: 10,
     });
     let loading = ref(false);
+    let params = ref({
+      trainCode: null,
+      date: null
+    });
     const columns = [
     {
       title: 'Date',
@@ -141,6 +151,51 @@ export default defineComponent({
     }
     ];
 
+    function containsChinese(str) {
+      return /[\u4e00-\u9fa5]/.test(str);
+    }
+
+    function transferEnglishCityName(trainStation, origin, relate) {
+      const words = trainStation.value[origin].trim().split(/\s+/);
+      let res;
+
+      if (words.length > 1) {
+        res = words.map(word => word.charAt(0).toUpperCase()).join('');
+      } else {
+        res =  trainStation.value[origin].slice(0, 3).toUpperCase();
+      }
+      trainStation.value[relate] = res;
+    }
+
+    function transferChineseCityName(trainStation, origin, relate) {
+      trainStation.value[relate] = pinyin(trainStation.value[origin], { toneType: 'none'}).replaceAll(" ", "");
+    }
+
+    watch(() => dailyTrainStation.value.name, ()=>{
+      if (Tool.isNotEmpty(dailyTrainStation.value.name)) {
+        if (containsChinese(dailyTrainStation.value.name)) {
+          transferChineseCityName(dailyTrainStation, "name", "namePinyin");
+        } else {
+          transferEnglishCityName(dailyTrainStation, "name", "namePinyin");
+        }
+      } else {
+        dailyTrainStation.value.namePinyin = "";
+      }
+    }, {immediate: true});
+
+    // Calculate stop duration automatically
+    watch(() => dailyTrainStation.value.inTime, ()=>{
+      let diff = dayjs(dailyTrainStation.value.outTime, 'HH:mm:ss').diff(dayjs(dailyTrainStation.value.inTime, 'HH:mm:ss'), 'seconds');
+      dailyTrainStation.value.stopTime = dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss');
+    }, {immediate: true});
+
+    // Calculate stop duration automatically
+    watch(() => dailyTrainStation.value.outTime, ()=>{
+      let diff = dayjs(dailyTrainStation.value.outTime, 'HH:mm:ss').diff(dayjs(dailyTrainStation.value.inTime, 'HH:mm:ss'), 'seconds');
+      dailyTrainStation.value.stopTime = dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss');
+    }, {immediate: true});
+
+
     const onAdd = () => {
       dailyTrainStation.value = {};
       visible.value = true;
@@ -159,6 +214,8 @@ export default defineComponent({
           handleQuery({
             page: pagination.value.current,
             size: pagination.value.pageSize,
+            trainCode: params.value.trainCode,
+            date: params.value.date
           });
         } else {
           notification.error({description: data.message});
@@ -174,7 +231,9 @@ export default defineComponent({
           visible.value = false;
           handleQuery({
             page: pagination.value.current,
-            size: pagination.value.pageSize
+            size: pagination.value.pageSize,
+            trainCode: params.value.trainCode,
+            date: params.value.date
           });
         } else {
           notification.error({description: data.message});
@@ -193,7 +252,9 @@ export default defineComponent({
       axios.get("/business/admin/daily-train-station/query-list", {
         params: {
           page: param.page,
-          size: param.size
+          size: param.size,
+          trainCode: params.value.trainCode,
+          date: params.value.date
         }
       }).then((response) => {
         loading.value = false;
@@ -212,7 +273,9 @@ export default defineComponent({
     const handleTableChange = (pagination) => {
       handleQuery({
         page: pagination.current,
-        size: pagination.pageSize
+        size: pagination.pageSize,
+        trainCode: params.value.trainCode,
+        date: params.value.date
       });
     };
 
@@ -229,13 +292,14 @@ export default defineComponent({
       dailyTrainStations,
       pagination,
       columns,
+      params,
       handleTableChange,
       handleQuery,
       loading,
       onAdd,
       handleOk,
       onEdit,
-      onDelete
+      onDelete,
     };
   },
 });
