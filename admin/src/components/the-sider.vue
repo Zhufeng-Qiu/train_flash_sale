@@ -2,7 +2,7 @@
   <a-layout-sider width="200" style="background: #fff">
     <a-menu
         v-model:selectedKeys="selectedKeys"
-        :openKeys="['batch', 'base']"
+        :openKeys="['batch', 'base', 'business']"
         mode="inline"
         :style="{ height: '100%', borderRight: 0 }"
     >
@@ -16,18 +16,19 @@
           <user-outlined /> &nbsp; About
         </router-link>
       </a-menu-item>
-      <a-sub-menu key="batch">
+      <a-sub-menu key="business">
         <template #title>
           <span>
             <UnorderedListOutlined />
-            Batch Management
+            Business Management
           </span>
         </template>
-        <a-menu-item key="/batch/job">
-          <router-link to="/batch/job">
-            <MenuUnfoldOutlined /> &nbsp; Task Management
+        <a-menu-item key="/business/daily-train">
+          <router-link to="/business/daily-train">
+            <user-outlined /> &nbsp; Daily Train Management
           </router-link>
         </a-menu-item>
+
       </a-sub-menu>
       <a-sub-menu key="base">
         <template #title>
@@ -59,6 +60,19 @@
         <a-menu-item key="/base/train-seat">
           <router-link to="/base/train-seat">
             <user-outlined /> &nbsp; Train-Seat
+          </router-link>
+        </a-menu-item>
+      </a-sub-menu>
+      <a-sub-menu key="batch">
+        <template #title>
+          <span>
+            <UnorderedListOutlined />
+            Batch Management
+          </span>
+        </template>
+        <a-menu-item key="/batch/job">
+          <router-link to="/batch/job">
+            <MenuUnfoldOutlined /> &nbsp; Task Management
           </router-link>
         </a-menu-item>
       </a-sub-menu>

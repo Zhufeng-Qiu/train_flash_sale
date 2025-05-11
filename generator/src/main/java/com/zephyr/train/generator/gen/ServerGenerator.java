@@ -17,13 +17,14 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 public class ServerGenerator {
-  static boolean readOnly = true;
+  static boolean readOnly = false;
   static String vuePath = "admin/src/views/main/";
   // windows
   // static String toPath = "generator\\src\\main\\java\\com\\zephyr\\train\\generator\\test\\";
   // mac
   static String serverPath = "[module]/src/main/java/com/zephyr/train/[module]/";
   static String pomPath = "generator/pom.xml";
+  static String module ="";
   static {
     new File(serverPath).mkdirs();
   }
@@ -33,7 +34,7 @@ public class ServerGenerator {
     String generatorPath = getGeneratorPath();
 
     // For example, generator-config-member.xml，extract module = member
-    String module = generatorPath.replace("src/main/resources/generator-config-", "").replace(".xml", "");
+    module = generatorPath.replace("src/main/resources/generator-config-", "").replace(".xml", "");
     System.out.println("module: " + module);
     serverPath = serverPath.replace("[module]", module);
     // new File(servicePath).mkdirs();
@@ -82,11 +83,11 @@ public class ServerGenerator {
     param.put("readOnly", readOnly);
     System.out.println("Assemble parameters: " + param);
 
-//    generateOnTemplate(Domain, param, "service", "service");
-//    generateOnTemplate(Domain, param, "controller/admin", "adminController");
-//    generateOnTemplate(Domain, param, "req", "saveReq");
-//    generateOnTemplate(Domain, param, "req", "queryReq");
-//    generateOnTemplate(Domain, param, "resp", "queryResp");
+    generateOnTemplate(Domain, param, "service", "service");
+    generateOnTemplate(Domain, param, "controller/admin", "adminController");
+    generateOnTemplate(Domain, param, "req", "saveReq");
+    generateOnTemplate(Domain, param, "req", "queryReq");
+    generateOnTemplate(Domain, param, "resp", "queryResp");
     genVue(do_main, param);
   }
 
@@ -103,8 +104,8 @@ public class ServerGenerator {
 
   private static void genVue(String do_main, Map<String, Object> param) throws IOException, TemplateException {
     FreemarkerUtil.initConfig("vue.ftl");
-    new File(vuePath).mkdirs();
-    String fileName = vuePath + do_main + ".vue";
+    new File(vuePath + module).mkdirs();
+    String fileName = vuePath + module + "/" + do_main + ".vue";
     System.out.println("Start to generate: " + fileName);
     FreemarkerUtil.generator(fileName, param);
   }

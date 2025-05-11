@@ -15,6 +15,16 @@
         <template v-if="column.dataIndex === 'operation'">
           <a-space>
             <a-popconfirm
+                title="This task will be executed once immediately. Confirm to proceed?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="handleRun(record)"
+            >
+              <a-button type="primary" size="small">
+                Manually execution
+              </a-button>
+            </a-popconfirm>
+            <a-popconfirm
                 title="Confirm to restart?"
                 ok-text="Yes"
                 cancel-text="No"
@@ -227,6 +237,20 @@ export default defineComponent({
       });
     };
 
+    /**
+     * Manually execution
+     */
+    const handleRun = (record) => {
+      axios.post('/batch/admin/job/run', record).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          notification.success({description: "Manually execution!"});
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
     const getEnumValue = (key, obj) => {
       return Tool.getEnumValue(key, obj);
     };
@@ -252,6 +276,7 @@ export default defineComponent({
       modalVisible,
       modalLoading,
       handleModalOk,
+      handleRun,
 
       getEnumValue
     };

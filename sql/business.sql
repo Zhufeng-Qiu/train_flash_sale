@@ -73,3 +73,21 @@ create table `train_seat` (
     `update_time` datetime(3) comment 'Update Time',
     primary key (`id`)
 ) engine=innodb default charset=utf8mb4 comment='Seat';
+
+drop table if exists `daily_train`;
+create table `daily_train` (
+    `id` bigint not null comment 'id',
+    `date` date not null comment 'Date',
+    `code` varchar(20) not null comment 'Train Number',
+    `type` char(1) not null comment 'Train Type|Enum[TrainTypeEnum]',
+    `start` varchar(20) not null comment 'Departure Station',
+    `start_pinyin` varchar(50) not null comment 'Departure Station Alias',
+    `start_time` time not null comment 'Start Time',
+    `end` varchar(20) not null comment 'Arrival Station',
+    `end_pinyin` varchar(50) not null comment 'Arrival Station Alias',
+    `end_time` time not null comment 'End Time',
+    `create_time` datetime(3) comment 'Create Time',
+    `update_time` datetime(3) comment 'Update Time',
+    primary key (`id`),
+    unique key `date_code_unique` (`date`, `code`)
+) engine=innodb default charset=utf8mb4 comment='Daily Train';
