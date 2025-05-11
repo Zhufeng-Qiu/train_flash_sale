@@ -110,3 +110,21 @@ create table `daily_train_station` (
     unique key `date_train_code_index_unique` (`date`, `train_code`, `index`),
     unique key `date_train_code_name_unique` (`date`, `train_code`, `name`)
 ) engine=innodb default charset=utf8mb4 comment='Daily Train Station';
+
+
+drop table if exists `daily_train_carriage`;
+create table `daily_train_carriage` (
+    `id` bigint not null comment 'id',
+    `date` date not null comment 'Date',
+    `train_code` varchar(20) not null comment 'Train Number',
+    `index` int not null comment 'Carriage Index',
+    `seat_type` char(1) not null comment 'Seat Type|Enum[SeatTypeEnum]',
+    `seat_count` int not null comment 'Seat Count',
+    `row_count` int not null comment 'Row Count',
+    `col_count` int not null comment 'Column Count',
+    `create_time` datetime(3) comment 'Create Time',
+    `update_time` datetime(3) comment 'Update Time',
+    primary key (`id`),
+    unique key `date_train_code_index_unique` (`date`, `train_code`, `index`)
+) engine=innodb default charset=utf8mb4 comment='Daily Train Carriage';
+
