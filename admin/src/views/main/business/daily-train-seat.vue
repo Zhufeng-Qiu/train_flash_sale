@@ -3,7 +3,7 @@
     <a-space>
       <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="Please select date" />
       <train-select-view v-model="params.trainCode" width="200px"></train-select-view>
-      <a-button type="primary" @click="handleQuery()">查找</a-button>
+      <a-button type="primary" @click="handleQuery()">Search</a-button>
     </a-space>
   </p>
   <a-table :dataSource="dailyTrainSeats"
