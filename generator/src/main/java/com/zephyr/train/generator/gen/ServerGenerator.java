@@ -17,7 +17,7 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 public class ServerGenerator {
-  static boolean readOnly = false;
+  static boolean readOnly = true;
   static String vuePath = "admin/src/views/main/";
   // windows
   // static String toPath = "generator\\src\\main\\java\\com\\zephyr\\train\\generator\\test\\";
