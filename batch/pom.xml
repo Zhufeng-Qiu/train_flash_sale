@@ -46,6 +46,17 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-quartz</artifactId>
     </dependency>
+
+    <!--Remote invoke openfeign-->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+    <!--openfeign use loadBalancer of loadBalance as default  -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-loadbalancer</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

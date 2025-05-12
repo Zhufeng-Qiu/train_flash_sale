@@ -1,3 +1,23 @@
+GET http://localhost:8003/batch/hello
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-12T165140.200.json
+
+###
+
+GET http://localhost:8003/batch/hello
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-12T165128.200.json
+
+###
+
 POST http://localhost:8000/batch/admin/job/delete
 Content-Type: application/json
 Content-Length: 79
@@ -644,33 +664,6 @@ Accept-Encoding: br,deflate,gzip,x-gzip
 }
 
 <> 2025-05-03T170512.200.json
-
-###
-
-GET http://localhost:8000/member/passenger/query-list
-Accept: application/json
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDYzMTU3NzksIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4MjI5NTQ3NjEwOTM1Mjk2LCJleHAiOjE3NDY0MDIxNzksImlhdCI6MTc0NjMxNTc3OX0.RAVxFYR_1NP7-1ex2owRFLipmB9qK6cC7iqLUrBPbdQ
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-03T164610.200.json
-
-###
-
-POST http://localhost:8000/member/member/login
-Content-Type: application/json
-Content-Length: 50
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-{
-  "mobile": "206-123-4567",
-  "code": "123456"
-}
-
-<> 2025-05-03T164609.200.json
 
 ###
 
