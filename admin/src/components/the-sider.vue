@@ -37,7 +37,12 @@
           <router-link to="/business/daily-train-carriage">
             <user-outlined /> &nbsp; Daily Train-Carriage
           </router-link>
-        </a-menu-item>v
+        </a-menu-item>
+        <a-menu-item key="/business/daily-train-seat">
+          <router-link to="/business/daily-train-seat">
+            <user-outlined /> &nbsp; Daily Train-Seat
+          </router-link>
+        </a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="base">
         <template #title>
