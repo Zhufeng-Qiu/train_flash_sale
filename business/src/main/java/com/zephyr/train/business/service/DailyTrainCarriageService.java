@@ -1,20 +1,24 @@
 package com.zephyr.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zephyr.train.business.enums.SeatColEnum;
-import com.zephyr.train.common.resp.PageResp;
-import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.business.domain.DailyTrainCarriage;
 import com.zephyr.train.business.domain.DailyTrainCarriageExample;
+import com.zephyr.train.business.domain.TrainCarriage;
+import com.zephyr.train.business.enums.SeatColEnum;
 import com.zephyr.train.business.mapper.DailyTrainCarriageMapper;
 import com.zephyr.train.business.req.DailyTrainCarriageQueryReq;
 import com.zephyr.train.business.req.DailyTrainCarriageSaveReq;
 import com.zephyr.train.business.resp.DailyTrainCarriageQueryResp;
+import com.zephyr.train.common.resp.PageResp;
+import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +31,10 @@ public class DailyTrainCarriageService {
 
   @Resource
   private DailyTrainCarriageMapper dailyTrainCarriageMapper;
+
+  @Resource
+  private TrainCarriageService trainCarriageService;
+
 
   public void save(DailyTrainCarriageSaveReq req) {
     DateTime now = DateTime.now();
@@ -77,5 +85,35 @@ public class DailyTrainCarriageService {
 
   public void delete(Long id) {
     dailyTrainCarriageMapper.deleteByPrimaryKey(id);
+  }
+
+  public void genDaily(Date date, String trainCode) {
+    LOG.info("Start to generate carriage info of train[{}] for date[{}]", trainCode, DateUtil.formatDate(date));
+
+    // Delete carriage info for specific train and date
+    DailyTrainCarriageExample dailyTrainCarriageExample = new DailyTrainCarriageExample();
+    dailyTrainCarriageExample.createCriteria()
+        .andDateEqualTo(date)
+        .andTrainCodeEqualTo(trainCode);
+    dailyTrainCarriageMapper.deleteByExample(dailyTrainCarriageExample);
+
+    // Query carriage info for specific train
+    List<TrainCarriage> carriageList = trainCarriageService.selectByTrainCode(trainCode);
+    if (CollUtil.isEmpty(carriageList)) {
+      LOG.info("No carriage basic data of this train found, generation of carriage info terminates");
+      return;
+    }
+
+    for (TrainCarriage trainCarriage : carriageList) {
+      DateTime now = DateTime.now();
+      DailyTrainCarriage dailyTrainCarriage = BeanUtil.copyProperties(trainCarriage, DailyTrainCarriage.class);
+      dailyTrainCarriage.setId(SnowUtil.getSnowflakeNextId());
+      dailyTrainCarriage.setCreateTime(now);
+      dailyTrainCarriage.setUpdateTime(now);
+      dailyTrainCarriage.setDate(date);
+      dailyTrainCarriageMapper.insert(dailyTrainCarriage);
+    }
+
+    LOG.info("Generate carriage info of train[{}] for date[{}] completed", trainCode, DateUtil.formatDate(date));
   }
 }
