@@ -3,6 +3,7 @@ package com.zephyr.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -33,6 +34,8 @@ public class DailyTrainService {
   @Resource
   private TrainService trainService;
 
+  @Resource
+  private DailyTrainStationService dailyTrainStationService;
 
   public void save(DailyTrainSaveReq req) {
     DateTime now = DateTime.now();
@@ -96,6 +99,8 @@ public class DailyTrainService {
   }
 
   public void genDailyTrain(Date date, Train train) {
+    LOG.info("Start to generate info of train[{}] for date[{}]", train.getCode(), DateUtil.formatDate(date));
+
     // Delete existing data for current train
     DailyTrainExample dailyTrainExample = new DailyTrainExample();
     dailyTrainExample.createCriteria()
@@ -111,5 +116,9 @@ public class DailyTrainService {
     dailyTrain.setUpdateTime(now);
     dailyTrain.setDate(date);
     dailyTrainMapper.insert(dailyTrain);
+
+    // Generate station info for current train
+    dailyTrainStationService.genDaily(date, train.getCode());
+    LOG.info("Generate info of train[{}] for date[{}] completed", train.getCode(), DateUtil.formatDate(date));
   }
 }
