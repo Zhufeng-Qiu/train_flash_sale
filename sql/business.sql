@@ -143,3 +143,31 @@ create table `daily_train_seat` (
     `update_time` datetime(3) comment 'Update Time',
     primary key (`id`)
 ) engine=innodb default charset=utf8mb4 comment='Daily Train Seat';
+
+drop table if exists `daily_train_ticket`;
+create table `daily_train_ticket` (
+    `id` bigint not null comment 'id',
+    `date` date not null comment 'Date',
+    `train_code` varchar(20) not null comment 'Train Number',
+    `start` varchar(20) not null comment 'Departure Station',
+    `start_pinyin` varchar(50) not null comment 'Departure Station Alias',
+    `start_time` time not null comment 'Start Time',
+    `start_index` tinyint not null comment 'Departure Station Index|The Nth stop of the entire train route',
+    `end` varchar(20) not null comment 'Arrival Station',
+    `end_pinyin` varchar(50) not null comment 'Arrival Station Alias',
+    `end_time` time not null comment 'End Time',
+    `end_index` tinyint not null comment 'Arrival Station Index|The Nth stop of the entire train route',
+    `ydz` int not null comment 'First Class Remaining Tickets',
+    `ydz_price` decimal(8, 2) not null comment 'First Class Ticket Price',
+    `edz` int not null comment 'Second Class Remaining Tickets',
+    `edz_price` decimal(8, 2) not null comment 'Second Class Ticket Price',
+    `rw` int not null comment 'Soft Sleeper Remaining Tickets',
+    `rw_price` decimal(8, 2) not null comment 'Soft Sleeper Ticket Price',
+    `yw` int not null comment 'Hard Seat Remaining Tickets',
+    `yw_price` decimal(8, 2) not null comment 'Hard Seat Ticket Price',
+    `create_time` datetime(3) comment 'Create Time',
+    `update_time` datetime(3) comment 'Update Time',
+    primary key (`id`),
+    unique key `date_train_code_start_end_unique` (`date`, `train_code`, `start`, `end`)
+) engine=innodb default charset=utf8mb4 comment='Remaining Tickets Info';
+
