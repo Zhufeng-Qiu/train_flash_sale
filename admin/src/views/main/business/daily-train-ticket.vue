@@ -16,6 +16,59 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
       </template>
+      <template v-else-if="column.dataIndex === 'station'">
+        DEP: {{record.startPinyin}}<br/>
+        ARR: {{record.endPinyin}}
+      </template>
+      <template v-else-if="column.dataIndex === 'time'">
+        DEP: {{record.startTime}} <br/>
+        ARR: {{record.endTime}}
+      </template>
+      <template v-else-if="column.dataIndex === 'duration'">
+        {{calDuration(record.startTime, record.endTime)}}<br/>
+        <div v-if="record.startTime.replaceAll(':', '') >= record.endTime.replaceAll(':', '')">
+          Next-day Arrival
+        </div>
+        <div v-else>
+          Same-day Arrival
+        </div>
+      </template>
+      <template v-else-if="column.dataIndex === 'ydz'">
+        <div v-if="record.ydz >= 0">
+          ${{record.ydzPrice}}
+          {{record.ydz}} seats left<br/>
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
+      <template v-else-if="column.dataIndex === 'edz'">
+        <div v-if="record.edz >= 0">
+          {{record.edz}} seats left<br/>
+          ${{record.edzPrice}}
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
+      <template v-else-if="column.dataIndex === 'rw'">
+        <div v-if="record.rw >= 0">
+          {{record.rw}} seats left<br/>
+          ${{record.rwPrice}}
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
+      <template v-else-if="column.dataIndex === 'yw'">
+        <div v-if="record.yw >= 0">
+          {{record.yw}} seats left<br/>
+          ${{record.ywPrice}}
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
     </template>
   </a-table>
 </template>
@@ -26,6 +79,7 @@ import {notification} from "ant-design-vue";
 import axios from "axios";
 import TrainSelectView from "@/components/train-select.vue";
 import StationSelectView from "@/components/station-select.vue";
+import dayjs from "dayjs";
 
 export default defineComponent({
   name: "daily-train-ticket-view",
@@ -70,96 +124,48 @@ export default defineComponent({
       end: null
     });
     const columns = [
-    {
-      title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
-    },
-    {
-      title: 'Train Number',
-      dataIndex: 'trainCode',
-      key: 'trainCode',
-    },
-    {
-      title: 'Departure Station',
-      dataIndex: 'start',
-      key: 'start',
-    },
-    {
-      title: 'Departure Station Alias',
-      dataIndex: 'startPinyin',
-      key: 'startPinyin',
-    },
-    {
-      title: 'Start Time',
-      dataIndex: 'startTime',
-      key: 'startTime',
-    },
-    {
-      title: 'Departure Station Index',
-      dataIndex: 'startIndex',
-      key: 'startIndex',
-    },
-    {
-      title: 'Arrival Station',
-      dataIndex: 'end',
-      key: 'end',
-    },
-    {
-      title: 'Arrival Station Alias',
-      dataIndex: 'endPinyin',
-      key: 'endPinyin',
-    },
-    {
-      title: 'End Time',
-      dataIndex: 'endTime',
-      key: 'endTime',
-    },
-    {
-      title: 'Arrival Station Index',
-      dataIndex: 'endIndex',
-      key: 'endIndex',
-    },
-    {
-      title: 'First Class Remaining Tickets',
-      dataIndex: 'ydz',
-      key: 'ydz',
-    },
-    {
-      title: 'First Class Ticket Price',
-      dataIndex: 'ydzPrice',
-      key: 'ydzPrice',
-    },
-    {
-      title: 'Second Class Remaining Tickets',
-      dataIndex: 'edz',
-      key: 'edz',
-    },
-    {
-      title: 'Second Class Ticket Price',
-      dataIndex: 'edzPrice',
-      key: 'edzPrice',
-    },
-    {
-      title: 'Soft Sleeper Remaining Tickets',
-      dataIndex: 'rw',
-      key: 'rw',
-    },
-    {
-      title: 'Soft Sleeper Ticket Price',
-      dataIndex: 'rwPrice',
-      key: 'rwPrice',
-    },
-    {
-      title: 'Hard Seat Remaining Tickets',
-      dataIndex: 'yw',
-      key: 'yw',
-    },
-    {
-      title: 'Hard Seat Ticket Price',
-      dataIndex: 'ywPrice',
-      key: 'ywPrice',
-    },
+      {
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
+      },
+      {
+        title: 'Train Number',
+        dataIndex: 'trainCode',
+        key: 'trainCode',
+      },
+      {
+        title: 'Station',
+        dataIndex: 'station',
+      },
+      {
+        title: 'Time',
+        dataIndex: 'time',
+      },
+      {
+        title: 'Duration',
+        dataIndex: 'duration',
+      },
+      {
+        title: 'First Class Ticket',
+        dataIndex: 'ydz',
+        key: 'ydz',
+      },
+      {
+        title: 'Second Class Ticket',
+        dataIndex: 'edz',
+        key: 'edz',
+      },
+      {
+        title: 'Soft Sleeper Ticket',
+        dataIndex: 'rw',
+        key: 'rw',
+      },
+      {
+        title: 'Hard Seat Ticket',
+        dataIndex: 'yw',
+        key: 'yw',
+      },
     ];
 
 
@@ -202,6 +208,11 @@ export default defineComponent({
       });
     };
 
+    const calDuration = (startTime, endTime) => {
+      let diff = dayjs(endTime, 'HH:mm:ss').diff(dayjs(startTime, 'HH:mm:ss'), 'seconds');
+      return dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss');
+    };
+
     onMounted(() => {
       handleQuery({
         page: 1,
@@ -218,7 +229,8 @@ export default defineComponent({
       handleTableChange,
       handleQuery,
       loading,
-      params
+      params,
+      calDuration
     };
   },
 });
