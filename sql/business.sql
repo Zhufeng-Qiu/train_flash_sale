@@ -152,11 +152,11 @@ create table `daily_train_ticket` (
     `start` varchar(20) not null comment 'Departure Station',
     `start_pinyin` varchar(50) not null comment 'Departure Station Alias',
     `start_time` time not null comment 'Start Time',
-    `start_index` tinyint not null comment 'Departure Station Index|The Nth stop of the entire train route',
+    `start_index` int not null comment 'Departure Station Index|The Nth stop of the entire train route',
     `end` varchar(20) not null comment 'Arrival Station',
     `end_pinyin` varchar(50) not null comment 'Arrival Station Alias',
     `end_time` time not null comment 'End Time',
-    `end_index` tinyint not null comment 'Arrival Station Index|The Nth stop of the entire train route',
+    `end_index` int not null comment 'Arrival Station Index|The Nth stop of the entire train route',
     `ydz` int not null comment 'First Class Remaining Tickets',
     `ydz_price` decimal(8, 2) not null comment 'First Class Ticket Price',
     `edz` int not null comment 'Second Class Remaining Tickets',
@@ -170,4 +170,3 @@ create table `daily_train_ticket` (
     primary key (`id`),
     unique key `date_train_code_start_end_unique` (`date`, `train_code`, `start`, `end`)
 ) engine=innodb default charset=utf8mb4 comment='Remaining Tickets Info';
-

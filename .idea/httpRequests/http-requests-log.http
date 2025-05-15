@@ -10,6 +10,22 @@ Accept-Encoding: br,deflate,gzip,x-gzip
   "jobGroupName": "default"
 }
 
+<> 2025-05-14T192143.200.json
+
+###
+
+POST http://localhost:8000/batch/admin/job/run
+Content-Type: application/json
+Content-Length: 85
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "name": "com.zephyr.train.batch.job.DailyTrainJob",
+  "jobGroupName": "default"
+}
+
 <> 2025-05-13T143135.200.json
 
 ###
@@ -678,17 +694,6 @@ User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2025-05-03T172839.200.json
-
-###
-
-GET http://localhost:8000/member/passenger/query-list?page=1&size=2
-Accept: application/json
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDYzMTg1MDcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4MjI5NTQ3NjEwOTM1Mjk2LCJleHAiOjE3NDY0MDQ5MDcsImlhdCI6MTc0NjMxODUwN30.bM-qUlKmkk1Xw8_xey5llrbfU4R0w4-q6ZzDuNELQRI
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-03T172830.200.json
 
 ###
 

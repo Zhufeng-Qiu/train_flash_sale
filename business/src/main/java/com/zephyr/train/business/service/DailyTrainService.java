@@ -22,6 +22,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DailyTrainService {
@@ -42,6 +43,9 @@ public class DailyTrainService {
 
   @Resource
   private DailyTrainSeatService dailyTrainSeatService;
+
+  @Resource
+  private DailyTrainTicketService dailyTrainTicketService;
 
   public void save(DailyTrainSaveReq req) {
     DateTime now = DateTime.now();
@@ -104,6 +108,7 @@ public class DailyTrainService {
     }
   }
 
+  @Transactional
   public void genDailyTrain(Date date, Train train) {
     LOG.info("Start to generate info of train[{}] for date[{}]", train.getCode(), DateUtil.formatDate(date));
 
@@ -132,6 +137,8 @@ public class DailyTrainService {
     // Generate seat info for current train
     dailyTrainSeatService.genDaily(date, train.getCode());
 
+    // Generate remaining ticket info for current train
+    dailyTrainTicketService.genDaily(date, train.getCode());
 
     LOG.info("Generate info of train[{}] for date[{}] completed", train.getCode(), DateUtil.formatDate(date));
   }
