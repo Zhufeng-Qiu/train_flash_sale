@@ -138,7 +138,7 @@ public class DailyTrainService {
     dailyTrainSeatService.genDaily(date, train.getCode());
 
     // Generate remaining ticket info for current train
-    dailyTrainTicketService.genDaily(date, train.getCode());
+    dailyTrainTicketService.genDaily(dailyTrain, date, train.getCode());
 
     LOG.info("Generate info of train[{}] for date[{}] completed", train.getCode(), DateUtil.formatDate(date));
   }
