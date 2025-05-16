@@ -4,12 +4,12 @@
       <router-link to="/welcome" style="color: white; font-size: 18px">
         <div style="display: flex; align-items: center;">
           <img src="@/assets/logo.png" alt="logo" style="height: 35px; margin-right: 10px;" />
-          <span>Train Flash Sale Admin Console</span>
+          <span>Train Flash Sale Admin Panel</span>
         </div>
       </router-link>
     </div>
     <div style="float: right; color: white;">
-      Welcome to admin console
+      Welcome to admin panel
     </div>
     <a-menu
         v-model:selectedKeys="selectedKeys"

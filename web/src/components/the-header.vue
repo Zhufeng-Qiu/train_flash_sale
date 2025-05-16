@@ -32,7 +32,7 @@
       </a-menu-item>
       <a-menu-item key="/ticket">
         <router-link to="/ticket">
-          <user-outlined /> &nbsp; Ticket
+          <user-outlined /> &nbsp; Tickets
         </router-link>
       </a-menu-item>
     </a-menu>

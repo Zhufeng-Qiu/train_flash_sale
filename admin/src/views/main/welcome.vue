@@ -1,5 +1,5 @@
 <template>
-  <h1>Welcome to ZephyrQ Train Flash Sale Admin Console</h1>
+  <h1>Welcome to ZephyrQ Train Flash Sale Admin Panel</h1>
 </template>
 <script>
 import { defineComponent } from 'vue';

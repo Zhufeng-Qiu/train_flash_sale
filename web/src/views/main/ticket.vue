@@ -1,7 +1,6 @@
 <template>
   <p>
     <a-space>
-      <train-select-view v-model="params.trainCode" width="200px"></train-select-view>
       <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="Please select date"></a-date-picker>
       <station-select-view v-model="params.start" width="200px"></station-select-view>
       <station-select-view v-model="params.end" width="200px"></station-select-view>
@@ -77,13 +76,12 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import {notification} from "ant-design-vue";
 import axios from "axios";
-import TrainSelectView from "@/components/train-select.vue";
 import StationSelectView from "@/components/station-select.vue";
 import dayjs from "dayjs";
 
 export default defineComponent({
   name: "ticket-view",
-  components: {StationSelectView, TrainSelectView},
+  components: {StationSelectView},
   setup() {
     const visible = ref(false);
     let dailyTrainTicket = ref({
@@ -125,11 +123,6 @@ export default defineComponent({
     });
     const columns = [
       {
-        title: 'Date',
-        dataIndex: 'date',
-        key: 'date',
-      },
-      {
         title: 'Train Number',
         dataIndex: 'trainCode',
         key: 'trainCode',
@@ -170,6 +163,18 @@ export default defineComponent({
 
 
     const handleQuery = (param) => {
+      if (Tool.isEmpty(params.value.date)) {
+        notification.error({description: "Please select date"});
+        return;
+      }
+      if (Tool.isEmpty(params.value.start)) {
+        notification.error({description: "Please select departure station"});
+        return;
+      }
+      if (Tool.isEmpty(params.value.end)) {
+        notification.error({description: "Please select arrival station"});
+        return;
+      }
       if (!param) {
         param = {
           page: 1,
@@ -214,10 +219,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      handleQuery({
-        page: 1,
-        size: pagination.value.pageSize
-      });
+      // handleQuery({
+      //   page: 1,
+      //   size: pagination.value.pageSize
+      // });
     });
 
     return {
