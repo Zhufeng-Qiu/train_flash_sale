@@ -15,6 +15,11 @@
           <user-outlined /> &nbsp; Passenger
         </router-link>
       </a-menu-item>
+      <a-menu-item key="/ticket">
+        <router-link to="/ticket">
+          <user-outlined /> &nbsp; Ticket
+        </router-link>
+      </a-menu-item>
     </a-menu>
   </a-layout-sider>
 </template>
