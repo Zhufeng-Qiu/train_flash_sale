@@ -20,10 +20,6 @@
   <a-divider></a-divider>
   <b>Select the passengers for whom you want to purchase tickets: </b>&nbsp;
   <a-checkbox-group v-model:value="passengerChecks" :options="passengerOptions" />
-  <br/>
-  Selected passengers：{{passengerChecks}}
-  <br/>
-  Tickets Details: {{tickets}}
   <div class="order-tickets">
     <a-row class="order-tickets-header" v-if="tickets.length > 0">
       <a-col :span="5">Passenger</a-col>
@@ -50,6 +46,40 @@
       </a-col>
     </a-row>
   </div>
+  <div v-if="tickets.length > 0">
+    <a-button type="primary" size="large" @click="finishCheckPassenger">Submit</a-button>
+  </div>
+
+  <a-modal v-model:visible="visible" title="Please check the following infomation"
+           style="top: 50px; width: 800px"
+           ok-text="Confirm" cancel-text="Cancel">
+    <div class="order-tickets">
+      <a-row class="order-tickets-header" v-if="tickets.length > 0">
+        <a-col :span="5">Passenger</a-col>
+        <a-col :span="10">ID Number</a-col>
+        <a-col :span="4">Passenger Type</a-col>
+        <a-col :span="4">Seat Type</a-col>
+      </a-row>
+      <a-row class="order-tickets-row" v-for="ticket in tickets" :key="ticket.passengerId">
+        <a-col :span="5">{{ticket.passengerName}}</a-col>
+        <a-col :span="10">{{ticket.passengerIdCard}}</a-col>
+        <a-col :span="4">
+          <span v-for="item in PASSENGER_TYPE_ARRAY" :key="item.code">
+            <span v-if="item.code === ticket.passengerType">
+              {{item.desc}}
+            </span>
+          </span>
+        </a-col>
+        <a-col :span="4">
+          <span v-for="item in seatTypes" :key="item.code">
+            <span v-if="item.code === ticket.seatTypeCode">
+              {{item.desc}}
+            </span>
+          </span>
+        </a-col>
+      </a-row>
+    </div>
+  </a-modal>
 </template>
 
 <script>
@@ -104,6 +134,7 @@ export default defineComponent({
     // }
     const tickets = ref([]);
     const PASSENGER_TYPE_ARRAY = window.PASSENGER_TYPE_ARRAY;
+    const visible = ref(false);
 
     // Check or uncheck a passenger then add or remove a record
     watch(() => passengerChecks.value, (newVal, oldVal)=>{
@@ -134,6 +165,18 @@ export default defineComponent({
       });
     };
 
+    const finishCheckPassenger = () => {
+      console.log("Tickets List: ", tickets.value);
+
+      if (tickets.value.length > 5) {
+        notification.error({description: 'You can only purchase up to five tickets.'});
+        return;
+      }
+
+      // Pop-up ticket info window
+      visible.value = true;
+    };
+
     onMounted(() => {
       handleQueryPassenger();
     });
@@ -145,7 +188,9 @@ export default defineComponent({
       passengerOptions,
       passengerChecks,
       tickets,
-      PASSENGER_TYPE_ARRAY
+      PASSENGER_TYPE_ARRAY,
+      visible,
+      finishCheckPassenger
     };
   },
 });
