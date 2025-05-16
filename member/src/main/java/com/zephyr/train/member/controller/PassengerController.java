@@ -9,7 +9,7 @@ import com.zephyr.train.member.resp.PassengerQueryResp;
 import com.zephyr.train.member.service.PassengerService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.bouncycastle.cert.ocsp.Req;
+import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,5 +42,11 @@ public class PassengerController {
   public CommonResp<Object> delete(@PathVariable Long id) {
     passengerService.delete(id);
     return new CommonResp<>();
+  }
+
+  @GetMapping("/query-mine")
+  public CommonResp<List<PassengerQueryResp>> queryMine() {
+    List<PassengerQueryResp> list = passengerService.queryMine();
+    return new CommonResp<>(list);
   }
 }

@@ -17,16 +17,22 @@
       </span>
     </div>
   </div>
+  <a-divider></a-divider>
+  {{passengers}}
 </template>
 
 <script>
 
-import {defineComponent} from 'vue';
+import {defineComponent, ref, onMounted} from 'vue';
+import axios from "axios";
+import {notification} from "ant-design-vue";
+
 
 export default defineComponent({
   name: "order-view",
   setup() {
     const dailyTrainTicket = SessionStorage.get(SESSION_ORDER) || {};
+    const passengers = ref([]);
     console.log("Order info for selected order", dailyTrainTicket);
 
     const SEAT_TYPE = window.SEAT_TYPE;
@@ -55,9 +61,25 @@ export default defineComponent({
     }
     console.log("Provided seat types: ", seatTypes)
 
+    const handleQueryPassenger = () => {
+      axios.get("/member/passenger/query-mine").then((response) => {
+        let data = response.data;
+        if (data.success) {
+          passengers.value = data.content;
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
+    onMounted(() => {
+      handleQueryPassenger();
+    });
+
     return {
       dailyTrainTicket,
-      seatTypes
+      seatTypes,
+      passengers
     };
   },
 });

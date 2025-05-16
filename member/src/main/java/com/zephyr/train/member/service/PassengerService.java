@@ -69,4 +69,16 @@ public class PassengerService {
   public void delete(Long id) {
     passengerMapper.deleteByPrimaryKey(id);
   }
+
+  /**
+   * Query all the passengers for current member
+   */
+  public List<PassengerQueryResp> queryMine() {
+    PassengerExample passengerExample = new PassengerExample();
+    passengerExample.setOrderByClause("name asc");
+    PassengerExample.Criteria criteria = passengerExample.createCriteria();
+    criteria.andMemberIdEqualTo(LoginMemberContext.getId());
+    List<Passenger> list = passengerMapper.selectByExample(passengerExample);
+    return BeanUtil.copyToList(list, PassengerQueryResp.class);
+  }
 }
