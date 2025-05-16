@@ -22,11 +22,13 @@
   <a-checkbox-group v-model:value="passengerChecks" :options="passengerOptions" />
   <br/>
   Selected passengers：{{passengerChecks}}
+  <br/>
+  Tickets Details: {{tickets}}
 </template>
 
 <script>
 
-import {defineComponent, ref, onMounted} from 'vue';
+import {defineComponent, ref, onMounted, watch} from 'vue';
 import axios from "axios";
 import {notification} from "ant-design-vue";
 
@@ -66,6 +68,30 @@ export default defineComponent({
     }
     console.log("Provided seat types: ", seatTypes)
 
+    // Tickets details for UI display and send to back-end API to indicate which passenger is buying a ticket for which seat.
+    // {
+    //   passengerId: 123,
+    //   passengerType: "1",
+    //   passengerName: "John Smith",
+    //   passengerIdCard: "12323132132",
+    //   seatTypeCode: "1"
+    // }
+    const tickets = ref([]);
+
+    // Check or uncheck a passenger then add or remove a record
+    watch(() => passengerChecks.value, (newVal, oldVal)=>{
+      console.log("Selected passengers changed", newVal, oldVal)
+      // Clean and re-construct the tickets list when changing
+      tickets.value = [];
+      passengerChecks.value.forEach((item) => tickets.value.push({
+        passengerId: item.id,
+        passengerType: item.type,
+        seatTypeCode: seatTypes[0].code,
+        passengerName: item.name,
+        passengerIdCard: item.idCard
+      }))
+    }, {immediate: true});
+
     const handleQueryPassenger = () => {
       axios.get("/member/passenger/query-mine").then((response) => {
         let data = response.data;
@@ -73,7 +99,7 @@ export default defineComponent({
           passengers.value = data.content;
           passengers.value.forEach((item) => passengerOptions.value.push({
             label: item.name,
-            value: item.id
+            value: item
           }))
         } else {
           notification.error({description: data.message});
@@ -90,7 +116,8 @@ export default defineComponent({
       seatTypes,
       passengers,
       passengerOptions,
-      passengerChecks
+      passengerChecks,
+      tickets
     };
   },
 });
