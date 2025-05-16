@@ -18,7 +18,10 @@
     </div>
   </div>
   <a-divider></a-divider>
-  {{passengers}}
+  <b>Select the passengers for whom you want to purchase tickets: </b>&nbsp;
+  <a-checkbox-group v-model:value="passengerChecks" :options="passengerOptions" />
+  <br/>
+  Selected passengers：{{passengerChecks}}
 </template>
 
 <script>
@@ -33,6 +36,8 @@ export default defineComponent({
   setup() {
     const dailyTrainTicket = SessionStorage.get(SESSION_ORDER) || {};
     const passengers = ref([]);
+    const passengerOptions = ref([]);
+    const passengerChecks = ref([]);
     console.log("Order info for selected order", dailyTrainTicket);
 
     const SEAT_TYPE = window.SEAT_TYPE;
@@ -66,6 +71,10 @@ export default defineComponent({
         let data = response.data;
         if (data.success) {
           passengers.value = data.content;
+          passengers.value.forEach((item) => passengerOptions.value.push({
+            label: item.name,
+            value: item.id
+          }))
         } else {
           notification.error({description: data.message});
         }
@@ -79,7 +88,9 @@ export default defineComponent({
     return {
       dailyTrainTicket,
       seatTypes,
-      passengers
+      passengers,
+      passengerOptions,
+      passengerChecks
     };
   },
 });
