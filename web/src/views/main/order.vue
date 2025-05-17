@@ -168,10 +168,30 @@ export default defineComponent({
     const finishCheckPassenger = () => {
       console.log("Tickets List: ", tickets.value);
 
-      if (tickets.value.length > 5) {
-        notification.error({description: 'You can only purchase up to five tickets.'});
+      if (tickets.value.length > 10) {
+        notification.error({description: 'You can only purchase up to ten tickets.'});
         return;
       }
+
+      // Validate that ticket availability is sufficient: for each seat type in the purchase list, check the train’s remaining-seat info to see if there are enough tickets.
+      // Front-end validation may not be completely accurate, but it helps to offload much of the work from the back end.
+      // Note: this step only simulates deduction—be sure to copy the `seatTypesTemp` variable before subtracting. Deducting directly from the original `seatTypes` would affect real inventory.
+      let seatTypesTemp = Tool.copy(seatTypes);
+      for (let i = 0; i < tickets.value.length; i++) {
+        let ticket = tickets.value[i];
+        for (let j = 0; j < seatTypesTemp.length; j++) {
+          let seatType = seatTypesTemp[j];
+          // Decrement the remaining count for this seat type by 1. This uses a temporary copy of the inventory for validation, not the real one.
+          if (ticket.seatTypeCode === seatType.code) {
+            seatType.count--;
+            if (seatType.count < 0) {
+              notification.error({description: seatType.desc + 'is insufficient'});
+              return;
+            }
+          }
+        }
+      }
+      console.log("Front-end remaining tickets validation passed");
 
       // Pop-up ticket info window
       visible.value = true;
