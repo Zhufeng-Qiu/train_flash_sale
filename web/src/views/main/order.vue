@@ -79,11 +79,22 @@
         </a-col>
       </a-row>
       <br/>
-      选座类型chooseSeatType：{{chooseSeatType}}
-      <br/>
       选座对象chooseSeatType：{{chooseSeatObj}}
       <br/>
-      座位类型SEAT_COL_ARRAY：{{SEAT_COL_ARRAY}}
+      <div v-if="chooseSeatType === 0" style="color: red;">
+        Your order is not supported to seat selection
+        <div>Platform rule: Seat selection is only supported if all seats are in first class or all are in second class</div>
+        <div>Platform rule: seat selection is not supported when remaining tickets are under 20</div>
+      </div>
+      <div v-else style="text-align: center">
+        <a-switch class="choose-seat-item" v-for="item in SEAT_COL_ARRAY" :key="item.code"
+                  v-model:checked="chooseSeatObj[item.code + '1']" :checked-children="item.desc" :un-checked-children="item.desc" />
+        <div v-if="tickets.length > 1">
+          <a-switch class="choose-seat-item" v-for="item in SEAT_COL_ARRAY" :key="item.code"
+                    v-model:checked="chooseSeatObj[item.code + '2']" :checked-children="item.desc" :un-checked-children="item.desc" />
+        </div>
+        <div style="color: #999999">提示：您可以选择{{tickets.length}}个座位</div>
+      </div>
     </div>
   </a-modal>
 </template>
@@ -197,8 +208,8 @@ export default defineComponent({
     const finishCheckPassenger = () => {
       console.log("Tickets List: ", tickets.value);
 
-      if (tickets.value.length > 10) {
-        notification.error({description: 'You can only purchase up to ten tickets.'});
+      if (tickets.value.length > 5) {
+        notification.error({description: 'You can only purchase up to five tickets.'});
         return;
       }
 
@@ -306,5 +317,8 @@ export default defineComponent({
   border-top: none;
   vertical-align: middle;
   line-height: 30px;
+}
+.order-tickets .choose-seat-item {
+  margin: 5px 5px;
 }
 </style>
