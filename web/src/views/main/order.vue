@@ -78,13 +78,19 @@
           </span>
         </a-col>
       </a-row>
+      <br/>
+      选座类型chooseSeatType：{{chooseSeatType}}
+      <br/>
+      选座对象chooseSeatType：{{chooseSeatObj}}
+      <br/>
+      座位类型SEAT_COL_ARRAY：{{SEAT_COL_ARRAY}}
     </div>
   </a-modal>
 </template>
 
 <script>
 
-import {defineComponent, ref, onMounted, watch} from 'vue';
+import {defineComponent, ref, onMounted, watch, computed} from 'vue';
 import axios from "axios";
 import {notification} from "ant-design-vue";
 
@@ -150,6 +156,29 @@ export default defineComponent({
       }))
     }, {immediate: true});
 
+    // 0: Seat selection is not supported；1: Select first class seat；2: Select second class seat
+    const chooseSeatType = ref(0);
+    // Get corresponding columns according selected seat type
+    // First class seat: ACDF
+    // Second class seat: ABCDF
+    const SEAT_COL_ARRAY = computed(() => {
+      return window.SEAT_COL_ARRAY.filter(item => item.type === chooseSeatType.value);
+    });
+    // Selected seats
+    // {
+    //   A1: false, C1: true，D1: false, F1: false，
+    //   A2: false, C2: false，D2: true, F2: false
+    // }
+    const chooseSeatObj = ref({});
+    watch(() => SEAT_COL_ARRAY.value, () => {
+      for (let i = 1; i <= 2; i++) {
+        SEAT_COL_ARRAY.value.forEach((item) => {
+          chooseSeatObj.value[item.code + i] = false;
+        })
+      }
+      console.log("Initialize two rows of unselected seats: ", chooseSeatObj.value);
+    }, {immediate: true});
+
     const handleQueryPassenger = () => {
       axios.get("/member/passenger/query-mine").then((response) => {
         let data = response.data;
@@ -193,6 +222,33 @@ export default defineComponent({
       }
       console.log("Front-end remaining tickets validation passed");
 
+      // Check whether seat selection is supported, only pure first class and pure second class seats allow seat selection.
+      // First filter out all seat types from records, e.g. [1, 1, 2, 2]
+      let ticketSeatTypeCodes = [];
+      for (let i = 0; i < tickets.value.length; i++) {
+        let ticket = tickets.value[i];
+        ticketSeatTypeCodes.push(ticket.seatTypeCode);
+      }
+      // Deduplicate the seat types: [1, 2]
+      const ticketSeatTypeCodesSet = Array.from(new Set(ticketSeatTypeCodes));
+      console.log("Selected seat types: ", ticketSeatTypeCodesSet);
+      if (ticketSeatTypeCodesSet.length !== 1) {
+        console.log("Multiple seat types are not supported to seat selection");
+        chooseSeatType.value = 0;
+      } else {
+        // ticketSeatTypeCodesSet.length === 1, that is only one seat type selection is selected
+        if (ticketSeatTypeCodesSet[0] === SEAT_TYPE.YDZ.code) {
+          console.log("First class seat selection");
+          chooseSeatType.value = SEAT_TYPE.YDZ.code;
+        } else if (ticketSeatTypeCodesSet[0] === SEAT_TYPE.EDZ.code) {
+          console.log("Second class seat selection");
+          chooseSeatType.value = SEAT_TYPE.EDZ.code;
+        } else {
+          console.log("Not first class seat nor second class seat, not supported to seat selection");
+          chooseSeatType.value = 0;
+        }
+      }
+
       // Pop-up ticket info window
       visible.value = true;
     };
@@ -210,7 +266,10 @@ export default defineComponent({
       tickets,
       PASSENGER_TYPE_ARRAY,
       visible,
-      finishCheckPassenger
+      finishCheckPassenger,
+      chooseSeatType,
+      chooseSeatObj,
+      SEAT_COL_ARRAY
     };
   },
 });
