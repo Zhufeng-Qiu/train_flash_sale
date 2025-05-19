@@ -78,9 +78,7 @@
           </span>
         </a-col>
       </a-row>
-      <br/>
-      选座对象chooseSeatType：{{chooseSeatObj}}
-      <br/>
+      <br>
       <div v-if="chooseSeatType === 0" style="color: red;">
         Your order is not supported to seat selection
         <div>Platform rule: Seat selection is only supported if all seats are in first class or all are in second class</div>
@@ -93,7 +91,7 @@
           <a-switch class="choose-seat-item" v-for="item in SEAT_COL_ARRAY" :key="item.code"
                     v-model:checked="chooseSeatObj[item.code + '2']" :checked-children="item.desc" :un-checked-children="item.desc" />
         </div>
-        <div style="color: #999999">提示：您可以选择{{tickets.length}}个座位</div>
+        <div style="color: #999999">Note: you can choose {{tickets.length}} seats</div>
       </div>
     </div>
   </a-modal>
@@ -257,6 +255,22 @@ export default defineComponent({
         } else {
           console.log("Not first class seat nor second class seat, not supported to seat selection");
           chooseSeatType.value = 0;
+        }
+
+        // Seat selection is not supported when remaining tickets are under 20; otherwise the success rate of ticket selection will not that high and affect ticket issuance
+        if (chooseSeatType.value !== 0) {
+          for (let i = 0; i < seatTypes.length; i++) {
+            let seatType = seatTypes[i];
+            // Find same seat type
+            if (ticketSeatTypeCodesSet[0] === seatType.code) {
+              // check remaining tickets, seat selection is not supported when remaining tickets are under 20;
+              if (seatType.count < 20) {
+                console.log("Seat selection is not supported when remaining tickets are under 20")
+                chooseSeatType.value = 0;
+                break;
+              }
+            }
+          }
         }
       }
 
