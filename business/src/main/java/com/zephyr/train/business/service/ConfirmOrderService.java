@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -11,6 +12,7 @@ import com.zephyr.train.business.domain.ConfirmOrder;
 import com.zephyr.train.business.domain.ConfirmOrderExample;
 import com.zephyr.train.business.domain.DailyTrainTicket;
 import com.zephyr.train.business.enums.ConfirmOrderStatusEnum;
+import com.zephyr.train.business.enums.SeatColEnum;
 import com.zephyr.train.business.enums.SeatTypeEnum;
 import com.zephyr.train.business.mapper.ConfirmOrderMapper;
 import com.zephyr.train.business.req.ConfirmOrderDoReq;
@@ -23,6 +25,7 @@ import com.zephyr.train.common.exception.BusinessExceptionEnum;
 import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConfirmOrderService {
 
+  public static final ArrayList<Object> OBJECT = new ArrayList<>();
   private static final Logger LOG = LoggerFactory.getLogger(ConfirmOrderService.class);
 
   @Resource
@@ -86,6 +90,7 @@ public class ConfirmOrderService {
     String trainCode = req.getTrainCode();
     String start = req.getStart();
     String end = req.getEnd();
+    List<ConfirmOrderTicketReq> tickets = req.getTickets();
 
     // Save the confirmation order record with initial status
     DateTime now = DateTime.now();
@@ -100,7 +105,7 @@ public class ConfirmOrderService {
     confirmOrder.setEnd(end);
     confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
     confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
-    confirmOrder.setTickets(JSON.toJSONString(req.getTickets()));
+    confirmOrder.setTickets(JSON.toJSONString(tickets));
     confirmOrderMapper.insert(confirmOrder);
 
     // Retrieve the remaining-ticket record to get the actual inventory
@@ -109,6 +114,42 @@ public class ConfirmOrderService {
 
     // Decrement the remaining-ticket count and verify availability
     reduceTickets(req, dailyTrainTicket);
+
+    // Calculate offsets relative to the first seat
+    // For example, if the selected seats are C1 and D2 (ACDF), the offsets are: [0, 5]
+    // For example, if the selected seats are A1, B1, and C1 (ABCDF), the offsets are: [0, 1, 2]
+    ConfirmOrderTicketReq ticketReq0 = tickets.get(0);
+    if(StrUtil.isNotBlank(ticketReq0.getSeat())) {
+      LOG.info("This order requires seat selection");
+      // Determine which columns are included in the seat type for this selection, to calculate each selected seat’s offset relative to the first seat
+      List<SeatColEnum> colEnumList = SeatColEnum.getColsByType(ticketReq0.getSeatTypeCode());
+      LOG.info("Seat Columns included in seat type for this order: {}", colEnumList);
+
+      // Build a reference seat list matching the two-row seat-selection layout on the front end, e.g. referSeatList = {A1, C1, D1, F1, A2, C2, D2, F2}
+      List<String> referSeatList = new ArrayList<>();
+      for (int i = 1; i <= 2; i++) {
+        for (SeatColEnum seatColEnum : colEnumList) {
+          referSeatList.add(seatColEnum.getCode() + i);
+        }
+      }
+      LOG.info("Reference two-row seat list: {}", referSeatList);
+
+      List<Integer> offsetList = new ArrayList<>();
+      // Absolute offset value, i.e., the position within the reference seat list
+      List<Integer> aboluteOffsetList = new ArrayList<>();
+      for (ConfirmOrderTicketReq ticketReq : tickets) {
+        int index = referSeatList.indexOf(ticketReq.getSeat());
+        aboluteOffsetList.add(index);
+      }
+      LOG.info("Absolute offset value for all seats: {}", aboluteOffsetList);
+      for (Integer index : aboluteOffsetList) {
+        int offset = index - aboluteOffsetList.get(0);
+        offsetList.add(offset);
+      }
+      LOG.info("Calculate the relative offset values of all seats relative to the first seat: {}", offsetList);
+    } else {
+      LOG.info("This order does not require seat selection");
+    }
 
     // Seat selection
     // - Fetch seat data one carriage at a time
