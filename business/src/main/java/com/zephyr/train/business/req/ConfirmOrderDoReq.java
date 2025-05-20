@@ -1,10 +1,10 @@
 package com.zephyr.train.business.req;
 
-import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 public class ConfirmOrderDoReq {
@@ -12,7 +12,6 @@ public class ConfirmOrderDoReq {
     /**
      * Member Id
      */
-    @NotNull(message = "[Member Id] cannot be null")
     private Long memberId;
 
     /**
@@ -49,7 +48,7 @@ public class ConfirmOrderDoReq {
     /**
      * Ticket
      */
-    @NotBlank(message = "[Ticket] cannot be blank")
+    @NotEmpty(message = "[Ticket] cannot be blank")
     private List<ConfirmOrderTicketReq> tickets;
 
     public Long getMemberId() {
