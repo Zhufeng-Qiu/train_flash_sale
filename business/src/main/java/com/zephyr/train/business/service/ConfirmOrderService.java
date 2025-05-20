@@ -5,14 +5,14 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zephyr.train.common.resp.PageResp;
-import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.business.domain.ConfirmOrder;
 import com.zephyr.train.business.domain.ConfirmOrderExample;
 import com.zephyr.train.business.mapper.ConfirmOrderMapper;
+import com.zephyr.train.business.req.ConfirmOrderDoReq;
 import com.zephyr.train.business.req.ConfirmOrderQueryReq;
-import com.zephyr.train.business.req.ConfirmOrderSaveReq;
 import com.zephyr.train.business.resp.ConfirmOrderQueryResp;
+import com.zephyr.train.common.resp.PageResp;
+import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
 import java.util.List;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class ConfirmOrderService {
   @Resource
   private ConfirmOrderMapper confirmOrderMapper;
 
-  public void save(ConfirmOrderSaveReq req) {
+  public void save(ConfirmOrderDoReq req) {
     DateTime now = DateTime.now();
     ConfirmOrder confirmOrder = BeanUtil.copyProperties(req, ConfirmOrder.class);
     if (ObjectUtil.isNull(confirmOrder.getId())) {
@@ -64,5 +64,25 @@ public class ConfirmOrderService {
 
   public void delete(Long id) {
     confirmOrderMapper.deleteByPrimaryKey(id);
+  }
+
+  public void doConfirm(ConfirmOrderDoReq req) {
+    // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice
+
+    // Save the confirmation order record with initial status
+
+    // Retrieve the remaining-ticket record to get the actual inventory
+
+    // Decrement the remaining-ticket count and verify availability
+
+    // Seat selection
+    // - Fetch seat data one carriage at a time
+    // - Select seats that meet the criteria; if a carriage doesn’t suffice, move to the next one (all selected seats must be in the same carriage)
+
+    // After seats are selected, process the transaction:
+    // - Update seat table sell status
+    // - Update remaining tickets in the ticket-detail table
+    // - Add a purchase record for the member
+    // - Update the confirmation order status to "success"
   }
 }

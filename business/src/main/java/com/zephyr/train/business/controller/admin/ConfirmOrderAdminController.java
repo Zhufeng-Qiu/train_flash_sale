@@ -3,12 +3,11 @@ package com.zephyr.train.business.controller.admin;
 import com.zephyr.train.common.resp.CommonResp;
 import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.business.req.ConfirmOrderQueryReq;
-import com.zephyr.train.business.req.ConfirmOrderSaveReq;
+import com.zephyr.train.business.req.ConfirmOrderDoReq;
 import com.zephyr.train.business.resp.ConfirmOrderQueryResp;
 import com.zephyr.train.business.service.ConfirmOrderService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +24,7 @@ public class ConfirmOrderAdminController {
   private ConfirmOrderService confirmOrderService;
 
   @PostMapping("/save")
-  public CommonResp<Object> save(@Valid @RequestBody ConfirmOrderSaveReq req) {
+  public CommonResp<Object> save(@Valid @RequestBody ConfirmOrderDoReq req) {
     confirmOrderService.save(req);
     return new CommonResp<>();
   }
