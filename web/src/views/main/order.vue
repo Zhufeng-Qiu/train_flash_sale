@@ -52,7 +52,8 @@
 
   <a-modal v-model:visible="visible" title="Please check the following infomation"
            style="top: 50px; width: 800px"
-           ok-text="Confirm" cancel-text="Cancel">
+           ok-text="Confirm" cancel-text="Cancel"
+           @ok="handleOk">
     <div class="order-tickets">
       <a-row class="order-tickets-header" v-if="tickets.length > 0">
         <a-col :span="5">Passenger</a-col>
@@ -93,6 +94,10 @@
         </div>
         <div style="color: #999999">Note: you can choose {{tickets.length}} seats</div>
       </div>
+      <br/>
+      最终购票：{{tickets}}
+      <br/>
+      最终选座：{{chooseSeatObj}}
     </div>
   </a-modal>
 </template>
@@ -145,7 +150,8 @@ export default defineComponent({
     //   passengerType: "1",
     //   passengerName: "John Smith",
     //   passengerIdCard: "12323132132",
-    //   seatTypeCode: "1"
+    //   seatTypeCode: "1",
+    //   seat: "C1"
     // }
     const tickets = ref([]);
     const PASSENGER_TYPE_ARRAY = window.PASSENGER_TYPE_ARRAY;
@@ -180,6 +186,7 @@ export default defineComponent({
     // }
     const chooseSeatObj = ref({});
     watch(() => SEAT_COL_ARRAY.value, () => {
+      chooseSeatObj.value = {};
       for (let i = 1; i <= 2; i++) {
         SEAT_COL_ARRAY.value.forEach((item) => {
           chooseSeatObj.value[item.code + i] = false;
@@ -278,6 +285,34 @@ export default defineComponent({
       visible.value = true;
     };
 
+    const handleOk = () => {
+      console.log("Selected seats: ", chooseSeatObj.value);
+
+      // Set seat for each ticket
+      // Clean then set
+      for (let i = 0; i < tickets.value.length; i++) {
+        tickets.value[i].seat = null;
+      }
+      let i = -1;
+      // Either do not select, or selected seats should be equal to purchased seats, i === (tickets.value.length - 1)
+      for (let key in chooseSeatObj.value) {
+        if (chooseSeatObj.value[key]) {
+          i++;
+          if (i > tickets.value.length - 1) {
+            notification.error({description: 'Selected seats are more than purchased seats'});
+            return;
+          }
+          tickets.value[i].seat = key;
+        }
+      }
+      if (i > -1 && i < (tickets.value.length - 1)) {
+        notification.error({description: 'Selected seats are lesss than purchased seats'});
+        return;
+      }
+
+      console.log("Final tickets; ", tickets.value);
+    }
+
     onMounted(() => {
       handleQueryPassenger();
     });
@@ -294,7 +329,8 @@ export default defineComponent({
       finishCheckPassenger,
       chooseSeatType,
       chooseSeatObj,
-      SEAT_COL_ARRAY
+      SEAT_COL_ARRAY,
+      handleOk
     };
   },
 });
