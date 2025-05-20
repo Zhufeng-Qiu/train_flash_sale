@@ -23,6 +23,11 @@
             Business Management
           </span>
         </template>
+        <a-menu-item key="/business/confirm-order">
+          <router-link to="/business/confirm-order">
+            <user-outlined /> &nbsp; Order Management
+          </router-link>
+        </a-menu-item>
         <a-menu-item key="/business/daily-train-ticket">
           <router-link to="/business/daily-train-ticket">
             <user-outlined /> &nbsp; Daily Remaining Ticket

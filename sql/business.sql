@@ -170,3 +170,20 @@ create table `daily_train_ticket` (
     primary key (`id`),
     unique key `date_train_code_start_end_unique` (`date`, `train_code`, `start`, `end`)
 ) engine=innodb default charset=utf8mb4 comment='Remaining Tickets Info';
+
+drop table if exists `confirm_order`;
+create table `confirm_order` (
+    `id` bigint not null comment 'id',
+    `member_id` bigint not null comment 'Member Id',
+    `date` date not null comment 'Date',
+    `train_code` varchar(20) not null comment 'Train Number',
+    `start` varchar(20) not null comment 'Departure Station',
+    `end` varchar(20) not null comment 'Arrival Station',
+    `daily_train_ticket_id` bigint not null comment 'Remaining Ticket Id',
+    `tickets` json not null comment 'Ticket',
+    `status` char(1) not null comment 'Order Status|Enum[ConfirmOrderStatusEnum]',
+    `create_time` datetime(3) comment 'Create Time',
+    `update_time` datetime(3) comment 'Update Time',
+    primary key (`id`),
+    index `date_train_code_index` (`date`, `train_code`)
+) engine=innodb default charset=utf8mb4 comment='Confirmed Order';
