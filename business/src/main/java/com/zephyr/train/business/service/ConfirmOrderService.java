@@ -10,6 +10,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zephyr.train.business.domain.ConfirmOrder;
 import com.zephyr.train.business.domain.ConfirmOrderExample;
+import com.zephyr.train.business.domain.DailyTrainCarriage;
+import com.zephyr.train.business.domain.DailyTrainSeat;
 import com.zephyr.train.business.domain.DailyTrainTicket;
 import com.zephyr.train.business.enums.ConfirmOrderStatusEnum;
 import com.zephyr.train.business.enums.SeatColEnum;
@@ -43,6 +45,13 @@ public class ConfirmOrderService {
 
   @Resource
   private DailyTrainTicketService dailyTrainTicketService;
+
+  @Resource
+  private DailyTrainCarriageService dailyTrainCarriageService;
+
+  @Resource
+  private DailyTrainSeatService dailyTrainSeatService;
+
 
   public void save(ConfirmOrderDoReq req) {
     DateTime now = DateTime.now();
@@ -147,8 +156,27 @@ public class ConfirmOrderService {
         offsetList.add(offset);
       }
       LOG.info("Calculate the relative offset values of all seats relative to the first seat: {}", offsetList);
+
+      getSeat(
+          date,
+          trainCode,
+          ticketReq0.getSeatTypeCode(),
+          ticketReq0.getSeat().split("")[0], // A1 -> A
+          offsetList
+      );
+
     } else {
       LOG.info("This order does not require seat selection");
+
+      for (ConfirmOrderTicketReq ticketReq : tickets) {
+        getSeat(
+            date,
+            trainCode,
+            ticketReq.getSeatTypeCode(),
+            null,
+            null
+        );
+      }
     }
 
     // Seat selection
@@ -160,6 +188,19 @@ public class ConfirmOrderService {
     // - Update remaining tickets in the ticket-detail table
     // - Add a purchase record for the member
     // - Update the confirmation order status to "success"
+  }
+
+  private void getSeat(Date date, String trainCode, String seatType, String column, List<Integer> offsetList) {
+    List<DailyTrainCarriage> carriageList = dailyTrainCarriageService.selectBySeatType(date, trainCode, seatType);
+    LOG.info("Find {} matching carriages", carriageList.size());
+
+    // 一个车箱一个车箱的获取座位数据
+    // Retrieve seat for each carriage
+    for (DailyTrainCarriage dailyTrainCarriage : carriageList) {
+      LOG.info("Start to select seats from carriage {}", dailyTrainCarriage.getIndex());
+      List<DailyTrainSeat> seatList = dailyTrainSeatService.selectByCarriage(date, trainCode, dailyTrainCarriage.getIndex());
+      LOG.info("Seat number of carriage {} : {}", dailyTrainCarriage.getIndex(), seatList.size());
+    }
   }
 
   private static void reduceTickets(ConfirmOrderDoReq req, DailyTrainTicket dailyTrainTicket) {

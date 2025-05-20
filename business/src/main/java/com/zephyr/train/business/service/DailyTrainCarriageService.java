@@ -118,4 +118,13 @@ public class DailyTrainCarriageService {
 
     LOG.info("Generate carriage info of train[{}] for date[{}] completed", trainCode, DateUtil.formatDate(date));
   }
+
+  public List<DailyTrainCarriage> selectBySeatType (Date date, String trainCode, String seatType) {
+    DailyTrainCarriageExample example = new DailyTrainCarriageExample();
+    example.createCriteria()
+        .andDateEqualTo(date)
+        .andTrainCodeEqualTo(trainCode)
+        .andSeatTypeEqualTo(seatType);
+    return dailyTrainCarriageMapper.selectByExample(example);
+  }
 }
