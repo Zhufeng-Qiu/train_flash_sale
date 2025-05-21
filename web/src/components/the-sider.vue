@@ -17,7 +17,12 @@
       </a-menu-item>
       <a-menu-item key="/ticket">
         <router-link to="/ticket">
-          <user-outlined /> &nbsp; Tickets
+          <user-outlined /> &nbsp; Ticket Search
+        </router-link>
+      </a-menu-item>
+      <a-menu-item key="/my-ticket">
+        <router-link to="/my-ticket">
+          <idcard-outlined /> &nbsp; My Tickets
         </router-link>
       </a-menu-item>
     </a-menu>
