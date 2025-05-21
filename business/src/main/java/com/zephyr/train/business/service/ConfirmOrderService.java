@@ -126,6 +126,8 @@ public class ConfirmOrderService {
     // Decrement the remaining-ticket count and verify availability
     reduceTickets(req, dailyTrainTicket);
 
+    // Final seat list
+    List<DailyTrainSeat> finalSeatList = new ArrayList<>();
     // Calculate offsets relative to the first seat
     // For example, if the selected seats are C1 and D2 (ACDF), the offsets are: [0, 5]
     // For example, if the selected seats are A1, B1, and C1 (ABCDF), the offsets are: [0, 1, 2]
@@ -160,6 +162,7 @@ public class ConfirmOrderService {
       LOG.info("Calculate the relative offset values of all seats relative to the first seat: {}", offsetList);
 
       getSeat(
+          finalSeatList,
           date,
           trainCode,
           ticketReq0.getSeatTypeCode(),
@@ -174,6 +177,7 @@ public class ConfirmOrderService {
 
       for (ConfirmOrderTicketReq ticketReq : tickets) {
         getSeat(
+            finalSeatList,
             date,
             trainCode,
             ticketReq.getSeatTypeCode(),
@@ -184,6 +188,8 @@ public class ConfirmOrderService {
         );
       }
     }
+
+    LOG.info("Final seat list: {}", finalSeatList);
 
     // Seat selection
     // - Fetch seat data one carriage at a time
@@ -196,13 +202,15 @@ public class ConfirmOrderService {
     // - Update the confirmation order status to "success"
   }
 
-  private void getSeat(Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
+  private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
+    List<DailyTrainSeat> getSeatList = new ArrayList<>();
     List<DailyTrainCarriage> carriageList = dailyTrainCarriageService.selectBySeatType(date, trainCode, seatType);
     LOG.info("Find {} matching carriages", carriageList.size());
 
     // Retrieve seat for each carriage
     for (DailyTrainCarriage dailyTrainCarriage : carriageList) {
       LOG.info("Start to select seats from carriage {}", dailyTrainCarriage.getIndex());
+      getSeatList = new ArrayList<>();
       List<DailyTrainSeat> seatList = dailyTrainSeatService.selectByCarriage(date, trainCode, dailyTrainCarriage.getIndex());
       LOG.info("Seat number of carriage {} : {}", dailyTrainCarriage.getIndex(), seatList.size());
 
@@ -210,6 +218,19 @@ public class ConfirmOrderService {
         DailyTrainSeat dailyTrainSeat = seatList.get(i);
         Integer seatIndex = dailyTrainSeat.getCarriageSeatIndex();
         String col = dailyTrainSeat.getCol();
+
+        // Check if current seat has not been selected
+        boolean alreadyChooseFlag = false;
+        for (DailyTrainSeat finalSeat : finalSeatList){
+          if (finalSeat.getId().equals(dailyTrainSeat.getId())) {
+            alreadyChooseFlag = true;
+            break;
+          }
+        }
+        if (alreadyChooseFlag) {
+          LOG.info("Seat {} has been selected, cannot be selected repeatedly, continue to check next seat", seatIndex);
+          continue;
+        }
 
         // Check column, if not null, then check column value
         if (StrUtil.isBlank(column)) {
@@ -224,6 +245,7 @@ public class ConfirmOrderService {
         boolean isChoose = calSell(dailyTrainSeat, startIndex, endIndex);
         if (isChoose) {
           LOG.info("Select seat");
+          getSeatList.add(dailyTrainSeat);
         } else {
           continue;
         }
@@ -250,6 +272,7 @@ public class ConfirmOrderService {
             boolean isChooseNext = calSell(nextDailyTrainSeat, startIndex, endIndex);
             if (isChooseNext) {
               LOG.info("Seat {} is selected", nextDailyTrainSeat.getCarriageSeatIndex());
+              getSeatList.add(nextDailyTrainSeat);
             } else {
               LOG.info("Seat {} cannot be selected", nextDailyTrainSeat.getCarriageSeatIndex());
               isGetAllOffsetSeat = false;
@@ -258,10 +281,12 @@ public class ConfirmOrderService {
           }
         }
         if (!isGetAllOffsetSeat) {
+          getSeatList = new ArrayList<>();
           continue;
         }
 
-        // Save selected seats
+        // Store selected seats
+        finalSeatList.addAll(getSeatList);
         return;
       }
     }
