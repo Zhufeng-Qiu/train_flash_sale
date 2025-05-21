@@ -64,6 +64,12 @@ public class MemberTicketReq {
   private String start;
 
   /**
+   * Departure Station Alias
+   */
+  @NotBlank(message = "[Departure Station Alias] cannot be blank")
+  private String startPinyin;
+
+  /**
    * Departure Time
    */
   @JsonFormat(pattern = "HH:mm:ss",timezone = "GMT-7")
@@ -75,6 +81,12 @@ public class MemberTicketReq {
    */
   @NotBlank(message = "[Arrival Station] cannot be null")
   private String end;
+
+  /**
+   * Arrival Station Alias
+   */
+  @NotBlank(message = "[Arrival Station Alias] cannot be blank")
+  private String endPinyin;
 
   /**
    * Arrival Time
@@ -193,20 +205,38 @@ public class MemberTicketReq {
     this.seatType = seatType;
   }
 
+  public String getStartPinyin() {
+    return startPinyin;
+  }
+
+  public void setStartPinyin(String startPinyin) {
+    this.startPinyin = startPinyin;
+  }
+
+  public String getEndPinyin() {
+    return endPinyin;
+  }
+
+  public void setEndPinyin(String endPinyin) {
+    this.endPinyin = endPinyin;
+  }
+
   @Override
   public String toString() {
     return "MemberTicketReq{" +
         "memberId=" + memberId +
         ", passengerId=" + passengerId +
-        ", passengerName=" + passengerName +
+        ", passengerName='" + passengerName + '\'' +
         ", date=" + date +
         ", trainCode='" + trainCode + '\'' +
         ", carriageIndex=" + carriageIndex +
         ", row='" + row + '\'' +
         ", col='" + col + '\'' +
         ", start='" + start + '\'' +
+        ", startPinyin='" + startPinyin + '\'' +
         ", startTime=" + startTime +
         ", end='" + end + '\'' +
+        ", endPinyin='" + endPinyin + '\'' +
         ", endTime=" + endTime +
         ", seatType='" + seatType + '\'' +
         '}';

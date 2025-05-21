@@ -196,7 +196,7 @@ public class ConfirmOrderService {
     // - Update remaining tickets in the ticket-detail table
     // - Add a purchase record for the member
     // - Update the confirmation order status to "success"
-    afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList);
+    afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets);
 
 
   }

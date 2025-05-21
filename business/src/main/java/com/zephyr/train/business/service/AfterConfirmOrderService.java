@@ -2,8 +2,13 @@ package com.zephyr.train.business.service;
 
 import com.zephyr.train.business.domain.DailyTrainSeat;
 import com.zephyr.train.business.domain.DailyTrainTicket;
+import com.zephyr.train.business.feign.MemberFeign;
 import com.zephyr.train.business.mapper.DailyTrainSeatMapper;
 import com.zephyr.train.business.mapper.cust.DailyTrainTicketMapperCust;
+import com.zephyr.train.business.req.ConfirmOrderTicketReq;
+import com.zephyr.train.common.context.LoginMemberContext;
+import com.zephyr.train.common.req.MemberTicketReq;
+import com.zephyr.train.common.resp.CommonResp;
 import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +28,9 @@ public class AfterConfirmOrderService {
   @Resource
   private DailyTrainTicketMapperCust dailyTrainTicketMapperCust;
 
+  @Resource
+  private MemberFeign memberFeign;
+
   /**
    * After seats are selected, process the transaction:
    * - Update seat table sell status
@@ -31,8 +39,9 @@ public class AfterConfirmOrderService {
    * - Update the confirmation order status to "success"
    */
   @Transactional
-  public void afterDoConfirm(DailyTrainTicket dailyTrainTicket, List<DailyTrainSeat> finalSeatList) {
-    for (DailyTrainSeat dailyTrainSeat : finalSeatList) {
+  public void afterDoConfirm(DailyTrainTicket dailyTrainTicket, List<DailyTrainSeat> finalSeatList, List<ConfirmOrderTicketReq> tickets) {
+    for (int j = 0; j < finalSeatList.size(); j++) {
+      DailyTrainSeat dailyTrainSeat = finalSeatList.get(j);
       DailyTrainSeat seatForUpdate = new DailyTrainSeat();
       seatForUpdate.setId(dailyTrainSeat.getId());
       seatForUpdate.setSell(dailyTrainSeat.getSell());
@@ -87,6 +96,27 @@ public class AfterConfirmOrderService {
           minEndIndex,
           maxEndIndex
       );
+
+      // Invoke member ticket interface, add the ticket for member
+      MemberTicketReq memberTicketReq = new MemberTicketReq();
+      memberTicketReq.setMemberId(LoginMemberContext.getId());
+      memberTicketReq.setPassengerId(tickets.get(j).getPassengerId());
+      memberTicketReq.setPassengerName(tickets.get(j).getPassengerName());
+      memberTicketReq.setDate(dailyTrainTicket.getDate());
+      memberTicketReq.setTrainCode(dailyTrainTicket.getTrainCode());
+      memberTicketReq.setCarriageIndex(dailyTrainSeat.getCarriageIndex());
+      memberTicketReq.setRow(dailyTrainSeat.getRow());
+      memberTicketReq.setCol(dailyTrainSeat.getCol());
+      memberTicketReq.setStart(dailyTrainTicket.getStart());
+      memberTicketReq.setStartPinyin(dailyTrainTicket.getStartPinyin());
+      memberTicketReq.setStartTime(dailyTrainTicket.getStartTime());
+      memberTicketReq.setEnd(dailyTrainTicket.getEnd());
+      memberTicketReq.setEndPinyin(dailyTrainTicket.getEndPinyin());
+      memberTicketReq.setEndTime(dailyTrainTicket.getEndTime());
+      memberTicketReq.setSeatType(dailyTrainSeat.getSeatType());
+      CommonResp<Object> commonResp = memberFeign.save(memberTicketReq);
+      LOG.info("Invoke member interface, return: {}", commonResp);
+
     }
   }
 }
