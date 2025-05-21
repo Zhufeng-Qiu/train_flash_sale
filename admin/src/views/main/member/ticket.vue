@@ -2,7 +2,6 @@
   <p>
     <a-space>
       <a-button type="primary" @click="handleQuery()">Refresh</a-button>
-      
     </a-space>
   </p>
   <a-table :dataSource="tickets"
@@ -15,7 +14,7 @@
       </template>
       <template v-else-if="column.dataIndex === 'col'">
         <span v-for="item in SEAT_COL_ARRAY" :key="item.code">
-          <span v-if="item.code === record.col">
+          <span v-if="item.code === record.col && item.type === record.seatType">
             {{item.desc}}
           </span>
         </span>
@@ -71,16 +70,6 @@ export default defineComponent({
     });
     let loading = ref(false);
     const columns = [
-    {
-      title: 'Member Id',
-      dataIndex: 'memberId',
-      key: 'memberId',
-    },
-    {
-      title: 'Passenger Id',
-      dataIndex: 'passengerId',
-      key: 'passengerId',
-    },
     {
       title: 'Passenger Name',
       dataIndex: 'passengerName',
