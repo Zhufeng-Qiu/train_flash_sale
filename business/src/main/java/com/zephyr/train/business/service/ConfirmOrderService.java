@@ -1,6 +1,7 @@
 package com.zephyr.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.NumberUtil;
@@ -205,15 +206,63 @@ public class ConfirmOrderService {
       List<DailyTrainSeat> seatList = dailyTrainSeatService.selectByCarriage(date, trainCode, dailyTrainCarriage.getIndex());
       LOG.info("Seat number of carriage {} : {}", dailyTrainCarriage.getIndex(), seatList.size());
 
-      for (DailyTrainSeat dailyTrainSeat : seatList) {
+      for (int i = 0; i < seatList.size(); i++) {
+        DailyTrainSeat dailyTrainSeat = seatList.get(i);
+        Integer seatIndex = dailyTrainSeat.getCarriageSeatIndex();
+        String col = dailyTrainSeat.getCol();
+
+        // Check column, if not null, then check column value
+        if (StrUtil.isBlank(column)) {
+          LOG.info("No Seat selection");
+        } else {
+          if (!column.equals(col)) {
+            LOG.info("The column value of Seat {} does not match, continue to next seat, current column: {}, target column: {}", seatIndex, col, column);
+            continue;
+          }
+        }
+
         boolean isChoose = calSell(dailyTrainSeat, startIndex, endIndex);
         if (isChoose) {
           LOG.info("Select seat");
-          return;
         } else {
-          LOG.info("Unselect seat");
           continue;
         }
+
+        // Select the remaining seats based on offset
+        boolean isGetAllOffsetSeat = true;
+        if (CollUtil.isNotEmpty(offsetList)) {
+          LOG.info("Offset:{}, check if the seats in offset can be selected", offsetList);
+          // Start from index 1, index 0 is the current selected seat
+          for (int j = 1; j < offsetList.size(); j++) {
+            Integer offset = offsetList.get(j);
+            // Seat index starts from 1
+            // int nextIndex = seatIndex + offset - 1;
+            int nextIndex = i + offset;
+
+            // Selected seats must be in the same carriage
+            if (nextIndex >= seatList.size()) {
+              LOG.info("Seat {} cannot be selected, index after offset is out of this carriage", nextIndex);
+              isGetAllOffsetSeat = false;
+              break;
+            }
+
+            DailyTrainSeat nextDailyTrainSeat = seatList.get(nextIndex);
+            boolean isChooseNext = calSell(nextDailyTrainSeat, startIndex, endIndex);
+            if (isChooseNext) {
+              LOG.info("Seat {} is selected", nextDailyTrainSeat.getCarriageSeatIndex());
+            } else {
+              LOG.info("Seat {} cannot be selected", nextDailyTrainSeat.getCarriageSeatIndex());
+              isGetAllOffsetSeat = false;
+              break;
+            }
+          }
+        }
+        if (!isGetAllOffsetSeat) {
+          continue;
+        }
+
+        // Save selected seats
+        return;
       }
     }
   }

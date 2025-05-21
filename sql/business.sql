@@ -68,7 +68,7 @@ create table `train_seat` (
     `row` char(2) not null comment 'Row|01, 02',
     `col` char(1) not null comment 'Column|Enum[SeatColEnum]',
     `seat_type` char(1) not null comment 'Seat Type|Enum[SeatTypeEnum]',
-    `carriage_seat_index` int not null comment 'In-carriage Seat Index',
+    `carriage_seat_index` int not null comment 'In-carriage Seat Index|1-based',
     `create_time` datetime(3) comment 'Create Time',
     `update_time` datetime(3) comment 'Update Time',
     primary key (`id`)
@@ -137,7 +137,7 @@ create table `daily_train_seat` (
     `row` char(2) not null comment 'Row|01, 02',
     `col` char(1) not null comment 'Column|Enum[SeatColEnum]',
     `seat_type` char(1) not null comment 'Seat Type|Enum[SeatTypeEnum]',
-    `carriage_seat_index` int not null comment 'In-carriage Seat Index',
+    `carriage_seat_index` int not null comment 'In-carriage Seat Index|1-based',
     `sell` varchar(50) not null comment 'Sale Status|Represents route stations using 01; 0: for sale, 1: sold',
     `create_time` datetime(3) comment 'Create Time',
     `update_time` datetime(3) comment 'Update Time',
