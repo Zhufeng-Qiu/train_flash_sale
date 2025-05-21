@@ -196,9 +196,7 @@ public class ConfirmOrderService {
     // - Update remaining tickets in the ticket-detail table
     // - Add a purchase record for the member
     // - Update the confirmation order status to "success"
-    afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets);
-
-
+    afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets, confirmOrder);
   }
 
   private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {

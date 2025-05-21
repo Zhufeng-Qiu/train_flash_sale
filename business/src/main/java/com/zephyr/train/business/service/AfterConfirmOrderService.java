@@ -1,8 +1,11 @@
 package com.zephyr.train.business.service;
 
+import com.zephyr.train.business.domain.ConfirmOrder;
 import com.zephyr.train.business.domain.DailyTrainSeat;
 import com.zephyr.train.business.domain.DailyTrainTicket;
+import com.zephyr.train.business.enums.ConfirmOrderStatusEnum;
 import com.zephyr.train.business.feign.MemberFeign;
+import com.zephyr.train.business.mapper.ConfirmOrderMapper;
 import com.zephyr.train.business.mapper.DailyTrainSeatMapper;
 import com.zephyr.train.business.mapper.cust.DailyTrainTicketMapperCust;
 import com.zephyr.train.business.req.ConfirmOrderTicketReq;
@@ -31,6 +34,9 @@ public class AfterConfirmOrderService {
   @Resource
   private MemberFeign memberFeign;
 
+  @Resource
+  private ConfirmOrderMapper confirmOrderMapper;
+
   /**
    * After seats are selected, process the transaction:
    * - Update seat table sell status
@@ -39,7 +45,7 @@ public class AfterConfirmOrderService {
    * - Update the confirmation order status to "success"
    */
   @Transactional
-  public void afterDoConfirm(DailyTrainTicket dailyTrainTicket, List<DailyTrainSeat> finalSeatList, List<ConfirmOrderTicketReq> tickets) {
+  public void afterDoConfirm(DailyTrainTicket dailyTrainTicket, List<DailyTrainSeat> finalSeatList, List<ConfirmOrderTicketReq> tickets, ConfirmOrder confirmOrder) {
     for (int j = 0; j < finalSeatList.size(); j++) {
       DailyTrainSeat dailyTrainSeat = finalSeatList.get(j);
       DailyTrainSeat seatForUpdate = new DailyTrainSeat();
@@ -117,6 +123,12 @@ public class AfterConfirmOrderService {
       CommonResp<Object> commonResp = memberFeign.save(memberTicketReq);
       LOG.info("Invoke member interface, return: {}", commonResp);
 
+      // Update order status as success
+      ConfirmOrder confirmOrderForUpdate = new ConfirmOrder();
+      confirmOrderForUpdate.setId(confirmOrder.getId());
+      confirmOrderForUpdate.setUpdateTime(new Date());
+      confirmOrderForUpdate.setStatus(ConfirmOrderStatusEnum.SUCCESS.getCode());
+      confirmOrderMapper.updateByPrimaryKeySelective(confirmOrderForUpdate);
     }
   }
 }
