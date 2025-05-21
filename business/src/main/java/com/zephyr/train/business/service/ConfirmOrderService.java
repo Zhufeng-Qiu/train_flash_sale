@@ -196,7 +196,7 @@ public class ConfirmOrderService {
     // - Update remaining tickets in the ticket-detail table
     // - Add a purchase record for the member
     // - Update the confirmation order status to "success"
-    afterConfirmOrderService.afterDoConfirm(finalSeatList);
+    afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList);
 
 
   }
@@ -292,11 +292,11 @@ public class ConfirmOrderService {
   }
 
   /**
-   * Check seat is sellable in given station range
+   * Check seat is sellable in given station interval
    * For example: sell=10001，0-1 has sold, 4-5 has sold
-   * All 0 means sellable in this range; as long as there is a 1, it is not sellable
+   * All 0 means sellable in this interval; as long as there is a 1, it is not sellable
    *
-   * For the sell value after purchased, origin value is 10001, station range is 1-4
+   * For the sell value after purchased, origin value is 10001, station interval is 1-4
    * get sale status for current purchase 01110, then bitwise-AND it with origin value, the sell value becomes 11111
    */
   private boolean calSell(DailyTrainSeat dailyTrainSeat, Integer startIndex, Integer endIndex) {
@@ -305,10 +305,10 @@ public class ConfirmOrderService {
     //  000, 000
     String sellPart = sell.substring(startIndex, endIndex);
     if (Integer.parseInt(sellPart) > 0) {
-      LOG.info("Seat {} in the station range {}~{} has been sold, cannot be selected", dailyTrainSeat.getCarriageSeatIndex(), startIndex, endIndex);
+      LOG.info("Seat {} in the station interval {}~{} has been sold, cannot be selected", dailyTrainSeat.getCarriageSeatIndex(), startIndex, endIndex);
       return false;
     } else {
-      LOG.info("Seat {} in the station range {}~{} has not been sold, can be selected", dailyTrainSeat.getCarriageSeatIndex(), startIndex, endIndex);
+      LOG.info("Seat {} in the station interval {}~{} has not been sold, can be selected", dailyTrainSeat.getCarriageSeatIndex(), startIndex, endIndex);
       //  111, 111
       String curSell = sellPart.replace('0', '1');
       // 0111, 0111
@@ -323,7 +323,7 @@ public class ConfirmOrderService {
       String newSell = NumberUtil.getBinaryStr(newSellInt);
       // 11111, 01111
       newSell = StrUtil.fillBefore(newSell, '0', sell.length());
-      LOG.info("Seat {} has been selected, origin sell value: {}, station range: {}~{}, current sell value: {}, final sell value: {}"
+      LOG.info("Seat {} has been selected, origin sell value: {}, station interval: {}~{}, current sell value: {}, final sell value: {}"
           , dailyTrainSeat.getCarriageSeatIndex(), sell, startIndex, endIndex, curSell, newSell);
       dailyTrainSeat.setSell(newSell);
       return true;
