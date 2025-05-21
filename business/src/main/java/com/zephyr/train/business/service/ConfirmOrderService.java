@@ -3,6 +3,7 @@ package com.zephyr.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.EnumUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -162,7 +163,9 @@ public class ConfirmOrderService {
           trainCode,
           ticketReq0.getSeatTypeCode(),
           ticketReq0.getSeat().split("")[0], // A1 -> A
-          offsetList
+          offsetList,
+          dailyTrainTicket.getStartIndex(),
+          dailyTrainTicket.getEndIndex()
       );
 
     } else {
@@ -174,7 +177,9 @@ public class ConfirmOrderService {
             trainCode,
             ticketReq.getSeatTypeCode(),
             null,
-            null
+            null,
+            dailyTrainTicket.getStartIndex(),
+            dailyTrainTicket.getEndIndex()
         );
       }
     }
@@ -190,16 +195,66 @@ public class ConfirmOrderService {
     // - Update the confirmation order status to "success"
   }
 
-  private void getSeat(Date date, String trainCode, String seatType, String column, List<Integer> offsetList) {
+  private void getSeat(Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
     List<DailyTrainCarriage> carriageList = dailyTrainCarriageService.selectBySeatType(date, trainCode, seatType);
     LOG.info("Find {} matching carriages", carriageList.size());
 
-    // 一个车箱一个车箱的获取座位数据
     // Retrieve seat for each carriage
     for (DailyTrainCarriage dailyTrainCarriage : carriageList) {
       LOG.info("Start to select seats from carriage {}", dailyTrainCarriage.getIndex());
       List<DailyTrainSeat> seatList = dailyTrainSeatService.selectByCarriage(date, trainCode, dailyTrainCarriage.getIndex());
       LOG.info("Seat number of carriage {} : {}", dailyTrainCarriage.getIndex(), seatList.size());
+
+      for (DailyTrainSeat dailyTrainSeat : seatList) {
+        boolean isChoose = calSell(dailyTrainSeat, startIndex, endIndex);
+        if (isChoose) {
+          LOG.info("Select seat");
+          return;
+        } else {
+          LOG.info("Unselect seat");
+          continue;
+        }
+      }
+    }
+  }
+
+  /**
+   * Check seat is sellable in given station range
+   * For example: sell=10001，0-1 has sold, 4-5 has sold
+   * All 0 means sellable in this range; as long as there is a 1, it is not sellable
+   *
+   * For the sell value after purchased, origin value is 10001, station range is 1-4
+   * get sale status for current purchase 01110, then bitwise-AND it with origin value, the sell value becomes 11111
+   */
+  private boolean calSell(DailyTrainSeat dailyTrainSeat, Integer startIndex, Integer endIndex) {
+    // 10001, 00001
+    String sell = dailyTrainSeat.getSell();
+    //  000, 000
+    String sellPart = sell.substring(startIndex, endIndex);
+    if (Integer.parseInt(sellPart) > 0) {
+      LOG.info("Seat {} in the station range {}~{} has been sold, cannot be selected", dailyTrainSeat.getCarriageSeatIndex(), startIndex, endIndex);
+      return false;
+    } else {
+      LOG.info("Seat {} in the station range {}~{} has not been sold, can be selected", dailyTrainSeat.getCarriageSeatIndex(), startIndex, endIndex);
+      //  111, 111
+      String curSell = sellPart.replace('0', '1');
+      // 0111, 0111
+      curSell = StrUtil.fillBefore(curSell, '0', endIndex);
+      // 01110, 01110
+      curSell = StrUtil.fillAfter(curSell, '0', sell.length());
+
+      // bitwise-AND
+      // 11111, 01111
+      int newSellInt = NumberUtil.binaryToInt(curSell) | NumberUtil.binaryToInt(sell);
+      //  11111,  1111
+      String newSell = NumberUtil.getBinaryStr(newSellInt);
+      // 11111, 01111
+      newSell = StrUtil.fillBefore(newSell, '0', sell.length());
+      LOG.info("Seat {} has been selected, origin sell value: {}, station range: {}~{}, current sell value: {}, final sell value: {}"
+          , dailyTrainSeat.getCarriageSeatIndex(), sell, startIndex, endIndex, curSell, newSell);
+      dailyTrainSeat.setSell(newSell);
+      return true;
+
     }
   }
 
