@@ -38,8 +38,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ConfirmOrderService {
-
-  public static final ArrayList<Object> OBJECT = new ArrayList<>();
   private static final Logger LOG = LoggerFactory.getLogger(ConfirmOrderService.class);
 
   @Resource
@@ -54,6 +52,8 @@ public class ConfirmOrderService {
   @Resource
   private DailyTrainSeatService dailyTrainSeatService;
 
+  @Resource
+  private AfterConfirmOrderService afterConfirmOrderService;
 
   public void save(ConfirmOrderDoReq req) {
     DateTime now = DateTime.now();
@@ -191,15 +191,14 @@ public class ConfirmOrderService {
 
     LOG.info("Final seat list: {}", finalSeatList);
 
-    // Seat selection
-    // - Fetch seat data one carriage at a time
-    // - Select seats that meet the criteria; if a carriage doesn’t suffice, move to the next one (all selected seats must be in the same carriage)
-
     // After seats are selected, process the transaction:
     // - Update seat table sell status
     // - Update remaining tickets in the ticket-detail table
     // - Add a purchase record for the member
     // - Update the confirmation order status to "success"
+    afterConfirmOrderService.afterDoConfirm(finalSeatList);
+
+
   }
 
   private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
