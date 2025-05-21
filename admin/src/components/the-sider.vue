@@ -2,7 +2,7 @@
   <a-layout-sider width="200" style="background: #fff">
     <a-menu
         v-model:selectedKeys="selectedKeys"
-        :openKeys="['batch', 'base', 'business']"
+        :openKeys="['batch', 'base', 'business', 'member']"
         mode="inline"
         :style="{ height: '100%', borderRight: 0 }"
     >
@@ -16,6 +16,19 @@
           <user-outlined /> &nbsp; About
         </router-link>
       </a-menu-item>
+      <a-sub-menu key="member">
+        <template #title>
+          <span>
+            <UnorderedListOutlined />
+            Member Management
+          </span>
+        </template>
+        <a-menu-item key="/member/ticket">
+          <router-link to="/member/ticket">
+            <MenuUnfoldOutlined /> Member Tickets
+          </router-link>
+        </a-menu-item>
+      </a-sub-menu>
       <a-sub-menu key="business">
         <template #title>
           <span>
