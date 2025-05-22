@@ -62,5 +62,11 @@
       <groupId>com.github.pagehelper</groupId>
       <artifactId>pagehelper-spring-boot-starter</artifactId>
     </dependency>
+
+    <!-- After SpringBoot 2.4(SpringCloud 2020), dependency should be imported to read bootstrap file -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-bootstrap</artifactId>
+    </dependency>
   </dependencies>
 </project>
