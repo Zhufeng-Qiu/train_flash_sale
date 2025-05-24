@@ -37,14 +37,22 @@ export default defineComponent({
      * Query all the train number for drop-down box
      */
     const queryAllTrain = () => {
-      axios.get("/business/admin/train/query-all").then((response) => {
-        let data = response.data;
-        if (data.success) {
-          trains.value = data.content;
-        } else {
-          notification.error({description: data.message});
-        }
-      });
+      let list = SessionStorage.get(SESSION_ALL_TRAIN);
+      if (Tool.isNotEmpty(list)) {
+        console.log("queryAllTrain load cache");
+        trains.value = list;
+      } else {
+        axios.get("/business/admin/train/query-all").then((response) => {
+          let data = response.data;
+          if (data.success) {
+            trains.value = data.content;
+            console.log("queryAllTrain store cache");
+            SessionStorage.set(SESSION_ALL_TRAIN, trains.value);
+          } else {
+            notification.error({description: data.message});
+          }
+        });
+      }
     };
 
     /**
