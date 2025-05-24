@@ -4,6 +4,56 @@ Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
+<> 2025-05-24T030215.200.json
+
+###
+
+DELETE http://localhost:8000/business/admin/train/delete/123
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T030208.200.json
+
+###
+
+GET http://localhost:8000/business/admin/train/query-all
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T030200.200.json
+
+###
+
+GET http://localhost:8000/business/admin/train/query-all
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T030151.200.json
+
+###
+
+DELETE http://localhost:8000/business/admin/train/delete/1926216831438295040
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T030135.200.json
+
+###
+
+GET http://localhost:8000/business/admin/train/query-all
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
 <> 2025-05-24T025603.200.json
 
 ###
@@ -577,63 +627,6 @@ Accept-Encoding: br,deflate,gzip,x-gzip
 }
 
 <> 2025-05-09T201045.200.json
-
-###
-
-GET http://localhost:8000/batch/admin/job/query
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-09T201041.200.json
-
-###
-
-POST http://localhost:8000/batch/admin/job/add
-Content-Type: application/json
-Content-Length: 138
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-{
-  "name": "com.zephyr.train.batch.job.TestJob",
-  "jobGroupName": "default",
-  "cronExpression": "*/2 * * * * ?",
-  "desc": "test job"
-}
-
-<> 2025-05-09T200956.200.json
-
-###
-
-GET http://localhost:8000/batch/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-08T190904.200.json
-
-###
-
-GET http://localhost:8003/batch/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-08T190901.200.json
-
-###
-
-GET http://localhost:8000/batch/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-08T190831.404.json
 
 ###
 
