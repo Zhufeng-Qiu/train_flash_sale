@@ -21,6 +21,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TrainService {
@@ -76,8 +77,11 @@ public class TrainService {
     trainMapper.deleteByPrimaryKey(id);
   }
 
+  @Transactional
   public List<TrainQueryResp> queryAll() {
     List<Train> trainList = selectAll();
+//     LOG.info("Query again");
+//     trainList = selectAll();
     return BeanUtil.copyToList(trainList, TrainQueryResp.class);
   }
 
