@@ -1,3 +1,93 @@
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list3?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T054332.200.json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list3?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T054244.200.json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list3?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T054030.200.json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T053940.200.json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list2?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T053934.200.json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T051951.200.json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T051943.200.json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T051922.200.json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
+Content-Type: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T051839.200.json
+
+###
+
 GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
 Content-Type: application/json
 Connection: Keep-Alive
@@ -405,96 +495,6 @@ User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2025-05-24T032542.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G1&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T032535.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T032510.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T032504.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T032258.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T032228.200.json
-
-###
-
-GET http://localhost:8000/business/admin/train/query-all
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T030215.200.json
-
-###
-
-DELETE http://localhost:8000/business/admin/train/delete/123
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T030208.200.json
-
-###
-
-GET http://localhost:8000/business/admin/train/query-all
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T030200.200.json
-
-###
-
-GET http://localhost:8000/business/admin/train/query-all
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T030151.200.json
 
 ###
 

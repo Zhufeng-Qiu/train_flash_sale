@@ -18,12 +18,6 @@ public class DailyTrainTicketController {
   @Resource
   private DailyTrainTicketService dailyTrainTicketService;
 
-  @GetMapping("/query-list2")
-  public CommonResp<PageResp<DailyTrainTicketQueryResp>> queryList2(@Valid DailyTrainTicketQueryReq req) {
-    PageResp<DailyTrainTicketQueryResp> list = dailyTrainTicketService.queryList2(req);
-    return new CommonResp<>(list);
-  }
-
   @GetMapping("/query-list")
   public CommonResp<PageResp<DailyTrainTicketQueryResp>> queryList(@Valid DailyTrainTicketQueryReq req) {
     PageResp<DailyTrainTicketQueryResp> list = dailyTrainTicketService.queryList(req);
