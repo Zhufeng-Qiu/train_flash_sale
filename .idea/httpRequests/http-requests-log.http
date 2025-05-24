@@ -1,3 +1,123 @@
+GET http://localhost:8000/business/redis/get/123
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T045947.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T045758.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T045539.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T045440.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T045429.500.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T045407.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T045359.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T044331.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T044127.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T043915.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T043444.200.json
+
+###
+
+GET http://localhost:8000/business/redis/set/123/test1
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-05-24T043303.200.json
+
+###
+
 GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
 Content-Type: application/json
 Connection: Keep-Alive
@@ -375,126 +495,6 @@ User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2025-05-24T024410.200.json
-
-###
-
-GET http://localhost:8000/business/admin/train/query-all
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T024324.200.json
-
-###
-
-GET http://localhost:8000/business/admin/train/query-all
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T024248.200.json
-
-###
-
-GET http://localhost:8000/business/admin/train/query-all
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T024140.200.json
-
-###
-
-GET http://localhost:8000/business/admin/train/query-all
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T024101.200.json
-
-###
-
-GET http://localhost:8000/batch/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-23T165353.200.json
-
-###
-
-GET http://localhost:8003/batch/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-23T165349.200.json
-
-###
-
-GET http://localhost:8001/member/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-21T171040.200.json
-
-###
-
-GET http://localhost:8001/member/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-21T171035.200.json
-
-###
-
-GET http://localhost:8001/member/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-21T171025.200.json
-
-###
-
-GET http://localhost:8001/member/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-21T170918.200.json
-
-###
-
-GET http://localhost:8001/member/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-21T170838.200.json
-
-###
-
-GET http://localhost:8000/member/hello
-Accept: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-21T165431.200.json
 
 ###
 
