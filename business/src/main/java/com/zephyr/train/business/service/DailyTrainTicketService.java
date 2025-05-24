@@ -73,6 +73,20 @@ public class DailyTrainTicketService {
   }
   @Cacheable(value="DailyTrainTicketService.queryList")
   public PageResp<DailyTrainTicketQueryResp> queryList(DailyTrainTicketQueryReq req) {
+    // Common Cache Expire Strategy:
+    // TTL: Time To Live
+    // LRU: Least Recently Used
+    // LFU: Least Frequently Used
+    // FIFO: First In First Out
+    // Random
+
+    // Retrieving data from cache; if the database itself has no data, this leads to cache penetration.
+    // if (Have data) { null []
+    //     return
+    // } else {
+    //     Retrieve data from database
+    // }
+
     DailyTrainTicketExample dailyTrainTicketExample = new DailyTrainTicketExample();
     dailyTrainTicketExample.setOrderByClause("id desc");
     DailyTrainTicketExample.Criteria criteria = dailyTrainTicketExample.createCriteria();
