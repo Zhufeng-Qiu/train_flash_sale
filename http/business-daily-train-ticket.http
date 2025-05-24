@@ -1,0 +1,8 @@
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New%20York%20City
+Content-Type: application/json
+
+###
+
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list2?page=1&size=5&trainCode=G2&start=Seattle&end=New%20York%20City
+Content-Type: application/json
+
