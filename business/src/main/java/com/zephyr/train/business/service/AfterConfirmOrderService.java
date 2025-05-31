@@ -12,13 +12,14 @@ import com.zephyr.train.business.req.ConfirmOrderTicketReq;
 import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.req.MemberTicketReq;
 import com.zephyr.train.common.resp.CommonResp;
+import io.seata.core.context.RootContext;
+import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AfterConfirmOrderService {
@@ -44,8 +45,10 @@ public class AfterConfirmOrderService {
    * - Add a purchase record for the member
    * - Update the confirmation order status to "success"
    */
-  @Transactional
-  public void afterDoConfirm(DailyTrainTicket dailyTrainTicket, List<DailyTrainSeat> finalSeatList, List<ConfirmOrderTicketReq> tickets, ConfirmOrder confirmOrder) {
+//  @Transactional
+  @GlobalTransactional
+  public void afterDoConfirm(DailyTrainTicket dailyTrainTicket, List<DailyTrainSeat> finalSeatList, List<ConfirmOrderTicketReq> tickets, ConfirmOrder confirmOrder) throws Exception {
+    LOG.info("Seata global event ID: {}", RootContext.getXID());
     for (int j = 0; j < finalSeatList.size(); j++) {
       DailyTrainSeat dailyTrainSeat = finalSeatList.get(j);
       DailyTrainSeat seatForUpdate = new DailyTrainSeat();
@@ -129,6 +132,11 @@ public class AfterConfirmOrderService {
       confirmOrderForUpdate.setUpdateTime(new Date());
       confirmOrderForUpdate.setStatus(ConfirmOrderStatusEnum.SUCCESS.getCode());
       confirmOrderMapper.updateByPrimaryKeySelective(confirmOrderForUpdate);
+
+      // Mock exception
+      if (1 == 1) {
+        throw new Exception("Mock exception");
+      }
     }
   }
 }
