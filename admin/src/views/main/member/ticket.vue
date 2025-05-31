@@ -2,6 +2,7 @@
   <p>
     <a-space>
       <a-button type="primary" @click="handleQuery()">Refresh</a-button>
+      
     </a-space>
   </p>
   <a-table :dataSource="tickets"
@@ -12,9 +13,9 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
       </template>
-      <template v-else-if="column.dataIndex === 'col'">
+      <template v-else-if="column.dataIndex === 'seatCol'">
         <span v-for="item in SEAT_COL_ARRAY" :key="item.code">
-          <span v-if="item.code === record.col && item.type === record.seatType">
+          <span v-if="item.code === record.seatCol && item.type === record.seatType">
             {{item.desc}}
           </span>
         </span>
@@ -46,15 +47,15 @@ export default defineComponent({
       memberId: undefined,
       passengerId: undefined,
       passengerName: undefined,
-      date: undefined,
+      trainDate: undefined,
       trainCode: undefined,
       carriageIndex: undefined,
-      row: undefined,
-      col: undefined,
-      start: undefined,
+      seatRow: undefined,
+      seatCol: undefined,
+      startStation: undefined,
       startPinyin: undefined,
       startTime: undefined,
-      end: undefined,
+      endStation: undefined,
       endPinyin: undefined,
       endTime: undefined,
       seatType: undefined,
@@ -71,14 +72,24 @@ export default defineComponent({
     let loading = ref(false);
     const columns = [
     {
+      title: 'Member Id',
+      dataIndex: 'memberId',
+      key: 'memberId',
+    },
+    {
+      title: 'Passenger Id',
+      dataIndex: 'passengerId',
+      key: 'passengerId',
+    },
+    {
       title: 'Passenger Name',
       dataIndex: 'passengerName',
       key: 'passengerName',
     },
     {
       title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
+      dataIndex: 'trainDate',
+      key: 'trainDate',
     },
     {
       title: 'Train Number',
@@ -92,18 +103,18 @@ export default defineComponent({
     },
     {
       title: 'Row',
-      dataIndex: 'row',
-      key: 'row',
+      dataIndex: 'seatRow',
+      key: 'seatRow',
     },
     {
       title: 'Column',
-      dataIndex: 'col',
-      key: 'col',
+      dataIndex: 'seatCol',
+      key: 'seatCol',
     },
     {
       title: 'Departure Station',
-      dataIndex: 'start',
-      key: 'start',
+      dataIndex: 'startStation',
+      key: 'startStation',
     },
     {
       title: 'Departure Station Alias',
@@ -117,8 +128,8 @@ export default defineComponent({
     },
     {
       title: 'Arrival Station',
-      dataIndex: 'end',
-      key: 'end',
+      dataIndex: 'endStation',
+      key: 'endStation',
     },
     {
       title: 'Arrival Station Alias',

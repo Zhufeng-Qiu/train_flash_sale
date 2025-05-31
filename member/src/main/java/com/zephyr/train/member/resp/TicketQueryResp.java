@@ -34,7 +34,7 @@ public class TicketQueryResp {
      * Date
      */
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT-7")
-    private Date date;
+    private Date trainDate;
 
     /**
      * Train Number
@@ -49,17 +49,17 @@ public class TicketQueryResp {
     /**
      * Row|01, 02
      */
-    private String row;
+    private String seatRow;
 
     /**
      * Column|Enum[SeatColEnum]
      */
-    private String col;
+    private String seatCol;
 
     /**
      * Departure Station
      */
-    private String start;
+    private String startStation;
 
     /**
      * Departure Station Alias
@@ -75,7 +75,7 @@ public class TicketQueryResp {
     /**
      * Arrival Station
      */
-    private String end;
+    private String endStation;
 
     /**
      * Arrival Station Alias
@@ -137,12 +137,12 @@ public class TicketQueryResp {
         this.passengerName = passengerName;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getTrainDate() {
+        return trainDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setTrainDate(Date trainDate) {
+        this.trainDate = trainDate;
     }
 
     public String getTrainCode() {
@@ -161,28 +161,28 @@ public class TicketQueryResp {
         this.carriageIndex = carriageIndex;
     }
 
-    public String getRow() {
-        return row;
+    public String getSeatRow() {
+        return seatRow;
     }
 
-    public void setRow(String row) {
-        this.row = row;
+    public void setSeatRow(String seatRow) {
+        this.seatRow = seatRow;
     }
 
-    public String getCol() {
-        return col;
+    public String getSeatCol() {
+        return seatCol;
     }
 
-    public void setCol(String col) {
-        this.col = col;
+    public void setSeatCol(String seatCol) {
+        this.seatCol = seatCol;
     }
 
-    public String getStart() {
-        return start;
+    public String getStartStation() {
+        return startStation;
     }
 
-    public void setStart(String start) {
-        this.start = start;
+    public void setStartStation(String startStation) {
+        this.startStation = startStation;
     }
 
     public String getStartPinyin() {
@@ -201,12 +201,12 @@ public class TicketQueryResp {
         this.startTime = startTime;
     }
 
-    public String getEnd() {
-        return end;
+    public String getEndStation() {
+        return endStation;
     }
 
-    public void setEnd(String end) {
-        this.end = end;
+    public void setEndStation(String endStation) {
+        this.endStation = endStation;
     }
 
     public String getEndPinyin() {
@@ -259,15 +259,15 @@ public class TicketQueryResp {
         sb.append(", memberId=").append(memberId);
         sb.append(", passengerId=").append(passengerId);
         sb.append(", passengerName=").append(passengerName);
-        sb.append(", date=").append(date);
+        sb.append(", trainDate=").append(trainDate);
         sb.append(", trainCode=").append(trainCode);
         sb.append(", carriageIndex=").append(carriageIndex);
-        sb.append(", row=").append(row);
-        sb.append(", col=").append(col);
-        sb.append(", start=").append(start);
+        sb.append(", seatRow=").append(seatRow);
+        sb.append(", seatCol=").append(seatCol);
+        sb.append(", startStation=").append(startStation);
         sb.append(", startPinyin=").append(startPinyin);
         sb.append(", startTime=").append(startTime);
-        sb.append(", end=").append(end);
+        sb.append(", endStation=").append(endStation);
         sb.append(", endPinyin=").append(endPinyin);
         sb.append(", endTime=").append(endTime);
         sb.append(", seatType=").append(seatType);

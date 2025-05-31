@@ -83,10 +83,10 @@ public class ServerGenerator {
     param.put("readOnly", readOnly);
     System.out.println("Assemble parameters: " + param);
 
-    generateOnTemplate(Domain, param, "service", "service");
-    generateOnTemplate(Domain, param, "controller/admin", "adminController");
+//    generateOnTemplate(Domain, param, "service", "service");
+//    generateOnTemplate(Domain, param, "controller/admin", "adminController");
     generateOnTemplate(Domain, param, "req", "saveReq");
-    generateOnTemplate(Domain, param, "req", "queryReq");
+//    generateOnTemplate(Domain, param, "req", "queryReq");
     generateOnTemplate(Domain, param, "resp", "queryResp");
     genVue(do_main, param);
   }
