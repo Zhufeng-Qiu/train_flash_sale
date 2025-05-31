@@ -134,6 +134,7 @@ public class AfterConfirmOrderService {
       confirmOrderMapper.updateByPrimaryKeySelective(confirmOrderForUpdate);
 
       // Mock exception
+      // Thread.sleep(10000);
       if (1 == 1) {
         throw new Exception("Mock exception");
       }
