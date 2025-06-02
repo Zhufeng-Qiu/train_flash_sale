@@ -3,6 +3,7 @@ package com.zephyr.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +59,7 @@ public class ConfirmOrderService {
   @Resource
   private AfterConfirmOrderService afterConfirmOrderService;
 
-  @Resource
+  @Autowired
   private StringRedisTemplate redisTemplate;
 
   public void save(ConfirmOrderDoReq req) {
@@ -100,13 +102,13 @@ public class ConfirmOrderService {
   }
 
   public void doConfirm(ConfirmOrderDoReq req) {
-    String key = req.getDate() + "-" + req.getTrainCode();
-    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(key, key, 5, TimeUnit.SECONDS);
+    String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
+    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
     if (setIfAbsent) {
-      LOG.info("Congratulation, got the lock!");
+      LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);
     } else {
       // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
-      LOG.info("Unfortunately, failed to acquire the lock.\n");
+      LOG.info("Unfortunately, failed to acquire the lock! lockKey：{}", lockKey);
       throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
     }
 
@@ -217,6 +219,9 @@ public class ConfirmOrderService {
       LOG.error("fail to store ticket info", e);
       throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
     }
+
+    LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
+    redisTemplate.delete(lockKey);
   }
 
   private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
