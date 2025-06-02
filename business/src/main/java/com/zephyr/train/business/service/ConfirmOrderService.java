@@ -94,7 +94,7 @@ public class ConfirmOrderService {
     confirmOrderMapper.deleteByPrimaryKey(id);
   }
 
-  public void doConfirm(ConfirmOrderDoReq req) {
+  public synchronized void doConfirm(ConfirmOrderDoReq req) {
     // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice TO-DO
 
     Date date = req.getDate();
