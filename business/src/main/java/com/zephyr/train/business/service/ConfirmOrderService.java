@@ -32,8 +32,10 @@ import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,6 +56,9 @@ public class ConfirmOrderService {
 
   @Resource
   private AfterConfirmOrderService afterConfirmOrderService;
+
+  @Resource
+  private StringRedisTemplate redisTemplate;
 
   public void save(ConfirmOrderDoReq req) {
     DateTime now = DateTime.now();
@@ -94,7 +99,17 @@ public class ConfirmOrderService {
     confirmOrderMapper.deleteByPrimaryKey(id);
   }
 
-  public synchronized void doConfirm(ConfirmOrderDoReq req) {
+  public void doConfirm(ConfirmOrderDoReq req) {
+    String key = req.getDate() + "-" + req.getTrainCode();
+    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(key, key, 5, TimeUnit.SECONDS);
+    if (setIfAbsent) {
+      LOG.info("Congratulation, got the lock!");
+    } else {
+      // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
+      LOG.info("Unfortunately, failed to acquire the lock.\n");
+      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+    }
+
     // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice TO-DO
 
     Date date = req.getDate();

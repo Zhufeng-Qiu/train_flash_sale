@@ -13,6 +13,7 @@ public enum BusinessExceptionEnum {
 
   CONFIRM_ORDER_TICKET_COUNT_ERROR("No enough remaining tickets available"),
   CONFIRM_ORDER_EXCEPTION("Server busy, try later"),
+  CONFIRM_ORDER_LOCK_FAIL("Too many people are trying to grab tickets. Please try again later."),
   ;
 
   private String desc;
