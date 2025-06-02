@@ -1,5 +1,6 @@
 -- -------------------------------- The script used when storeMode is 'db' --------------------------------
 -- the table to store GlobalSession data
+drop table if exists `global_table`;
 CREATE TABLE IF NOT EXISTS `global_table`
 (
     `xid`                       VARCHAR(128) NOT NULL,
@@ -20,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `global_table`
     DEFAULT CHARSET = utf8mb4;
 
 -- the table to store BranchSession data
+drop table if exists `branch_table`;
 CREATE TABLE IF NOT EXISTS `branch_table`
 (
     `branch_id`         BIGINT       NOT NULL,
@@ -39,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `branch_table`
     DEFAULT CHARSET = utf8mb4;
 
 -- the table to store lock data
+drop table if exists `lock_table`;
 CREATE TABLE IF NOT EXISTS `lock_table`
 (
     `row_key`        VARCHAR(128) NOT NULL,
@@ -58,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `lock_table`
     ) ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4;
 
+drop table if exists `distributed_lock`;
 CREATE TABLE IF NOT EXISTS `distributed_lock`
 (
     `lock_key`       CHAR(20) NOT NULL,

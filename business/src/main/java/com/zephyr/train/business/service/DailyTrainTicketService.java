@@ -71,7 +71,7 @@ public class DailyTrainTicketService {
   public PageResp<DailyTrainTicketQueryResp> queryList2(DailyTrainTicketQueryReq req) {
     return queryList(req);
   }
-  @Cacheable(value="DailyTrainTicketService.queryList")
+//  @Cacheable(value="DailyTrainTicketService.queryList")
   public PageResp<DailyTrainTicketQueryResp> queryList(DailyTrainTicketQueryReq req) {
     // Common Cache Expire Strategy:
     // TTL: Time To Live

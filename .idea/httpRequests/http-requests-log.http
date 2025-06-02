@@ -1,3 +1,90 @@
+POST http://localhost:8000/business/confirm-order/do
+Content-Type: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDg3NjUzNDcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDg4NTE3NDcsImlhdCI6MTc0ODc2NTM0N30.g27QAsMT0baSDs6kmEeG-gvg3__z30keAp3DtiKXc34
+Content-Length: 352
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "dailyTrainTicketId": 1925007629416009700,
+  "date": 1747724400000,
+  "end": "New York City",
+  "start": "Los Angeles",
+  "tickets": [
+    {
+      "passengerId": 1918926588892811300,
+      "passengerIdCard": "passenger_id7",
+      "passengerName": "passenger7",
+      "passengerType": "1",
+      "seatTypeCode": "2"
+    }
+  ],
+  "trainCode": "G2"
+}
+
+<> 2025-06-01T011457.200.json
+
+###
+
+POST http://localhost:8000/business/confirm-order/do
+Content-Type: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDg3NjUzNDcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDg4NTE3NDcsImlhdCI6MTc0ODc2NTM0N30.g27QAsMT0baSDs6kmEeG-gvg3__z30keAp3DtiKXc34
+Content-Length: 352
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "dailyTrainTicketId": 1925007629416009700,
+  "date": 1747724400000,
+  "end": "New York City",
+  "start": "Los Angeles",
+  "tickets": [
+    {
+      "passengerId": 1918926588892811300,
+      "passengerIdCard": "passenger_id7",
+      "passengerName": "passenger7",
+      "passengerType": "1",
+      "seatTypeCode": "2"
+    }
+  ],
+  "trainCode": "G2"
+}
+
+<> 2025-06-01T011405.200.json
+
+###
+
+POST http://localhost:8000/business/confirm-order/do
+Content-Type: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDg3NjUzNDcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDg4NTE3NDcsImlhdCI6MTc0ODc2NTM0N30.g27QAsMT0baSDs6kmEeG-gvg3__z30keAp3DtiKXc34
+Content-Length: 352
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "dailyTrainTicketId": 1925007629416009700,
+  "date": 1747724400000,
+  "end": "New York City",
+  "start": "Los Angeles",
+  "tickets": [
+    {
+      "passengerId": 1918926588892811300,
+      "passengerIdCard": "passenger_id7",
+      "passengerName": "passenger7",
+      "passengerType": "1",
+      "seatTypeCode": "2"
+    }
+  ],
+  "trainCode": "G2"
+}
+
+<> 2025-06-01T011342.200.json
+
+###
+
 GET http://localhost:8000/business/admin/daily-train-ticket/query-list3?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
 Content-Type: application/json
 Connection: Keep-Alive
@@ -465,36 +552,6 @@ User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2025-05-24T033343.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=2&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T032630.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T032554.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G1&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T032542.200.json
 
 ###
 
