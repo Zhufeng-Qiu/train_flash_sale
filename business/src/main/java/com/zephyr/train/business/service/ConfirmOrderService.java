@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +63,9 @@ public class ConfirmOrderService {
 
   @Autowired
   private StringRedisTemplate redisTemplate;
+
+  @Autowired
+  private RedissonClient redissonClient;
 
   public void save(ConfirmOrderDoReq req) {
     DateTime now = DateTime.now();
@@ -103,125 +108,158 @@ public class ConfirmOrderService {
 
   public void doConfirm(ConfirmOrderDoReq req) {
     String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
-    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
-    if (setIfAbsent) {
-      LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);
-    } else {
-      // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
-      LOG.info("Unfortunately, failed to acquire the lock! lockKey：{}", lockKey);
-      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
-    }
+//    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
+//    if (setIfAbsent) {
+//      LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);
+//    } else {
+//      // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
+//      LOG.info("Unfortunately, failed to acquire the lock! lockKey：{}", lockKey);
+//      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+//    }
 
-    // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice TO-DO
+    RLock lock = null;
 
-    Date date = req.getDate();
-    String trainCode = req.getTrainCode();
-    String start = req.getStart();
-    String end = req.getEnd();
-    List<ConfirmOrderTicketReq> tickets = req.getTickets();
+    try {
+      // Use redisson built-in watchdog
+      lock = redissonClient.getLock(lockKey);
+      /**
+        waitTime: the maximum time to acquire the lock
+        leaseTime: lease time
+        timeUnit: time unit
+       */
+      // boolean tryLock = lock.tryLock(30, 10, TimeUnit.SECONDS); // without watchdog
+      boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS); // with watchdog
+      if (tryLock) {
+        LOG.info("Congratulation, got the lock!");
+         // Test redisson watchdog
+//         for (int i = 0; i < 30; i++) {
+//             Long expire = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
+//             LOG.info("Lock expire time: {}", expire);
+//             Thread.sleep(1000);
+//         }
+      } else {
+        // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
+        LOG.info("Unfortunately, failed to acquire the lock!");
+        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+      }
+      // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice TO-DO
 
-    // Save the confirmation order record with initial status
-    DateTime now = DateTime.now();
-    ConfirmOrder confirmOrder = new ConfirmOrder();
-    confirmOrder.setId(SnowUtil.getSnowflakeNextId());
-    confirmOrder.setCreateTime(now);
-    confirmOrder.setUpdateTime(now);
-    confirmOrder.setMemberId(LoginMemberContext.getId());
-    confirmOrder.setDate(date);
-    confirmOrder.setTrainCode(trainCode);
-    confirmOrder.setStart(start);
-    confirmOrder.setEnd(end);
-    confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
-    confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
-    confirmOrder.setTickets(JSON.toJSONString(tickets));
-    confirmOrderMapper.insert(confirmOrder);
+      Date date = req.getDate();
+      String trainCode = req.getTrainCode();
+      String start = req.getStart();
+      String end = req.getEnd();
+      List<ConfirmOrderTicketReq> tickets = req.getTickets();
 
-    // Retrieve the remaining-ticket record to get the actual inventory
-    DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
-    LOG.info("Retrieve remaining tickets: {}", dailyTrainTicket);
+      // Save the confirmation order record with initial status
+      DateTime now = DateTime.now();
+      ConfirmOrder confirmOrder = new ConfirmOrder();
+      confirmOrder.setId(SnowUtil.getSnowflakeNextId());
+      confirmOrder.setCreateTime(now);
+      confirmOrder.setUpdateTime(now);
+      confirmOrder.setMemberId(LoginMemberContext.getId());
+      confirmOrder.setDate(date);
+      confirmOrder.setTrainCode(trainCode);
+      confirmOrder.setStart(start);
+      confirmOrder.setEnd(end);
+      confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
+      confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
+      confirmOrder.setTickets(JSON.toJSONString(tickets));
+      confirmOrderMapper.insert(confirmOrder);
 
-    // Decrement the remaining-ticket count and verify availability
-    reduceTickets(req, dailyTrainTicket);
+      // Retrieve the remaining-ticket record to get the actual inventory
+      DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
+      LOG.info("Retrieve remaining tickets: {}", dailyTrainTicket);
 
-    // Final seat list
-    List<DailyTrainSeat> finalSeatList = new ArrayList<>();
-    // Calculate offsets relative to the first seat
-    // For example, if the selected seats are C1 and D2 (ACDF), the offsets are: [0, 5]
-    // For example, if the selected seats are A1, B1, and C1 (ABCDF), the offsets are: [0, 1, 2]
-    ConfirmOrderTicketReq ticketReq0 = tickets.get(0);
-    if(StrUtil.isNotBlank(ticketReq0.getSeat())) {
-      LOG.info("This order requires seat selection");
-      // Determine which columns are included in the seat type for this selection, to calculate each selected seat’s offset relative to the first seat
-      List<SeatColEnum> colEnumList = SeatColEnum.getColsByType(ticketReq0.getSeatTypeCode());
-      LOG.info("Seat Columns included in seat type for this order: {}", colEnumList);
+      // Decrement the remaining-ticket count and verify availability
+      reduceTickets(req, dailyTrainTicket);
 
-      // Build a reference seat list matching the two-row seat-selection layout on the front end, e.g. referSeatList = {A1, C1, D1, F1, A2, C2, D2, F2}
-      List<String> referSeatList = new ArrayList<>();
-      for (int i = 1; i <= 2; i++) {
-        for (SeatColEnum seatColEnum : colEnumList) {
-          referSeatList.add(seatColEnum.getCode() + i);
+      // Final seat list
+      List<DailyTrainSeat> finalSeatList = new ArrayList<>();
+      // Calculate offsets relative to the first seat
+      // For example, if the selected seats are C1 and D2 (ACDF), the offsets are: [0, 5]
+      // For example, if the selected seats are A1, B1, and C1 (ABCDF), the offsets are: [0, 1, 2]
+      ConfirmOrderTicketReq ticketReq0 = tickets.get(0);
+      if(StrUtil.isNotBlank(ticketReq0.getSeat())) {
+        LOG.info("This order requires seat selection");
+        // Determine which columns are included in the seat type for this selection, to calculate each selected seat’s offset relative to the first seat
+        List<SeatColEnum> colEnumList = SeatColEnum.getColsByType(ticketReq0.getSeatTypeCode());
+        LOG.info("Seat Columns included in seat type for this order: {}", colEnumList);
+
+        // Build a reference seat list matching the two-row seat-selection layout on the front end, e.g. referSeatList = {A1, C1, D1, F1, A2, C2, D2, F2}
+        List<String> referSeatList = new ArrayList<>();
+        for (int i = 1; i <= 2; i++) {
+          for (SeatColEnum seatColEnum : colEnumList) {
+            referSeatList.add(seatColEnum.getCode() + i);
+          }
         }
-      }
-      LOG.info("Reference two-row seat list: {}", referSeatList);
+        LOG.info("Reference two-row seat list: {}", referSeatList);
 
-      List<Integer> offsetList = new ArrayList<>();
-      // Absolute offset value, i.e., the position within the reference seat list
-      List<Integer> aboluteOffsetList = new ArrayList<>();
-      for (ConfirmOrderTicketReq ticketReq : tickets) {
-        int index = referSeatList.indexOf(ticketReq.getSeat());
-        aboluteOffsetList.add(index);
-      }
-      LOG.info("Absolute offset value for all seats: {}", aboluteOffsetList);
-      for (Integer index : aboluteOffsetList) {
-        int offset = index - aboluteOffsetList.get(0);
-        offsetList.add(offset);
-      }
-      LOG.info("Calculate the relative offset values of all seats relative to the first seat: {}", offsetList);
+        List<Integer> offsetList = new ArrayList<>();
+        // Absolute offset value, i.e., the position within the reference seat list
+        List<Integer> aboluteOffsetList = new ArrayList<>();
+        for (ConfirmOrderTicketReq ticketReq : tickets) {
+          int index = referSeatList.indexOf(ticketReq.getSeat());
+          aboluteOffsetList.add(index);
+        }
+        LOG.info("Absolute offset value for all seats: {}", aboluteOffsetList);
+        for (Integer index : aboluteOffsetList) {
+          int offset = index - aboluteOffsetList.get(0);
+          offsetList.add(offset);
+        }
+        LOG.info("Calculate the relative offset values of all seats relative to the first seat: {}", offsetList);
 
-      getSeat(
-          finalSeatList,
-          date,
-          trainCode,
-          ticketReq0.getSeatTypeCode(),
-          ticketReq0.getSeat().split("")[0], // A1 -> A
-          offsetList,
-          dailyTrainTicket.getStartIndex(),
-          dailyTrainTicket.getEndIndex()
-      );
-
-    } else {
-      LOG.info("This order does not require seat selection");
-
-      for (ConfirmOrderTicketReq ticketReq : tickets) {
         getSeat(
             finalSeatList,
             date,
             trainCode,
-            ticketReq.getSeatTypeCode(),
-            null,
-            null,
+            ticketReq0.getSeatTypeCode(),
+            ticketReq0.getSeat().split("")[0], // A1 -> A
+            offsetList,
             dailyTrainTicket.getStartIndex(),
             dailyTrainTicket.getEndIndex()
         );
+
+      } else {
+        LOG.info("This order does not require seat selection");
+
+        for (ConfirmOrderTicketReq ticketReq : tickets) {
+          getSeat(
+              finalSeatList,
+              date,
+              trainCode,
+              ticketReq.getSeatTypeCode(),
+              null,
+              null,
+              dailyTrainTicket.getStartIndex(),
+              dailyTrainTicket.getEndIndex()
+          );
+        }
+      }
+
+      LOG.info("Final seat list: {}", finalSeatList);
+
+      // After seats are selected, process the transaction:
+      // - Update seat table sell status
+      // - Update remaining tickets in the ticket-detail table
+      // - Add a purchase record for the member
+      // - Update the confirmation order status to "success"
+      try {
+        afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets, confirmOrder);
+      } catch (Exception e) {
+        LOG.error("fail to store ticket info", e);
+        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
+      }
+
+//      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
+//      redisTemplate.delete(lockKey);
+    } catch (InterruptedException e) {
+      LOG.error("Purchase exception", e);
+    } finally {
+      LOG.info("Purchase process completed, release lock!");
+      if (null != lock && lock.isHeldByCurrentThread()) {
+        lock.unlock();
       }
     }
-
-    LOG.info("Final seat list: {}", finalSeatList);
-
-    // After seats are selected, process the transaction:
-    // - Update seat table sell status
-    // - Update remaining tickets in the ticket-detail table
-    // - Add a purchase record for the member
-    // - Update the confirmation order status to "success"
-    try {
-      afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets, confirmOrder);
-    } catch (Exception e) {
-      LOG.error("fail to store ticket info", e);
-      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
-    }
-
-    LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
-    redisTemplate.delete(lockKey);
   }
 
   private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {

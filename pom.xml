@@ -100,6 +100,12 @@
         <scope>import</scope>
       </dependency>
 
+      <!-- At least 3.18.0 version to support spring boot 3 -->
+      <dependency>
+        <groupId>org.redisson</groupId>
+        <artifactId>redisson-spring-boot-starter</artifactId>
+        <version>3.21.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
