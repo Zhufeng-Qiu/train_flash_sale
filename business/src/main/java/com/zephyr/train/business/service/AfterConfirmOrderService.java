@@ -12,7 +12,6 @@ import com.zephyr.train.business.req.ConfirmOrderTicketReq;
 import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.req.MemberTicketReq;
 import com.zephyr.train.common.resp.CommonResp;
-import io.seata.core.context.RootContext;
 import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +46,7 @@ public class AfterConfirmOrderService {
 //  @Transactional
 //  @GlobalTransactional
   public void afterDoConfirm(DailyTrainTicket dailyTrainTicket, List<DailyTrainSeat> finalSeatList, List<ConfirmOrderTicketReq> tickets, ConfirmOrder confirmOrder) throws Exception {
-    LOG.info("Seata global event ID: {}", RootContext.getXID());
+//    LOG.info("Seata global event ID: {}", RootContext.getXID());
     for (int j = 0; j < finalSeatList.size(); j++) {
       DailyTrainSeat dailyTrainSeat = finalSeatList.get(j);
       DailyTrainSeat seatForUpdate = new DailyTrainSeat();
