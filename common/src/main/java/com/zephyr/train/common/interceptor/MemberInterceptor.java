@@ -23,6 +23,7 @@ public class MemberInterceptor implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    LOG.info("MemberInterceptor starts");
     // Retrieve token parameter from request header
     String token = request.getHeader("token");
     if (StrUtil.isNotBlank(token)) {
@@ -32,6 +33,7 @@ public class MemberInterceptor implements HandlerInterceptor {
       MemberLoginResp member = JSONUtil.toBean(loginMember, MemberLoginResp.class);
       LoginMemberContext.setMember(member);
     }
+    LOG.info("MemberInterceptor ends");
     return true;
   }
 
