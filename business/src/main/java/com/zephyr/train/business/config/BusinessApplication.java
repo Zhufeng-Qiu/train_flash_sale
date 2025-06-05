@@ -1,6 +1,11 @@
 package com.zephyr.train.business.config;
 
 
+import com.alibaba.csp.sentinel.slots.block.RuleConstant;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
+import java.util.ArrayList;
+import java.util.List;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,5 +30,20 @@ public class BusinessApplication {
     Environment env = app.run(args).getEnvironment();
     LOG.info("Launch successfully!");
     LOG.info("Test Address: \thttp://127.0.0.1:{}{}/hello", env.getProperty("server.port"), env.getProperty("server.servlet.context-path"));
+
+    // Rate limiting rule
+    initFlowRules();
+    LOG.info("Rate limiting rule defined");
+  }
+
+  private static void initFlowRules(){
+    List<FlowRule> rules = new ArrayList<>();
+    FlowRule rule = new FlowRule();
+    rule.setResource("doConfirm");
+    rule.setGrade(RuleConstant.FLOW_GRADE_QPS);
+    // Set limit QPS to 20.
+    rule.setCount(1);
+    rules.add(rule);
+    FlowRuleManager.loadRules(rules);
   }
 }
