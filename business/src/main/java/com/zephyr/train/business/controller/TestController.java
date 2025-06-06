@@ -1,23 +1,28 @@
 package com.zephyr.train.business.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.zephyr.train.business.service.TestService;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TestController {
 
+  @Resource
+  private TestService testService;
+
   @SentinelResource("hello")
   @GetMapping("/hello")
   public String hello() throws InterruptedException {
-     Thread.sleep(500);
-    return "Hello World! Business";
+    testService.hello2();
+    return "Hello World! Business!";
   }
 
   @SentinelResource("hello1")
   @GetMapping("/hello1")
   public String hello1() throws InterruptedException {
-     Thread.sleep(500);
-    return "Hello World! Business1";
+    testService.hello2();
+    return "Hello World! Business1!";
   }
 }
