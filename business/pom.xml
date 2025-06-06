@@ -64,7 +64,7 @@
       <artifactId>redisson-spring-boot-starter</artifactId>
     </dependency>
 
-    <!-- Rate limiting and circuit breaking -->
+    <!-- Flow limiting and degrade -->
     <dependency>
       <groupId>com.alibaba.cloud</groupId>
       <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>

@@ -1,3 +1,13 @@
+GET http://localhost:8003/batch/hello
+Accept: application/json
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-06T020717.200.json
+
+###
+
 GET http://localhost:8002/business/hello
 Accept: application/json
 Connection: Keep-Alive
@@ -542,16 +552,6 @@ User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2025-05-24T033358.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=2&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T033349.200.json
 
 ###
 
