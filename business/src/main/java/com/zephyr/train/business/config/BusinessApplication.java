@@ -31,9 +31,9 @@ public class BusinessApplication {
     LOG.info("Launch successfully!");
     LOG.info("Test Address: \thttp://127.0.0.1:{}{}/hello", env.getProperty("server.port"), env.getProperty("server.servlet.context-path"));
 
-    // Rate limiting rule
-    initFlowRules();
-    LOG.info("Rate limiting rule defined");
+    // Flow limiting rule
+//    initFlowRules();
+//    LOG.info("Flow limiting rule defined");
   }
 
   private static void initFlowRules(){
