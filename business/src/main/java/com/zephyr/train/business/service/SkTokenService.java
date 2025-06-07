@@ -2,6 +2,7 @@ package com.zephyr.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -14,6 +15,7 @@ import com.zephyr.train.business.req.SkTokenQueryReq;
 import com.zephyr.train.business.req.SkTokenSaveReq;
 import com.zephyr.train.business.resp.SkTokenQueryResp;
 import jakarta.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,43 @@ public class SkTokenService {
 
   @Resource
   private SkTokenMapper skTokenMapper;
+
+  @Resource
+  private DailyTrainSeatService dailyTrainSeatService;
+
+  @Resource
+  private DailyTrainStationService dailyTrainStationService;
+
+  /**
+   * Initialization
+   */
+  public void genDaily(Date date, String trainCode) {
+    LOG.info("Delete token records of train[{}] for date[{}]", trainCode, DateUtil.formatDate(date));
+    SkTokenExample skTokenExample = new SkTokenExample();
+    skTokenExample.createCriteria().andDateEqualTo(date).andTrainCodeEqualTo(trainCode);
+    skTokenMapper.deleteByExample(skTokenExample);
+
+    DateTime now = DateTime.now();
+    SkToken skToken = new SkToken();
+    skToken.setDate(date);
+    skToken.setTrainCode(trainCode);
+    skToken.setId(SnowUtil.getSnowflakeNextId());
+    skToken.setCreateTime(now);
+    skToken.setUpdateTime(now);
+
+    int seatCount = dailyTrainSeatService.countSeat(date, trainCode);
+    LOG.info("Seat number of train[{}]: {}", trainCode, seatCount);
+
+    long stationCount = dailyTrainStationService.countByTrainCode(date, trainCode);
+    LOG.info("Station number of train[{}]: {}", trainCode, stationCount);
+
+    // The ratio "3/4" value should be set according to the actual ticket‐selling case; a single train can sell at most seatCount * (stationCount – 1) tickets.
+    int count = (int) (seatCount * (stationCount - 1) * 3/4);
+    LOG.info("Initialized token number of train[{}]: {}", trainCode, count);
+    skToken.setCount(count);
+
+    skTokenMapper.insert(skToken);
+  }
 
   public void save(SkTokenSaveReq req) {
     DateTime now = DateTime.now();

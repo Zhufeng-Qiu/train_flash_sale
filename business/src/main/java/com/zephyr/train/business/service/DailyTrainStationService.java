@@ -110,4 +110,16 @@ public class DailyTrainStationService {
 
     LOG.info("Generate station info of train[{}] for date[{}] completed", trainCode, DateUtil.formatDate(date));
   }
+
+  /**
+   * Query all stations according to train number
+   */
+  public long countByTrainCode(Date date, String trainCode) {
+    DailyTrainStationExample example = new DailyTrainStationExample();
+    example.createCriteria()
+        .andDateEqualTo(date)
+        .andTrainCodeEqualTo(trainCode);
+    long stationCount = dailyTrainStationMapper.countByExample(example);
+    return stationCount;
+  }
 }

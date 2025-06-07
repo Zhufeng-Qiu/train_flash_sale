@@ -47,6 +47,9 @@ public class DailyTrainService {
   @Resource
   private DailyTrainTicketService dailyTrainTicketService;
 
+  @Resource
+  private SkTokenService skTokenService;
+
   public void save(DailyTrainSaveReq req) {
     DateTime now = DateTime.now();
     DailyTrain dailyTrain = BeanUtil.copyProperties(req, DailyTrain.class);
@@ -139,6 +142,9 @@ public class DailyTrainService {
 
     // Generate remaining ticket info for current train
     dailyTrainTicketService.genDaily(dailyTrain, date, train.getCode());
+
+    // Generate remaining token info for current train
+    skTokenService.genDaily(date, train.getCode());
 
     LOG.info("Generate info of train[{}] for date[{}] completed", train.getCode(), DateUtil.formatDate(date));
   }
