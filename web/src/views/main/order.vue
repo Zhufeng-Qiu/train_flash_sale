@@ -53,7 +53,7 @@
   <a-modal v-model:visible="visible" title="Please check the following infomation"
            style="top: 50px; width: 800px"
            ok-text="Confirm" cancel-text="Cancel"
-           @ok="handleOk">
+           @ok="showImageCodeModal">
     <div class="order-tickets">
       <a-row class="order-tickets-header" v-if="tickets.length > 0">
         <a-col :span="5">Passenger</a-col>
@@ -94,11 +94,25 @@
         </div>
         <div style="color: #999999">Note: you can choose {{tickets.length}} seats</div>
       </div>
-      <br/>
-      最终购票：{{tickets}}
-      <br/>
-      最终选座：{{chooseSeatObj}}
+<!--      <br/>-->
+<!--      最终购票：{{tickets}}-->
+<!--      <br/>-->
+<!--      最终选座：{{chooseSeatObj}}-->
     </div>
+  </a-modal>
+
+  <!-- CAPTCA -->
+  <a-modal v-model:visible="imageCodeModalVisible" :title="null" :footer="null" :closable="false"
+           style="top: 50px; width: 400px">
+    <p style="text-align: center; font-weight: bold; font-size: 18px">Use CAPTCHA to mitigate sudden traffic spikes</p>
+    <p>
+      <a-input v-model:value="imageCode" placeholder="CAPTCHA">
+        <template #suffix>
+          <img v-show="!!imageCodeSrc" :src="imageCodeSrc" alt="CAPTCHA" v-on:click="loadImageCode()"/>
+        </template>
+      </a-input>
+    </p>
+    <a-button type="danger" block @click="handleOk">Place order after inputting CAPTCHA</a-button>
   </a-modal>
 </template>
 
@@ -286,6 +300,11 @@ export default defineComponent({
     };
 
     const handleOk = () => {
+      if (Tool.isEmpty(imageCode.value)) {
+        notification.error({description: 'CAPTCHA cannot be empty'});
+        return;
+      }
+
       console.log("Selected seats: ", chooseSeatObj.value);
 
       // Set seat for each ticket
@@ -329,6 +348,25 @@ export default defineComponent({
       });
     }
 
+    /* ------------------- 验证码 --------------------- */
+    const imageCodeModalVisible = ref();
+    const imageCodeToken = ref();
+    const imageCodeSrc = ref();
+    const imageCode = ref();
+
+    /**
+     * Load CAPTCHA
+     */
+    const loadImageCode = () => {
+      imageCodeToken.value = Tool.uuid(8);
+      imageCodeSrc.value = process.env.VUE_APP_SERVER + '/business/kaptcha/image-code/' + imageCodeToken.value;
+    };
+
+    const showImageCodeModal = () => {
+      loadImageCode();
+      imageCodeModalVisible.value = true;
+    };
+
     onMounted(() => {
       handleQueryPassenger();
     });
@@ -346,7 +384,13 @@ export default defineComponent({
       chooseSeatType,
       chooseSeatObj,
       SEAT_COL_ARRAY,
-      handleOk
+      handleOk,
+      imageCodeToken,
+      imageCodeSrc,
+      imageCode,
+      showImageCodeModal,
+      imageCodeModalVisible,
+      loadImageCode
     };
   },
 });
