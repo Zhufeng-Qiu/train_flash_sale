@@ -52,4 +52,15 @@ public class ControllerExceptionHandler {
     commonResp.setMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     return commonResp;
   }
+
+  /**
+   * Unified handling of validation exceptions
+   * @param e
+   * @return
+   */
+  @ExceptionHandler(value = RuntimeException.class)
+  @ResponseBody
+  public CommonResp exceptionHandler(RuntimeException e) {
+    throw e;
+  }
 }
