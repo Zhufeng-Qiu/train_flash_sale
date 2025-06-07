@@ -18,8 +18,11 @@ import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,6 +41,9 @@ public class SkTokenService {
 
   @Resource
   private SkTokenMapperCust skTokenMapperCust;
+
+  @Autowired
+  private StringRedisTemplate redisTemplate;
 
   /**
    * Initialization
@@ -110,10 +116,21 @@ public class SkTokenService {
   }
 
   /**
-   * Get token
+   * Validate token
    */
   public boolean validSkToken(Date date, String trainCode, Long memberId) {
     LOG.info("Member[{}] starts to get the token of train[{}] for date[{}]", memberId, trainCode, DateUtil.formatDate(date));
+
+    // First acquire the token lock, then verify the remaining token count to prevent bots from snatching tickets. The 'lockKey' itself serves as the token — a credential that indicates who is allowed to do what.
+    String lockKey = DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
+    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
+    if (Boolean.TRUE.equals(setIfAbsent)) {
+      LOG.info("Congratulation, got the token lock! lockKey：{}", lockKey);
+    } else {
+      LOG.info("Unfortunately, failed to acquire the token lock! lockKey：{}", lockKey);
+      return false;
+    }
+
     // Tokens roughly represent the inventory. Once the tokens are exhausted, ticket sales stop and there is no need to enter the main purchase flow to check stock, since checking tokens is definitely more efficient than checking inventory.
     int updateCount = skTokenMapperCust.decrease(date, trainCode);
     if (updateCount > 0) {
