@@ -1,6 +1,7 @@
 package com.zephyr.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -8,7 +9,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zephyr.train.business.domain.SkToken;
 import com.zephyr.train.business.domain.SkTokenExample;
-import com.zephyr.train.business.enums.LockKeyPreEnum;
+import com.zephyr.train.business.enums.RedisKeyPreEnum;
 import com.zephyr.train.business.mapper.SkTokenMapper;
 import com.zephyr.train.business.mapper.cust.SkTokenMapperCust;
 import com.zephyr.train.business.req.SkTokenQueryReq;
@@ -125,7 +126,7 @@ public class SkTokenService {
     LOG.info("Member[{}] starts to get the token of train[{}] for date[{}]", memberId, trainCode, DateUtil.formatDate(date));
 
     // First acquire the token lock, then verify the remaining token count to prevent bots from snatching tickets. The 'lockKey' itself serves as the token — a credential that indicates who is allowed to do what.
-    String lockKey = LockKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
+    String lockKey = RedisKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
     Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
     if (Boolean.TRUE.equals(setIfAbsent)) {
       LOG.info("Congratulation, got the token lock! lockKey：{}", lockKey);
@@ -134,12 +135,58 @@ public class SkTokenService {
       return false;
     }
 
-    // Tokens roughly represent the inventory. Once the tokens are exhausted, ticket sales stop and there is no need to enter the main purchase flow to check stock, since checking tokens is definitely more efficient than checking inventory.
-    int updateCount = skTokenMapperCust.decrease(date, trainCode);
-    if (updateCount > 0) {
-      return true;
+    // redis cache + database
+    String skTokenCountKey = RedisKeyPreEnum.SK_TOKEN_COUNT + "-" + DateUtil.formatDate(date) + "-" + trainCode;
+    Object skTokenCount = redisTemplate.opsForValue().get(skTokenCountKey);
+    if (skTokenCount != null) {
+      LOG.info("The cache key for this train’s token gate: {}", skTokenCountKey);
+      Long count = redisTemplate.opsForValue().decrement(skTokenCountKey, 1);
+      if (count < 0L) {
+        LOG.error("Fail to get token: {}", skTokenCountKey);
+        return false;
+      } else {
+        LOG.info("After getting token, remaining token number: {}", count);
+        redisTemplate.expire(skTokenCountKey, 60, TimeUnit.SECONDS);
+        // Update database after getting 5 tokens
+        if (count % 5 == 0) {
+          skTokenMapperCust.set(date, trainCode, count.intValue());
+        }
+        return true;
+      }
     } else {
-      return false;
+      LOG.info("No cache key for this train’s token gate: {}", skTokenCountKey);
+      // Check if there are tokens remaining
+      SkTokenExample skTokenExample = new SkTokenExample();
+      skTokenExample.createCriteria().andDateEqualTo(date).andTrainCodeEqualTo(trainCode);
+      List<SkToken> tokenCountList = skTokenMapper.selectByExample(skTokenExample);
+      if (CollUtil.isEmpty(tokenCountList)) {
+        LOG.info("Fail to find token record of train[{}] for date[{}]", trainCode, DateUtil.formatDate(date));
+        return false;
+      }
+
+      SkToken skToken = tokenCountList.get(0);
+      if (skToken.getCount() <= 0) {
+        LOG.info("Token of train[{}] for date[{}] is 0",  trainCode, DateUtil.formatDate(date));
+        return false;
+      }
+
+      // There are tokens remaining
+      // token - 1
+      Integer count = skToken.getCount() - 1;
+      skToken.setCount(count);
+      LOG.info("Store token gate of this train in cache, key: {}, count: {}", skTokenCountKey, count);
+      // No need to update database, just modify cache
+      redisTemplate.opsForValue().set(skTokenCountKey, String.valueOf(count), 60, TimeUnit.SECONDS);
+//      skTokenMapper.updateByPrimaryKey(skToken);
+      return true;
     }
+
+//    // Tokens roughly represent the inventory. Once the tokens are exhausted, ticket sales stop and there is no need to enter the main purchase flow to check stock, since checking tokens is definitely more efficient than checking inventory.
+//    int updateCount = skTokenMapperCust.decrease(date, trainCode, 1);
+//    if (updateCount > 0) {
+//      return true;
+//    } else {
+//      return false;
+//    }
   }
 }
