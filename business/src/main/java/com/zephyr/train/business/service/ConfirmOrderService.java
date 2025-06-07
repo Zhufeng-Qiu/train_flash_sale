@@ -19,6 +19,7 @@ import com.zephyr.train.business.domain.DailyTrainCarriage;
 import com.zephyr.train.business.domain.DailyTrainSeat;
 import com.zephyr.train.business.domain.DailyTrainTicket;
 import com.zephyr.train.business.enums.ConfirmOrderStatusEnum;
+import com.zephyr.train.business.enums.LockKeyPreEnum;
 import com.zephyr.train.business.enums.SeatColEnum;
 import com.zephyr.train.business.enums.SeatTypeEnum;
 import com.zephyr.train.business.mapper.ConfirmOrderMapper;
@@ -123,7 +124,7 @@ public class ConfirmOrderService {
     }
 
     // Purchase ticket
-    String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
+    String lockKey = LockKeyPreEnum.CONFIRM_ORDER + "-" + DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
 //    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
 //    if (setIfAbsent) {
 //      LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);

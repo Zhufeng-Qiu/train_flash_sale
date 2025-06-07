@@ -8,6 +8,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zephyr.train.business.domain.SkToken;
 import com.zephyr.train.business.domain.SkTokenExample;
+import com.zephyr.train.business.enums.LockKeyPreEnum;
 import com.zephyr.train.business.mapper.SkTokenMapper;
 import com.zephyr.train.business.mapper.cust.SkTokenMapperCust;
 import com.zephyr.train.business.req.SkTokenQueryReq;
@@ -122,7 +123,7 @@ public class SkTokenService {
     LOG.info("Member[{}] starts to get the token of train[{}] for date[{}]", memberId, trainCode, DateUtil.formatDate(date));
 
     // First acquire the token lock, then verify the remaining token count to prevent bots from snatching tickets. The 'lockKey' itself serves as the token — a credential that indicates who is allowed to do what.
-    String lockKey = DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
+    String lockKey = LockKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
     Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
     if (Boolean.TRUE.equals(setIfAbsent)) {
       LOG.info("Congratulation, got the token lock! lockKey：{}", lockKey);
