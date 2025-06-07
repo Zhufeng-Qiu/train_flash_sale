@@ -69,6 +69,9 @@ public class ConfirmOrderService {
   @Autowired
   private RedissonClient redissonClient;
 
+  @Autowired
+  private SkTokenService skTokenService;
+
   public void save(ConfirmOrderDoReq req) {
     DateTime now = DateTime.now();
     ConfirmOrder confirmOrder = BeanUtil.copyProperties(req, ConfirmOrder.class);
@@ -110,6 +113,16 @@ public class ConfirmOrderService {
 
   @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
   public void doConfirm(ConfirmOrderDoReq req) {
+    // Check remaining token
+    boolean validSkToken = skTokenService.validSkToken(req.getDate(), req.getTrainCode(), LoginMemberContext.getId());
+    if (validSkToken) {
+      LOG.info("Validation of remaining token passed");
+    } else {
+      LOG.info("Validation of remaining token failed");
+      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
+    }
+
+    // Purchase ticket
     String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
 //    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
 //    if (setIfAbsent) {

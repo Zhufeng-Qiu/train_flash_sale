@@ -6,14 +6,15 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zephyr.train.common.resp.PageResp;
-import com.zephyr.train.common.util.SnowUtil;
 import com.zephyr.train.business.domain.SkToken;
 import com.zephyr.train.business.domain.SkTokenExample;
 import com.zephyr.train.business.mapper.SkTokenMapper;
+import com.zephyr.train.business.mapper.cust.SkTokenMapperCust;
 import com.zephyr.train.business.req.SkTokenQueryReq;
 import com.zephyr.train.business.req.SkTokenSaveReq;
 import com.zephyr.train.business.resp.SkTokenQueryResp;
+import com.zephyr.train.common.resp.PageResp;
+import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,9 @@ public class SkTokenService {
 
   @Resource
   private DailyTrainStationService dailyTrainStationService;
+
+  @Resource
+  private SkTokenMapperCust skTokenMapperCust;
 
   /**
    * Initialization
@@ -59,7 +63,7 @@ public class SkTokenService {
     LOG.info("Station number of train[{}]: {}", trainCode, stationCount);
 
     // The ratio "3/4" value should be set according to the actual ticket‐selling case; a single train can sell at most seatCount * (stationCount – 1) tickets.
-    int count = (int) (seatCount * (stationCount - 1) * 3/4);
+    int count = (int) (seatCount * (stationCount - 1) * 3 / 4);
     LOG.info("Initialized token number of train[{}]: {}", trainCode, count);
     skToken.setCount(count);
 
@@ -103,5 +107,19 @@ public class SkTokenService {
 
   public void delete(Long id) {
     skTokenMapper.deleteByPrimaryKey(id);
+  }
+
+  /**
+   * Get token
+   */
+  public boolean validSkToken(Date date, String trainCode, Long memberId) {
+    LOG.info("Member[{}] starts to get the token of train[{}] for date[{}]", memberId, trainCode, DateUtil.formatDate(date));
+    // Tokens roughly represent the inventory. Once the tokens are exhausted, ticket sales stop and there is no need to enter the main purchase flow to check stock, since checking tokens is definitely more efficient than checking inventory.
+    int updateCount = skTokenMapperCust.decrease(date, trainCode);
+    if (updateCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
