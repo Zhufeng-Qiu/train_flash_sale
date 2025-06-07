@@ -53,7 +53,7 @@
   <a-modal v-model:visible="visible" title="Please check the following infomation"
            style="top: 50px; width: 800px"
            ok-text="Confirm" cancel-text="Cancel"
-           @ok="showImageCodeModal">
+           @ok="showFirstImageCodeModal">
     <div class="order-tickets">
       <a-row class="order-tickets-header" v-if="tickets.length > 0">
         <a-col :span="5">Passenger</a-col>
@@ -101,10 +101,13 @@
     </div>
   </a-modal>
 
-  <!-- CAPTCA -->
+  <!-- Second back-end CAPTCHA -->
   <a-modal v-model:visible="imageCodeModalVisible" :title="null" :footer="null" :closable="false"
            style="top: 50px; width: 400px">
-    <p style="text-align: center; font-weight: bold; font-size: 18px">Use CAPTCHA to mitigate sudden traffic spikes</p>
+    <p style="text-align: center; font-weight: bold; font-size: 18px">
+      Use back-end CAPTCHA to mitigate sudden traffic spikes<br/>
+      to avoid bots snatching
+    </p>
     <p>
       <a-input v-model:value="imageCode" placeholder="CAPTCHA">
         <template #suffix>
@@ -113,6 +116,23 @@
       </a-input>
     </p>
     <a-button type="danger" block @click="handleOk">Place order after inputting CAPTCHA</a-button>
+  </a-modal>
+
+  <!-- First front-end CAPTCHA -->
+  <a-modal v-model:visible="firstImageCodeModalVisible" :title="null" :footer="null" :closable="false"
+           style="top: 50px; width: 400px">
+    <p style="text-align: center; font-weight: bold; font-size: 18px">
+      Use front-end CAPTCHA to mitigate sudden traffic spikes<br/>
+      Reduce the load on the back-end CAPTCHA endpoint.
+    </p>
+    <p>
+      <a-input v-model:value="firstImageCodeTarget" placeholder="CAPTCHA">
+        <template #suffix>
+          {{firstImageCodeSourceA}} + {{firstImageCodeSourceB}}
+        </template>
+      </a-input>
+    </p>
+    <a-button type="danger" block @click="validFirstImageCode">Submit CAPTCHA</a-button>
   </a-modal>
 </template>
 
@@ -350,7 +370,7 @@ export default defineComponent({
       });
     }
 
-    /* ------------------- CAPTCHA --------------------- */
+    /* ------------------- Second CAPTCHA --------------------- */
     const imageCodeModalVisible = ref();
     const imageCodeToken = ref();
     const imageCodeSrc = ref();
@@ -367,6 +387,42 @@ export default defineComponent({
     const showImageCodeModal = () => {
       loadImageCode();
       imageCodeModalVisible.value = true;
+    };
+
+    /* ------------------- First CAPTCHA --------------------- */
+    const firstImageCodeSourceA = ref();
+    const firstImageCodeSourceB = ref();
+    const firstImageCodeTarget = ref();
+    const firstImageCodeModalVisible = ref();
+
+    /**
+     * Load first CAPCHA
+     */
+    const loadFirstImageCode = () => {
+      // Get a number between 1 and 10: Math.floor(Math.random()*10 + 1)
+      firstImageCodeSourceA.value = Math.floor(Math.random() * 10 + 1) + 10;
+      firstImageCodeSourceB.value = Math.floor(Math.random() * 10 + 1) + 20;
+    };
+
+    /**
+     * Display first CAPTCHA pop-up window
+     */
+    const showFirstImageCodeModal = () => {
+      loadFirstImageCode();
+      firstImageCodeModalVisible.value = true;
+    };
+
+    /**
+     * Validate first CAPTCHA
+     */
+    const validFirstImageCode = () => {
+      if (parseInt(firstImageCodeTarget.value) === parseInt(firstImageCodeSourceA.value + firstImageCodeSourceB.value)) {
+        // First CAPTCHA validation passed
+        firstImageCodeModalVisible.value = false;
+        showImageCodeModal();
+      } else {
+        notification.error({description: 'CAPTCHA does not match'});
+      }
     };
 
     onMounted(() => {
@@ -392,7 +448,13 @@ export default defineComponent({
       imageCode,
       showImageCodeModal,
       imageCodeModalVisible,
-      loadImageCode
+      loadImageCode,
+      firstImageCodeSourceA,
+      firstImageCodeSourceB,
+      firstImageCodeTarget,
+      firstImageCodeModalVisible,
+      showFirstImageCodeModal,
+      validFirstImageCode,
     };
   },
 });
