@@ -51,6 +51,18 @@ public class ConfirmOrderDoReq {
     @NotEmpty(message = "[Ticket] cannot be blank")
     private List<ConfirmOrderTicketReq> tickets;
 
+    /**
+     * CAPTCHA
+     */
+    @NotBlank(message = "[CAPTCHA] cannot be null")
+    private String imageCode;
+
+    /**
+     * CAPTCHA token
+     */
+    @NotBlank(message = "[CAPTCHA] illegal parameter")
+    private String imageCodeToken;
+
     public Long getMemberId() {
         return memberId;
     }
@@ -107,6 +119,22 @@ public class ConfirmOrderDoReq {
         this.tickets = tickets;
     }
 
+    public String getImageCode() {
+        return imageCode;
+    }
+
+    public void setImageCode(String imageCode) {
+        this.imageCode = imageCode;
+    }
+
+    public String getImageCodeToken() {
+        return imageCodeToken;
+    }
+
+    public void setImageCodeToken(String imageCodeToken) {
+        this.imageCodeToken = imageCodeToken;
+    }
+
     @Override
     public String toString() {
         return "ConfirmOrderDoReq{" +
@@ -117,6 +145,8 @@ public class ConfirmOrderDoReq {
             ", end='" + end + '\'' +
             ", dailyTrainTicketId=" + dailyTrainTicketId +
             ", tickets=" + tickets +
+            ", imageCode='" + imageCode + '\'' +
+            ", imageCodeToken='" + imageCodeToken + '\'' +
             '}';
     }
 }

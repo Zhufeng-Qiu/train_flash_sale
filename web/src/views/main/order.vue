@@ -337,7 +337,9 @@ export default defineComponent({
         trainCode: dailyTrainTicket.trainCode,
         start: dailyTrainTicket.start,
         end: dailyTrainTicket.end,
-        tickets: tickets.value
+        tickets: tickets.value,
+        imageCodeToken: imageCodeToken.value,
+        imageCode: imageCode.value,
       }).then((response) => {
         let data = response.data;
         if (data.success) {
@@ -348,7 +350,7 @@ export default defineComponent({
       });
     }
 
-    /* ------------------- 验证码 --------------------- */
+    /* ------------------- CAPTCHA --------------------- */
     const imageCodeModalVisible = ref();
     const imageCodeToken = ref();
     const imageCodeSrc = ref();
