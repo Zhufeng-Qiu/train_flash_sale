@@ -201,3 +201,15 @@ CREATE TABLE `undo_log` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+drop table if exists `sk_token`;
+create table `sk_token` (
+    `id` bigint not null comment 'id',
+    `date` date not null comment 'Date',
+    `train_code` varchar(20) not null comment 'Train Number',
+    `count` int not null comment 'Remaining Tokens',
+    `create_time` datetime(3) comment 'Create Time',
+    `update_time` datetime(3) comment 'Update Time',
+    primary key (`id`),
+    unique key `date_train_code_unique` (`date`, `train_code`)
+) engine=innodb default charset=utf8mb4 comment='Flash Sale Token';

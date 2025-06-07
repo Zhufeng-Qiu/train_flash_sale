@@ -2,7 +2,7 @@
   <p>
     <a-space>
       <a-button type="primary" @click="handleQuery()">Refresh</a-button>
-      
+      <a-button type="primary" @click="onAdd">Add</a-button>
     </a-space>
   </p>
   <a-table :dataSource="tickets"
@@ -12,10 +12,19 @@
            :loading="loading">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
+        <a-space>
+          <a-popconfirm
+              title="Once deleted, it cannot be recovered. Confirm to delete?"
+              @confirm="onDelete(record)"
+              ok-text="Confirm" cancel-text="Cancel">
+            <a style="color: red">Delete</a>
+          </a-popconfirm>
+          <a @click="onEdit(record)">Edit</a>
+        </a-space>
       </template>
       <template v-else-if="column.dataIndex === 'seatCol'">
         <span v-for="item in SEAT_COL_ARRAY" :key="item.code">
-          <span v-if="item.code === record.seatCol && item.type === record.seatType">
+          <span v-if="item.code === record.seatCol">
             {{item.desc}}
           </span>
         </span>
@@ -29,6 +38,64 @@
       </template>
     </template>
   </a-table>
+  <a-modal v-model:visible="visible" title="Ticket" @ok="handleOk"
+           ok-text="Confirm" cancel-text="Cancel">
+    <a-form :model="ticket" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
+      <a-form-item label="Member Id">
+        <a-input v-model:value="ticket.memberId" />
+      </a-form-item>
+      <a-form-item label="Passenger Id">
+        <a-input v-model:value="ticket.passengerId" />
+      </a-form-item>
+      <a-form-item label="Passenger Name">
+        <a-input v-model:value="ticket.passengerName" />
+      </a-form-item>
+      <a-form-item label="Date">
+        <a-date-picker v-model:value="ticket.trainDate" valueFormat="YYYY-MM-DD" placeholder="Please select date" />
+      </a-form-item>
+      <a-form-item label="Train Number">
+        <a-input v-model:value="ticket.trainCode" />
+      </a-form-item>
+      <a-form-item label="Carriage Index">
+        <a-input v-model:value="ticket.carriageIndex" />
+      </a-form-item>
+      <a-form-item label="Row">
+        <a-input v-model:value="ticket.seatRow" />
+      </a-form-item>
+      <a-form-item label="Column">
+        <a-select v-model:value="ticket.seatCol">
+          <a-select-option v-for="item in SEAT_COL_ARRAY" :key="item.code" :value="item.code">
+            {{item.desc}}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="Departure Station">
+        <a-input v-model:value="ticket.startStation" />
+      </a-form-item>
+      <a-form-item label="Departure Station Alias">
+        <a-input v-model:value="ticket.startPinyin" />
+      </a-form-item>
+      <a-form-item label="Start Time">
+        <a-time-picker v-model:value="ticket.startTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
+      </a-form-item>
+      <a-form-item label="Arrival Station">
+        <a-input v-model:value="ticket.endStation" />
+      </a-form-item>
+      <a-form-item label="Arrival Station Alias">
+        <a-input v-model:value="ticket.endPinyin" />
+      </a-form-item>
+      <a-form-item label="End Time">
+        <a-time-picker v-model:value="ticket.endTime" valueFormat="HH:mm:ss" placeholder="Please select time" />
+      </a-form-item>
+      <a-form-item label="Seat Type">
+        <a-select v-model:value="ticket.seatType">
+          <a-select-option v-for="item in SEAT_TYPE_ARRAY" :key="item.code" :value="item.code">
+            {{item.desc}}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 
 <script>
@@ -146,8 +213,52 @@ export default defineComponent({
       dataIndex: 'seatType',
       key: 'seatType',
     },
+    {
+      title: 'Operation',
+      dataIndex: 'operation'
+    }
     ];
 
+    const onAdd = () => {
+      ticket.value = {};
+      visible.value = true;
+    };
+
+    const onEdit = (record) => {
+      ticket.value = window.Tool.copy(record);
+      visible.value = true;
+    };
+
+    const onDelete = (record) => {
+      axios.delete("/member/admin/ticket/delete/" + record.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          notification.success({description: "Delete successfully!"});
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize,
+          });
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
+    const handleOk = () => {
+      axios.post("/member/admin/ticket/save", ticket.value).then((response) => {
+        let data = response.data;
+        if (data.success) {
+          notification.success({description: "Save successfully!"});
+          visible.value = false;
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
 
     const handleQuery = (param) => {
       if (!param) {
@@ -202,6 +313,10 @@ export default defineComponent({
       handleTableChange,
       handleQuery,
       loading,
+      onAdd,
+      handleOk,
+      onEdit,
+      onDelete
     };
   },
 });

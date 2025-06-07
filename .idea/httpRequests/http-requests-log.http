@@ -1,3 +1,30 @@
+POST http://localhost:8000/batch/admin/job/add
+Content-Type: application/json
+Content-Length: 138
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "name": "com.zephyr.train.batch.job.TestJob",
+  "jobGroupName": "default",
+  "cronExpression": "*/2 * * * * ?",
+  "desc": "test job"
+}
+
+<> 2025-06-06T181020.404.html
+
+###
+
+GET http://localhost:8000/batch/admin/job/query
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-06T180956.404.html
+
+###
+
 GET http://localhost:8003/batch/hello
 Accept: application/json
 Connection: Keep-Alive
@@ -532,26 +559,6 @@ User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2025-05-24T034007.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=2&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T033832.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=2&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T033826.200.json
 
 ###
 

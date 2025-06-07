@@ -41,6 +41,11 @@
             <user-outlined /> &nbsp; Order Management
           </router-link>
         </a-menu-item>
+        <a-menu-item key="/business/sk-token">
+          <router-link to="/business/sk-token">
+            <user-outlined /> &nbsp; Token Management
+          </router-link>
+        </a-menu-item>
         <a-menu-item key="/business/daily-train-ticket">
           <router-link to="/business/daily-train-ticket">
             <user-outlined /> &nbsp; Daily Remaining Ticket

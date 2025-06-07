@@ -17,7 +17,7 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 public class ServerGenerator {
-  static boolean readOnly = true;
+  static boolean readOnly = false;
   static String vuePath = "admin/src/views/main/";
   // windows
   // static String toPath = "generator\\src\\main\\java\\com\\zephyr\\train\\generator\\test\\";
@@ -25,9 +25,9 @@ public class ServerGenerator {
   static String serverPath = "[module]/src/main/java/com/zephyr/train/[module]/";
   static String pomPath = "generator/pom.xml";
   static String module ="";
-  static {
-    new File(serverPath).mkdirs();
-  }
+//  static {
+//    new File(serverPath).mkdirs();
+//  }
 
   public static void main(String[] args) throws Exception {
     // Get mybatis-generator
@@ -37,7 +37,7 @@ public class ServerGenerator {
     module = generatorPath.replace("src/main/resources/generator-config-", "").replace(".xml", "");
     System.out.println("module: " + module);
     serverPath = serverPath.replace("[module]", module);
-    // new File(servicePath).mkdirs();
+     new File(serverPath).mkdirs();
     System.out.println("servicePath: " + serverPath);
 
     // Read table Node
@@ -83,10 +83,10 @@ public class ServerGenerator {
     param.put("readOnly", readOnly);
     System.out.println("Assemble parameters: " + param);
 
-//    generateOnTemplate(Domain, param, "service", "service");
-//    generateOnTemplate(Domain, param, "controller/admin", "adminController");
+    generateOnTemplate(Domain, param, "service", "service");
+    generateOnTemplate(Domain, param, "controller/admin", "adminController");
     generateOnTemplate(Domain, param, "req", "saveReq");
-//    generateOnTemplate(Domain, param, "req", "queryReq");
+    generateOnTemplate(Domain, param, "req", "queryReq");
     generateOnTemplate(Domain, param, "resp", "queryResp");
     genVue(do_main, param);
   }
