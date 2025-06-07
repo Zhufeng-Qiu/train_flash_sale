@@ -13,9 +13,9 @@ public enum BusinessExceptionEnum {
 
   CONFIRM_ORDER_TICKET_COUNT_ERROR("No enough remaining tickets available"),
   CONFIRM_ORDER_EXCEPTION("Server busy, try later."),
-  CONFIRM_ORDER_LOCK_FAIL("Too many people are trying to get tickets. Please try again later."),
-  CONFIRM_ORDER_FLOW_EXCEPTION("Too many people are trying to get tickets. Flow limited. Please try again later."),
-  CONFIRM_ORDER_SK_TOKEN_FAIL("Tickets have sold out."),
+  CONFIRM_ORDER_LOCK_FAIL("Too many people trying to get tickets. Please try again later."),
+  CONFIRM_ORDER_FLOW_EXCEPTION("Too many people trying to purchase tickets. Flow limited. Please try again later."),
+  CONFIRM_ORDER_SK_TOKEN_FAIL("Too many people trying to purchase tickets. Please try again in 5 seconds."),
   ;
 
   private String desc;

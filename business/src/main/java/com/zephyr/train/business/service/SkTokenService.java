@@ -69,8 +69,10 @@ public class SkTokenService {
     long stationCount = dailyTrainStationService.countByTrainCode(date, trainCode);
     LOG.info("Station number of train[{}]: {}", trainCode, stationCount);
 
-    // The ratio "3/4" value should be set according to the actual ticket‐selling case; a single train can sell at most seatCount * (stationCount – 1) tickets.
-    int count = (int) (seatCount * (stationCount - 1) * 3 / 4);
+    // The ratio value should be set according to the actual ticket‐selling case; a single train can sell at most seatCount * (stationCount – 1) tickets.
+    // count = (seatCount * (stationCount - 1) * ratio);
+    double ratio = 1.0;
+    int count = (int) (seatCount * (stationCount - 1) * ratio);
     LOG.info("Initialized token number of train[{}]: {}", trainCode, count);
     skToken.setCount(count);
 
