@@ -2,7 +2,7 @@
   <p>
     <a-space>
       <a-button type="primary" @click="handleQuery()">Refresh</a-button>
-      <a-button type="primary" @click="onAdd">Add</a-button>
+<!--      <a-button type="primary" @click="onAdd">Add</a-button>-->
     </a-space>
   </p>
   <a-table :dataSource="skTokens"
@@ -13,13 +13,13 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
-          <a-popconfirm
-              title="Once deleted, it cannot be recovered. Confirm to delete?"
-              @confirm="onDelete(record)"
-              ok-text="Confirm" cancel-text="Cancel">
-            <a style="color: red">Delete</a>
-          </a-popconfirm>
-          <a @click="onEdit(record)">Edit</a>
+<!--          <a-popconfirm-->
+<!--              title="Once deleted, it cannot be recovered. Confirm to delete?"-->
+<!--              @confirm="onDelete(record)"-->
+<!--              ok-text="Confirm" cancel-text="Cancel">-->
+<!--            <a style="color: red">Delete</a>-->
+<!--          </a-popconfirm>-->
+          <a @click="onEdit(record)">Modify Remaining Tokens</a>
         </a-space>
       </template>
     </template>
@@ -28,10 +28,10 @@
            ok-text="Confirm" cancel-text="Cancel">
     <a-form :model="skToken" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
       <a-form-item label="Date">
-        <a-date-picker v-model:value="skToken.date" valueFormat="YYYY-MM-DD" placeholder="Please select date" />
+        <a-date-picker v-model:value="skToken.date" valueFormat="YYYY-MM-DD" placeholder="Please select date" disabled/>
       </a-form-item>
       <a-form-item label="Train Number">
-        <a-input v-model:value="skToken.trainCode" />
+        <a-input v-model:value="skToken.trainCode" disabled/>
       </a-form-item>
       <a-form-item label="Remaining Tokens">
         <a-input v-model:value="skToken.count" />
