@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSON;
 import com.zephyr.train.business.domain.ConfirmOrder;
 import com.zephyr.train.business.dto.ConfirmOrderMQDto;
 import com.zephyr.train.business.enums.ConfirmOrderStatusEnum;
-import com.zephyr.train.business.enums.RocketMQTopicEnum;
 import com.zephyr.train.business.mapper.ConfirmOrderMapper;
 import com.zephyr.train.business.req.ConfirmOrderDoReq;
 import com.zephyr.train.business.req.ConfirmOrderTicketReq;
@@ -18,7 +17,6 @@ import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -33,11 +31,14 @@ public class BeforeConfirmOrderService {
   @Autowired
   private SkTokenService skTokenService;
 
-  @Resource
-  public RocketMQTemplate rocketMQTemplate;
+//  @Resource
+//  public RocketMQTemplate rocketMQTemplate;
 
   @Resource
   private ConfirmOrderMapper confirmOrderMapper;
+
+  @Resource
+  private ConfirmOrderService confirmOrderService;
 
   @SentinelResource(value = "beforeDoConfirm", blockHandler = "beforeDoConfirmBlock")
   public Long beforeDoConfirm(ConfirmOrderDoReq req) {
@@ -74,18 +75,16 @@ public class BeforeConfirmOrderService {
     confirmOrder.setTickets(JSON.toJSONString(tickets));
     confirmOrderMapper.insert(confirmOrder);
 
-    // Ready to purchase ticket: TODO: send MQ, wait for purchasing ticket
-    LOG.info("Ready to send MQ, wait for purchasing ticket");
-
     // Send MQ to queue up for purchasing
     ConfirmOrderMQDto confirmOrderMQDto = new ConfirmOrderMQDto();
     confirmOrderMQDto.setDate(req.getDate());
     confirmOrderMQDto.setTrainCode(req.getTrainCode());
     confirmOrderMQDto.setLogId(MDC.get("LOG_ID"));
     String reqJson = JSON.toJSONString(confirmOrderMQDto);
-    LOG.info("Queue up for purchasing ticket, sending MQ starts, message: {} ", reqJson);
-    rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(), reqJson);
-    LOG.info("Queue up for purchasing ticket, sending MQ ends");
+//    LOG.info("Queue up for purchasing ticket, sending MQ starts, message: {} ", reqJson);
+//    rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(), reqJson);
+//    LOG.info("Queue up for purchasing ticket, sending MQ ends");
+    confirmOrderService.doConfirm(confirmOrderMQDto);
     return confirmOrder.getId();
   }
 

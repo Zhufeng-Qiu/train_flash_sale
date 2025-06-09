@@ -40,8 +40,10 @@ import java.util.concurrent.TimeUnit;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -112,7 +114,10 @@ public class ConfirmOrderService {
   }
 
   @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
+  @Async
   public void doConfirm(ConfirmOrderMQDto dto) {
+    MDC.put("LOG_ID", dto.getLogId());
+    LOG.info("Start to confirm order asynchronously: {}", dto);
 
 //    // Check remaining token
 //    boolean validSkToken = skTokenService.validSkToken(dto.getDate(), dto.getTrainCode(), LoginMemberContext.getId());
