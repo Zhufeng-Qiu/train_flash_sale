@@ -134,6 +134,13 @@
     </p>
     <a-button type="danger" block @click="validFirstImageCode">Submit CAPTCHA</a-button>
   </a-modal>
+
+  <a-modal v-model:visible="lineModalVisible" :title="null" :footer="null" :maskClosable="false" :closable="false"
+           style="top: 50px; width: 400px">
+    <div class="book-line">
+      <loading-outlined /> System Processing...
+    </div>
+  </a-modal>
 </template>
 
 <script>
@@ -190,6 +197,7 @@ export default defineComponent({
     const tickets = ref([]);
     const PASSENGER_TYPE_ARRAY = window.PASSENGER_TYPE_ARRAY;
     const visible = ref(false);
+    const lineModalVisible = ref(false);
 
     // Check or uncheck a passenger then add or remove a record
     watch(() => passengerChecks.value, (newVal, oldVal)=>{
@@ -363,7 +371,10 @@ export default defineComponent({
       }).then((response) => {
         let data = response.data;
         if (data.success) {
-          notification.success({description: "Place Order successfully!"});
+          // notification.success({description: "Place Order successfully!"});
+          visible.value = false;
+          imageCodeModalVisible.value = false;
+          lineModalVisible.value = true;
         } else {
           notification.error({description: data.message});
         }
@@ -455,6 +466,7 @@ export default defineComponent({
       firstImageCodeModalVisible,
       showFirstImageCodeModal,
       validFirstImageCode,
+      lineModalVisible
     };
   },
 });
