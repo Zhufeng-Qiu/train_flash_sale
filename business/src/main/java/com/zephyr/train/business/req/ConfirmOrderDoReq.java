@@ -10,6 +10,11 @@ import java.util.List;
 public class ConfirmOrderDoReq {
 
     /**
+     * Log Id
+     */
+    private String logId;
+
+    /**
      * Member Id
      */
     private Long memberId;
@@ -135,6 +140,14 @@ public class ConfirmOrderDoReq {
         this.imageCodeToken = imageCodeToken;
     }
 
+    public String getLogId() {
+        return logId;
+    }
+
+    public void setLogId(String logId) {
+        this.logId = logId;
+    }
+
     @Override
     public String toString() {
         return "ConfirmOrderDoReq{" +
@@ -147,6 +160,7 @@ public class ConfirmOrderDoReq {
             ", tickets=" + tickets +
             ", imageCode='" + imageCode + '\'' +
             ", imageCodeToken='" + imageCodeToken + '\'' +
+            ", logId='" + logId + '\'' +
             '}';
     }
 }

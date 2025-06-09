@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +77,7 @@ public class BeforeConfirmOrderService {
     LOG.info("Ready to send MQ, wait for purchasing ticket");
 
     // Send MQ to queue up for purchasing
+    req.setLogId(MDC.get("LOG_ID"));
     String reqJson = JSON.toJSONString(req);
     LOG.info("Queue up for purchasing ticket, sending MQ starts, message: {} ", reqJson);
     rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(), reqJson);
