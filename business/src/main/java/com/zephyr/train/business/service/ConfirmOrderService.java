@@ -199,6 +199,18 @@ public class ConfirmOrderService {
   }
 
   /**
+   * Update status
+   * @param confirmOrder
+   */
+  public void updateStatus(ConfirmOrder confirmOrder) {
+    ConfirmOrder confirmOrderForUpdate = new ConfirmOrder();
+    confirmOrderForUpdate.setId(confirmOrder.getId());
+    confirmOrderForUpdate.setUpdateTime(new Date());
+    confirmOrderForUpdate.setStatus(confirmOrder.getStatus());
+    confirmOrderMapper.updateByPrimaryKeySelective(confirmOrderForUpdate);
+  }
+
+  /**
    * Sell ticket
    * @param confirmOrder
    */
@@ -217,6 +229,11 @@ public class ConfirmOrderService {
     req.setLogId("");
 
     // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice TO-DO
+
+    // Set order status as pending to avoid duplicate processing
+    LOG.info("Set order status as pending to avoid duplicate processing, confirm_order.id: {}", confirmOrder.getId());
+    confirmOrder.setStatus(ConfirmOrderStatusEnum.PENDING.getCode());
+    updateStatus(confirmOrder);
 
     Date date = req.getDate();
     String trainCode = req.getTrainCode();
