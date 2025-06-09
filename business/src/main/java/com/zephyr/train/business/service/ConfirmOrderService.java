@@ -181,7 +181,19 @@ public class ConfirmOrderService {
         }
 
         // Sell one by one
-        list.forEach(this::sell);
+        list.forEach(confirmOrder -> {
+          try {
+            sell(confirmOrder);
+          } catch (BusinessException e) {
+            if (e.getE().equals(BusinessExceptionEnum.CONFIRM_ORDER_TICKET_COUNT_ERROR)) {
+              LOG.info("No remaining tickets available for this order; proceed to sell for next order");
+              confirmOrder.setStatus(ConfirmOrderStatusEnum.EMPTY.getCode());
+              updateStatus(confirmOrder);
+            } else {
+              throw e;
+            }
+          }
+        });
       }
 
 //      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
