@@ -1,22 +1,26 @@
 package com.zephyr.train.business.service;
 
-import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.DateTime;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
-import com.zephyr.train.business.enums.RedisKeyPreEnum;
+import com.zephyr.train.business.domain.ConfirmOrder;
+import com.zephyr.train.business.enums.ConfirmOrderStatusEnum;
 import com.zephyr.train.business.enums.RocketMQTopicEnum;
+import com.zephyr.train.business.mapper.ConfirmOrderMapper;
 import com.zephyr.train.business.req.ConfirmOrderDoReq;
+import com.zephyr.train.business.req.ConfirmOrderTicketReq;
 import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.exception.BusinessException;
 import com.zephyr.train.common.exception.BusinessExceptionEnum;
+import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
+import java.util.List;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,16 +29,17 @@ public class BeforeConfirmOrderService {
   private static final Logger LOG = LoggerFactory.getLogger(BeforeConfirmOrderService.class);
 
   @Autowired
-  private StringRedisTemplate redisTemplate;
-
-  @Autowired
   private SkTokenService skTokenService;
 
   @Resource
   public RocketMQTemplate rocketMQTemplate;
 
+  @Resource
+  private ConfirmOrderMapper confirmOrderMapper;
+
   @SentinelResource(value = "beforeDoConfirm", blockHandler = "beforeDoConfirmBlock")
   public void beforeDoConfirm(ConfirmOrderDoReq req) {
+    req.setMemberId(LoginMemberContext.getId());
 
     // Check remaining token
     boolean validSkToken = skTokenService.validSkToken(req.getDate(), req.getTrainCode(), LoginMemberContext.getId());
@@ -45,22 +50,32 @@ public class BeforeConfirmOrderService {
       throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
     }
 
-    // Purchase ticket lock
-    String lockKey = RedisKeyPreEnum.CONFIRM_ORDER + "-" + DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
-    // setIfAbsent corresponds to redis's setnx
-    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 10, TimeUnit.SECONDS);
-    if (Boolean.TRUE.equals(setIfAbsent)) {
-      LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);
-    } else {
-      // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
-      LOG.info("Unfortunately, failed to acquire the lock! lockKey：{}", lockKey);
-      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
-    }
+    Date date = req.getDate();
+    String trainCode = req.getTrainCode();
+    String start = req.getStart();
+    String end = req.getEnd();
+    List<ConfirmOrderTicketReq> tickets = req.getTickets();
+
+    // Save the confirmation order record with initial status
+    DateTime now = DateTime.now();
+    ConfirmOrder confirmOrder = new ConfirmOrder();
+    confirmOrder.setId(SnowUtil.getSnowflakeNextId());
+    confirmOrder.setCreateTime(now);
+    confirmOrder.setUpdateTime(now);
+    confirmOrder.setMemberId(req.getMemberId());
+    confirmOrder.setDate(date);
+    confirmOrder.setTrainCode(trainCode);
+    confirmOrder.setStart(start);
+    confirmOrder.setEnd(end);
+    confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
+    confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
+    confirmOrder.setTickets(JSON.toJSONString(tickets));
+    confirmOrderMapper.insert(confirmOrder);
 
     // Ready to purchase ticket: TODO: send MQ, wait for purchasing ticket
     LOG.info("Ready to send MQ, wait for purchasing ticket");
 
-    // 发送MQ排队购票
+    // Send MQ to queue up for purchasing
     String reqJson = JSON.toJSONString(req);
     LOG.info("Queue up for purchasing ticket, sending MQ starts, message: {} ", reqJson);
     rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(), reqJson);

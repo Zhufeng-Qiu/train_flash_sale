@@ -10,7 +10,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
-import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zephyr.train.business.domain.ConfirmOrder;
@@ -27,7 +26,6 @@ import com.zephyr.train.business.req.ConfirmOrderDoReq;
 import com.zephyr.train.business.req.ConfirmOrderQueryReq;
 import com.zephyr.train.business.req.ConfirmOrderTicketReq;
 import com.zephyr.train.business.resp.ConfirmOrderQueryResp;
-import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.exception.BusinessException;
 import com.zephyr.train.common.exception.BusinessExceptionEnum;
 import com.zephyr.train.common.resp.PageResp;
@@ -113,19 +111,21 @@ public class ConfirmOrderService {
 
   @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
   public void doConfirm(ConfirmOrderDoReq req) {
-    // Check remaining token
-    boolean validSkToken = skTokenService.validSkToken(req.getDate(), req.getTrainCode(), LoginMemberContext.getId());
-    if (validSkToken) {
-      LOG.info("Validation of remaining token passed");
-    } else {
-      LOG.info("Validation of remaining token failed");
-      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
-    }
 
-    // Purchase ticket lock
+//    // Check remaining token
+//    boolean validSkToken = skTokenService.validSkToken(req.getDate(), req.getTrainCode(), LoginMemberContext.getId());
+//    if (validSkToken) {
+//      LOG.info("Validation of remaining token passed");
+//    } else {
+//      LOG.info("Validation of remaining token failed");
+//      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
+//    }
+//
+    // Get distributed  lock
     String lockKey = RedisKeyPreEnum.CONFIRM_ORDER + "-" + DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
+    // setIfAbsent corresponds to redis's setnx
     Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 10, TimeUnit.SECONDS);
-    if (setIfAbsent) {
+    if (Boolean.TRUE.equals(setIfAbsent)) {
       LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);
     } else {
       // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
@@ -168,20 +168,38 @@ public class ConfirmOrderService {
       List<ConfirmOrderTicketReq> tickets = req.getTickets();
 
       // Save the confirmation order record with initial status
-      DateTime now = DateTime.now();
-      ConfirmOrder confirmOrder = new ConfirmOrder();
-      confirmOrder.setId(SnowUtil.getSnowflakeNextId());
-      confirmOrder.setCreateTime(now);
-      confirmOrder.setUpdateTime(now);
-      confirmOrder.setMemberId(LoginMemberContext.getId());
-      confirmOrder.setDate(date);
-      confirmOrder.setTrainCode(trainCode);
-      confirmOrder.setStart(start);
-      confirmOrder.setEnd(end);
-      confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
-      confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
-      confirmOrder.setTickets(JSON.toJSONString(tickets));
-      confirmOrderMapper.insert(confirmOrder);
+//      DateTime now = DateTime.now();
+//      ConfirmOrder confirmOrder = new ConfirmOrder();
+//      confirmOrder.setId(SnowUtil.getSnowflakeNextId());
+//      confirmOrder.setCreateTime(now);
+//      confirmOrder.setUpdateTime(now);
+//      confirmOrder.setMemberId(req.getMemberId());
+//      confirmOrder.setDate(date);
+//      confirmOrder.setTrainCode(trainCode);
+//      confirmOrder.setStart(start);
+//      confirmOrder.setEnd(end);
+//      confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
+//      confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
+//      confirmOrder.setTickets(JSON.toJSONString(tickets));
+//      confirmOrderMapper.insert(confirmOrder);
+
+      // Get order from database
+      ConfirmOrderExample confirmOrderExample = new ConfirmOrderExample();
+      confirmOrderExample.setOrderByClause("id asc");
+      ConfirmOrderExample.Criteria criteria = confirmOrderExample.createCriteria();
+      criteria.andDateEqualTo(req.getDate())
+          .andTrainCodeEqualTo(req.getTrainCode())
+          .andMemberIdEqualTo(req.getMemberId())
+          .andStatusEqualTo(ConfirmOrderStatusEnum.INIT.getCode());
+      List<ConfirmOrder> list = confirmOrderMapper.selectByExampleWithBLOBs(confirmOrderExample);
+      ConfirmOrder confirmOrder;
+      if (CollUtil.isEmpty(list)) {
+        LOG.info("Cannot find original order, end");
+        return;
+      } else {
+        LOG.info("Process {} orders", list.size());
+        confirmOrder = list.get(0);
+      }
 
       // Retrieve the remaining-ticket record to get the actual inventory
       DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
@@ -272,8 +290,8 @@ public class ConfirmOrderService {
 //    } catch (InterruptedException e) {
 //      LOG.error("Purchase exception", e);
     } finally {
-      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
-      redisTemplate.delete(lockKey);
+//      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
+//      redisTemplate.delete(lockKey);
 //      LOG.info("Purchase process completed, release lock!");
 //      if (null != lock && lock.isHeldByCurrentThread()) {
 //        lock.unlock();

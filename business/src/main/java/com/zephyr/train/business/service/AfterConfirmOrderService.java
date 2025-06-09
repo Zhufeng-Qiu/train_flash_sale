@@ -9,7 +9,6 @@ import com.zephyr.train.business.mapper.ConfirmOrderMapper;
 import com.zephyr.train.business.mapper.DailyTrainSeatMapper;
 import com.zephyr.train.business.mapper.cust.DailyTrainTicketMapperCust;
 import com.zephyr.train.business.req.ConfirmOrderTicketReq;
-import com.zephyr.train.common.context.LoginMemberContext;
 import com.zephyr.train.common.req.MemberTicketReq;
 import com.zephyr.train.common.resp.CommonResp;
 import jakarta.annotation.Resource;
@@ -106,7 +105,7 @@ public class AfterConfirmOrderService {
 
       // Invoke member ticket interface, add the ticket for member
       MemberTicketReq memberTicketReq = new MemberTicketReq();
-      memberTicketReq.setMemberId(LoginMemberContext.getId());
+      memberTicketReq.setMemberId(confirmOrder.getMemberId());
       memberTicketReq.setPassengerId(tickets.get(j).getPassengerId());
       memberTicketReq.setPassengerName(tickets.get(j).getPassengerName());
       memberTicketReq.setTrainDate(dailyTrainTicket.getDate());
