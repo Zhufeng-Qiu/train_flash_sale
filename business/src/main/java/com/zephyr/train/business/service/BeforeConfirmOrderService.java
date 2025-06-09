@@ -5,6 +5,7 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.zephyr.train.business.domain.ConfirmOrder;
+import com.zephyr.train.business.dto.ConfirmOrderMQDto;
 import com.zephyr.train.business.enums.ConfirmOrderStatusEnum;
 import com.zephyr.train.business.enums.RocketMQTopicEnum;
 import com.zephyr.train.business.mapper.ConfirmOrderMapper;
@@ -77,8 +78,11 @@ public class BeforeConfirmOrderService {
     LOG.info("Ready to send MQ, wait for purchasing ticket");
 
     // Send MQ to queue up for purchasing
-    req.setLogId(MDC.get("LOG_ID"));
-    String reqJson = JSON.toJSONString(req);
+    ConfirmOrderMQDto confirmOrderMQDto = new ConfirmOrderMQDto();
+    confirmOrderMQDto.setDate(req.getDate());
+    confirmOrderMQDto.setTrainCode(req.getTrainCode());
+    confirmOrderMQDto.setLogId(MDC.get("LOG_ID"));
+    String reqJson = JSON.toJSONString(confirmOrderMQDto);
     LOG.info("Queue up for purchasing ticket, sending MQ starts, message: {} ", reqJson);
     rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(), reqJson);
     LOG.info("Queue up for purchasing ticket, sending MQ ends");

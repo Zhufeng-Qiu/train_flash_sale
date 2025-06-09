@@ -290,8 +290,8 @@ public class ConfirmOrderService {
 //    } catch (InterruptedException e) {
 //      LOG.error("Purchase exception", e);
     } finally {
-//      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
-//      redisTemplate.delete(lockKey);
+      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
+      redisTemplate.delete(lockKey);
 //      LOG.info("Purchase process completed, release lock!");
 //      if (null != lock && lock.isHeldByCurrentThread()) {
 //        lock.unlock();
