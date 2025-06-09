@@ -40,7 +40,7 @@ public class BeforeConfirmOrderService {
   private ConfirmOrderMapper confirmOrderMapper;
 
   @SentinelResource(value = "beforeDoConfirm", blockHandler = "beforeDoConfirmBlock")
-  public void beforeDoConfirm(ConfirmOrderDoReq req) {
+  public Long beforeDoConfirm(ConfirmOrderDoReq req) {
     req.setMemberId(LoginMemberContext.getId());
 
     // Check remaining token
@@ -86,6 +86,7 @@ public class BeforeConfirmOrderService {
     LOG.info("Queue up for purchasing ticket, sending MQ starts, message: {} ", reqJson);
     rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(), reqJson);
     LOG.info("Queue up for purchasing ticket, sending MQ ends");
+    return confirmOrder.getId();
   }
 
   /**
