@@ -230,11 +230,11 @@ public class ConfirmOrderService {
    */
   private void sell(ConfirmOrder confirmOrder) {
     // To demonstrate the queuing effect, add a 200 ms delay for each ticket order
-    try {
-      Thread.sleep(200);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
+//    try {
+//      Thread.sleep(200);
+//    } catch (InterruptedException e) {
+//      throw new RuntimeException(e);
+//    }
 
     // Construct ConfirmOrderDoReq
     ConfirmOrderDoReq req = new ConfirmOrderDoReq();
