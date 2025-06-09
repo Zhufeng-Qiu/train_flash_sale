@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,9 @@ public class SkTokenService {
 
   @Autowired
   private StringRedisTemplate redisTemplate;
+
+  @Value("${spring.profiles.active}")
+  private String env;
 
   /**
    * Initialization
@@ -125,14 +129,16 @@ public class SkTokenService {
   public boolean validSkToken(Date date, String trainCode, Long memberId) {
     LOG.info("Member[{}] starts to get the token of train[{}] for date[{}]", memberId, trainCode, DateUtil.formatDate(date));
 
-    // First acquire the token lock, then verify the remaining token count to prevent bots from snatching tickets. The 'lockKey' itself serves as the token — a credential that indicates who is allowed to do what.
-    String lockKey = RedisKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
-    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
-    if (Boolean.TRUE.equals(setIfAbsent)) {
-      LOG.info("Congratulation, got the token lock! lockKey：{}", lockKey);
-    } else {
-      LOG.info("Unfortunately, failed to acquire the token lock! lockKey：{}", lockKey);
-      return false;
+    if (!env.equals("dev")) {
+      // First acquire the token lock, then verify the remaining token count to prevent bots from snatching tickets. The 'lockKey' itself serves as the token — a credential that indicates who is allowed to do what.
+      String lockKey = RedisKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
+      Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
+      if (Boolean.TRUE.equals(setIfAbsent)) {
+        LOG.info("Congratulation, got the token lock! lockKey：{}", lockKey);
+      } else {
+        LOG.info("Unfortunately, failed to acquire the token lock! lockKey：{}", lockKey);
+        return false;
+      }
     }
 
     // redis cache + database

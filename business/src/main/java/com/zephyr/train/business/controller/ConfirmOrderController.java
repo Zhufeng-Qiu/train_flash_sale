@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,24 +31,29 @@ public class ConfirmOrderController {
   @Autowired
   private StringRedisTemplate redisTemplate;
 
+  @Value("${spring.profiles.active}")
+  private String env;
+
   // Do not use interface path as resource name; otherwise, after flow limiting, the fallback method will not be invoked.
   @SentinelResource(value = "confirmOrderDo", blockHandler = "doConfirmBlock")
   @PostMapping("/do")
   public CommonResp<Object> doConfirm(@Valid @RequestBody ConfirmOrderDoReq req) {
-    // CAPTCHA validation
-    String imageCodeToken = req.getImageCodeToken();
-    String imageCode = req.getImageCode();
-    String imageCodeRedis = redisTemplate.opsForValue().get(imageCodeToken);
-    LOG.info("Get CAPTCHA from redis: {}", imageCodeRedis);
-    if (ObjectUtils.isEmpty(imageCodeRedis)) {
-      return new CommonResp<>(false, "CAPTCHA expired", null);
-    }
-    // Ignore case when validating CAPTCHA to improve the user experience — for example, characters like O/o, V/v, and W/w are easily confused.
-    if (!imageCodeRedis.equalsIgnoreCase(imageCode)) {
-      return new CommonResp<>(false, "CAPTCHA does not match", null);
-    } else {
-      // Remove CAPTCHA after validation
-      redisTemplate.delete(imageCodeToken);
+    if (!env.equals("dev")) {
+      // CAPTCHA validation
+      String imageCodeToken = req.getImageCodeToken();
+      String imageCode = req.getImageCode();
+      String imageCodeRedis = redisTemplate.opsForValue().get(imageCodeToken);
+      LOG.info("Get CAPTCHA from redis: {}", imageCodeRedis);
+      if (ObjectUtils.isEmpty(imageCodeRedis)) {
+        return new CommonResp<>(false, "CAPTCHA expired", null);
+      }
+      // Ignore case when validating CAPTCHA to improve the user experience — for example, characters like O/o, V/v, and W/w are easily confused.
+      if (!imageCodeRedis.equalsIgnoreCase(imageCode)) {
+        return new CommonResp<>(false, "CAPTCHA does not match", null);
+      } else {
+        // Remove CAPTCHA after validation
+        redisTemplate.delete(imageCodeToken);
+      }
     }
 
     beforeConfirmOrderService.beforeDoConfirm(req);
