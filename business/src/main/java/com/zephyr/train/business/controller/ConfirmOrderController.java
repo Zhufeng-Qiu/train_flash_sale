@@ -4,6 +4,7 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.zephyr.train.business.req.ConfirmOrderDoReq;
 import com.zephyr.train.business.service.BeforeConfirmOrderService;
+import com.zephyr.train.business.service.ConfirmOrderService;
 import com.zephyr.train.common.exception.BusinessExceptionEnum;
 import com.zephyr.train.common.resp.CommonResp;
 import jakarta.annotation.Resource;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +36,9 @@ public class ConfirmOrderController {
 
   @Value("${spring.profiles.active}")
   private String env;
+
+  @Resource
+  private ConfirmOrderService confirmOrderService;
 
   // Do not use interface path as resource name; otherwise, after flow limiting, the fallback method will not be invoked.
   @SentinelResource(value = "confirmOrderDo", blockHandler = "doConfirmBlock")
@@ -60,13 +66,19 @@ public class ConfirmOrderController {
     return new CommonResp<>(String.valueOf(id));
   }
 
+  @GetMapping("/query-line-count/{id}")
+  public CommonResp<Integer> queryLineCount(@PathVariable Long id) {
+    Integer count = confirmOrderService.queryLineCount(id);
+    return new CommonResp<>(count);
+  }
+
   /**
-   * Rate limiting method, including all the parameters of rate limiting and BlockException
+   * Flow limiting method, including all the parameters of flow limiting and BlockException
    * @param req
    * @param e
    */
   public CommonResp<Object> doConfirmBlock(ConfirmOrderDoReq req, BlockException e) {
-    LOG.info("ConfirmOrderController购票请求被限流：{}", req);
+    LOG.info("ConfirmOrderController purchasing requests are flow limited: {}", req);
     // throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_FLOW_EXCEPTION);
     CommonResp<Object> commonResp = new CommonResp<>();
     commonResp.setSuccess(false);

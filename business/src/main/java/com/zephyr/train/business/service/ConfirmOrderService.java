@@ -550,4 +550,38 @@ public class ConfirmOrderService {
     LOG.info("Ticket purchase requests are being flow limited: {}", req);
     throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_FLOW_EXCEPTION);
   }
+
+  /**
+   * Query how many people are ahead in the queue
+   * @param id
+   */
+  public Integer queryLineCount(Long id) {
+    ConfirmOrder confirmOrder = confirmOrderMapper.selectByPrimaryKey(id);
+    ConfirmOrderStatusEnum statusEnum = EnumUtil.getBy(ConfirmOrderStatusEnum::getCode, confirmOrder.getStatus());
+    int result = switch (statusEnum) {
+      case PENDING -> 0; // Queue 0
+      case SUCCESS -> -1; // Success
+      case FAILURE -> -2; // Fail
+      case EMPTY -> -3; // No ticket available
+      case CANCEL -> -4; // Cancel
+      case INIT -> 999; // Need to query table to obtain the actual queue count.
+    };
+
+    if (result == 999) {
+      // Determine the ranking position
+      // [where a=1 and (b=1 or c=1)] equals [where (a=1 and b=1) or (a=1 and c=1)]
+      ConfirmOrderExample confirmOrderExample = new ConfirmOrderExample();
+      confirmOrderExample.or().andDateEqualTo(confirmOrder.getDate())
+          .andTrainCodeEqualTo(confirmOrder.getTrainCode())
+          .andCreateTimeLessThan(confirmOrder.getCreateTime())
+          .andStatusEqualTo(ConfirmOrderStatusEnum.INIT.getCode());
+      confirmOrderExample.or().andDateEqualTo(confirmOrder.getDate())
+          .andTrainCodeEqualTo(confirmOrder.getTrainCode())
+          .andCreateTimeLessThan(confirmOrder.getCreateTime())
+          .andStatusEqualTo(ConfirmOrderStatusEnum.PENDING.getCode());
+      return Math.toIntExact(confirmOrderMapper.countByExample(confirmOrderExample));
+    } else {
+      return result;
+    }
+  }
 }
