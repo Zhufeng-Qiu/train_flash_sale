@@ -131,8 +131,10 @@ public class ConfirmOrderService {
       LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);
     } else {
       // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
-      LOG.info("Unfortunately, failed to acquire the lock! lockKey：{}", lockKey);
-      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+//      LOG.info("Unfortunately, failed to acquire the lock! lockKey：{}", lockKey);
+//      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+      LOG.info("Failed to acquire the lock; another consumer thread is selling tickets, no action is taken.");
+      return;
     }
 
 //    RLock lock = null;

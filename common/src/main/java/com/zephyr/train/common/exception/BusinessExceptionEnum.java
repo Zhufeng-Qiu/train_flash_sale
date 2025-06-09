@@ -11,7 +11,7 @@ public enum BusinessExceptionEnum {
   BUSINESS_TRAIN_STATION_NAME_UNIQUE_ERROR("[Station Name] already exists for current train number."),
   BUSINESS_TRAIN_CARRIAGE_INDEX_UNIQUE_ERROR("[Carriage Index] already exists for current train number."),
 
-  CONFIRM_ORDER_TICKET_COUNT_ERROR("No enough remaining tickets available"),
+  CONFIRM_ORDER_TICKET_COUNT_ERROR("No enough remaining tickets available."),
   CONFIRM_ORDER_EXCEPTION("Server busy, try later."),
   CONFIRM_ORDER_LOCK_FAIL("Too many people trying to get tickets. Please try again later."),
   CONFIRM_ORDER_FLOW_EXCEPTION("Too many people trying to purchase tickets. Flow limited. Please try again later."),
