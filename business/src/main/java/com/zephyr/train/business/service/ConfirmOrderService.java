@@ -10,6 +10,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zephyr.train.business.domain.ConfirmOrder;
@@ -17,6 +18,7 @@ import com.zephyr.train.business.domain.ConfirmOrderExample;
 import com.zephyr.train.business.domain.DailyTrainCarriage;
 import com.zephyr.train.business.domain.DailyTrainSeat;
 import com.zephyr.train.business.domain.DailyTrainTicket;
+import com.zephyr.train.business.dto.ConfirmOrderMQDto;
 import com.zephyr.train.business.enums.ConfirmOrderStatusEnum;
 import com.zephyr.train.business.enums.RedisKeyPreEnum;
 import com.zephyr.train.business.enums.SeatColEnum;
@@ -110,10 +112,10 @@ public class ConfirmOrderService {
   }
 
   @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
-  public void doConfirm(ConfirmOrderDoReq req) {
+  public void doConfirm(ConfirmOrderMQDto dto) {
 
 //    // Check remaining token
-//    boolean validSkToken = skTokenService.validSkToken(req.getDate(), req.getTrainCode(), LoginMemberContext.getId());
+//    boolean validSkToken = skTokenService.validSkToken(dto.getDate(), dto.getTrainCode(), LoginMemberContext.getId());
 //    if (validSkToken) {
 //      LOG.info("Validation of remaining token passed");
 //    } else {
@@ -122,7 +124,7 @@ public class ConfirmOrderService {
 //    }
 //
     // Get distributed  lock
-    String lockKey = RedisKeyPreEnum.CONFIRM_ORDER + "-" + DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
+    String lockKey = RedisKeyPreEnum.CONFIRM_ORDER + "-" + DateUtil.formatDate(dto.getDate()) + "-" + dto.getTrainCode();
     // setIfAbsent corresponds to redis's setnx
     Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 10, TimeUnit.SECONDS);
     if (Boolean.TRUE.equals(setIfAbsent)) {
@@ -159,130 +161,27 @@ public class ConfirmOrderService {
 //        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
 //      }
 
-      // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice TO-DO
+      while (true) {
+        // 取确认订单表的记录，同日期车次，状态是I，分页处理，每次取N条
+        // Retrieve records from confirm_order table for same train/date, status is INIT, pagination process to take N records eaech time
+        ConfirmOrderExample confirmOrderExample = new ConfirmOrderExample();
+        confirmOrderExample.setOrderByClause("id asc");
+        ConfirmOrderExample.Criteria criteria = confirmOrderExample.createCriteria();
+        criteria.andDateEqualTo(dto.getDate())
+            .andTrainCodeEqualTo(dto.getTrainCode())
+            .andStatusEqualTo(ConfirmOrderStatusEnum.INIT.getCode());
+        PageHelper.startPage(1, 5);
+        List<ConfirmOrder> list = confirmOrderMapper.selectByExampleWithBLOBs(confirmOrderExample);
 
-      Date date = req.getDate();
-      String trainCode = req.getTrainCode();
-      String start = req.getStart();
-      String end = req.getEnd();
-      List<ConfirmOrderTicketReq> tickets = req.getTickets();
-
-      // Save the confirmation order record with initial status
-//      DateTime now = DateTime.now();
-//      ConfirmOrder confirmOrder = new ConfirmOrder();
-//      confirmOrder.setId(SnowUtil.getSnowflakeNextId());
-//      confirmOrder.setCreateTime(now);
-//      confirmOrder.setUpdateTime(now);
-//      confirmOrder.setMemberId(req.getMemberId());
-//      confirmOrder.setDate(date);
-//      confirmOrder.setTrainCode(trainCode);
-//      confirmOrder.setStart(start);
-//      confirmOrder.setEnd(end);
-//      confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
-//      confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
-//      confirmOrder.setTickets(JSON.toJSONString(tickets));
-//      confirmOrderMapper.insert(confirmOrder);
-
-      // Get order from database
-      ConfirmOrderExample confirmOrderExample = new ConfirmOrderExample();
-      confirmOrderExample.setOrderByClause("id asc");
-      ConfirmOrderExample.Criteria criteria = confirmOrderExample.createCriteria();
-      criteria.andDateEqualTo(req.getDate())
-          .andTrainCodeEqualTo(req.getTrainCode())
-          .andMemberIdEqualTo(req.getMemberId())
-          .andStatusEqualTo(ConfirmOrderStatusEnum.INIT.getCode());
-      List<ConfirmOrder> list = confirmOrderMapper.selectByExampleWithBLOBs(confirmOrderExample);
-      ConfirmOrder confirmOrder;
-      if (CollUtil.isEmpty(list)) {
-        LOG.info("Cannot find original order, end");
-        return;
-      } else {
-        LOG.info("Process {} orders", list.size());
-        confirmOrder = list.get(0);
-      }
-
-      // Retrieve the remaining-ticket record to get the actual inventory
-      DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
-      LOG.info("Retrieve remaining tickets: {}", dailyTrainTicket);
-
-      // Decrement the remaining-ticket count and verify availability
-      reduceTickets(req, dailyTrainTicket);
-
-      // Final seat list
-      List<DailyTrainSeat> finalSeatList = new ArrayList<>();
-      // Calculate offsets relative to the first seat
-      // For example, if the selected seats are C1 and D2 (ACDF), the offsets are: [0, 5]
-      // For example, if the selected seats are A1, B1, and C1 (ABCDF), the offsets are: [0, 1, 2]
-      ConfirmOrderTicketReq ticketReq0 = tickets.get(0);
-      if(StrUtil.isNotBlank(ticketReq0.getSeat())) {
-        LOG.info("This order requires seat selection");
-        // Determine which columns are included in the seat type for this selection, to calculate each selected seat’s offset relative to the first seat
-        List<SeatColEnum> colEnumList = SeatColEnum.getColsByType(ticketReq0.getSeatTypeCode());
-        LOG.info("Seat Columns included in seat type for this order: {}", colEnumList);
-
-        // Build a reference seat list matching the two-row seat-selection layout on the front end, e.g. referSeatList = {A1, C1, D1, F1, A2, C2, D2, F2}
-        List<String> referSeatList = new ArrayList<>();
-        for (int i = 1; i <= 2; i++) {
-          for (SeatColEnum seatColEnum : colEnumList) {
-            referSeatList.add(seatColEnum.getCode() + i);
-          }
+        if (CollUtil.isEmpty(list)) {
+          LOG.info("No order to be processed, end loop");
+          break;
+        } else {
+          LOG.info("Process {} orders", list.size());
         }
-        LOG.info("Reference two-row seat list: {}", referSeatList);
 
-        List<Integer> offsetList = new ArrayList<>();
-        // Absolute offset value, i.e., the position within the reference seat list
-        List<Integer> aboluteOffsetList = new ArrayList<>();
-        for (ConfirmOrderTicketReq ticketReq : tickets) {
-          int index = referSeatList.indexOf(ticketReq.getSeat());
-          aboluteOffsetList.add(index);
-        }
-        LOG.info("Absolute offset value for all seats: {}", aboluteOffsetList);
-        for (Integer index : aboluteOffsetList) {
-          int offset = index - aboluteOffsetList.get(0);
-          offsetList.add(offset);
-        }
-        LOG.info("Calculate the relative offset values of all seats relative to the first seat: {}", offsetList);
-
-        getSeat(
-            finalSeatList,
-            date,
-            trainCode,
-            ticketReq0.getSeatTypeCode(),
-            ticketReq0.getSeat().split("")[0], // A1 -> A
-            offsetList,
-            dailyTrainTicket.getStartIndex(),
-            dailyTrainTicket.getEndIndex()
-        );
-
-      } else {
-        LOG.info("This order does not require seat selection");
-
-        for (ConfirmOrderTicketReq ticketReq : tickets) {
-          getSeat(
-              finalSeatList,
-              date,
-              trainCode,
-              ticketReq.getSeatTypeCode(),
-              null,
-              null,
-              dailyTrainTicket.getStartIndex(),
-              dailyTrainTicket.getEndIndex()
-          );
-        }
-      }
-
-      LOG.info("Final seat list: {}", finalSeatList);
-
-      // After seats are selected, process the transaction:
-      // - Update seat table sell status
-      // - Update remaining tickets in the ticket-detail table
-      // - Add a purchase record for the member
-      // - Update the confirmation order status to "success"
-      try {
-        afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets, confirmOrder);
-      } catch (Exception e) {
-        LOG.error("fail to store ticket info", e);
-        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
+        // Sell one by one
+        list.forEach(this::sell);
       }
 
 //      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
@@ -299,7 +198,152 @@ public class ConfirmOrderService {
     }
   }
 
-  private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
+  /**
+   * Sell ticket
+   * @param confirmOrder
+   */
+  private void sell(ConfirmOrder confirmOrder) {
+    // Construct ConfirmOrderDoReq
+    ConfirmOrderDoReq req = new ConfirmOrderDoReq();
+    req.setMemberId(confirmOrder.getMemberId());
+    req.setDate(confirmOrder.getDate());
+    req.setTrainCode(confirmOrder.getTrainCode());
+    req.setStart(confirmOrder.getStart());
+    req.setEnd(confirmOrder.getEnd());
+    req.setDailyTrainTicketId(confirmOrder.getDailyTrainTicketId());
+    req.setTickets(JSON.parseArray(confirmOrder.getTickets(), ConfirmOrderTicketReq.class));
+    req.setImageCode("");
+    req.setImageCodeToken("");
+    req.setLogId("");
+
+    // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice TO-DO
+
+    Date date = req.getDate();
+    String trainCode = req.getTrainCode();
+    String start = req.getStart();
+    String end = req.getEnd();
+    List<ConfirmOrderTicketReq> tickets = req.getTickets();
+
+    // Save the confirmation order record with initial status
+//      DateTime now = DateTime.now();
+//      ConfirmOrder confirmOrder = new ConfirmOrder();
+//      confirmOrder.setId(SnowUtil.getSnowflakeNextId());
+//      confirmOrder.setCreateTime(now);
+//      confirmOrder.setUpdateTime(now);
+//      confirmOrder.setMemberId(req.getMemberId());
+//      confirmOrder.setDate(date);
+//      confirmOrder.setTrainCode(trainCode);
+//      confirmOrder.setStart(start);
+//      confirmOrder.setEnd(end);
+//      confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
+//      confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
+//      confirmOrder.setTickets(JSON.toJSONString(tickets));
+//      confirmOrderMapper.insert(confirmOrder);
+
+    // Get order from database
+//    ConfirmOrderExample confirmOrderExample = new ConfirmOrderExample();
+//    confirmOrderExample.setOrderByClause("id asc");
+//    ConfirmOrderExample.Criteria criteria = confirmOrderExample.createCriteria();
+//    criteria.andDateEqualTo(req.getDate())
+//        .andTrainCodeEqualTo(req.getTrainCode())
+//        .andMemberIdEqualTo(req.getMemberId())
+//        .andStatusEqualTo(ConfirmOrderStatusEnum.INIT.getCode());
+//    List<ConfirmOrder> list = confirmOrderMapper.selectByExampleWithBLOBs(confirmOrderExample);
+//    ConfirmOrder confirmOrder;
+//    if (CollUtil.isEmpty(list)) {
+//      LOG.info("Cannot find original order, end");
+//      return;
+//    } else {
+//      LOG.info("Process {} orders", list.size());
+//      confirmOrder = list.get(0);
+//    }
+
+    // Retrieve the remaining-ticket record to get the actual inventory
+    DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
+    LOG.info("Retrieve remaining tickets: {}", dailyTrainTicket);
+
+    // Decrement the remaining-ticket count and verify availability
+    reduceTickets(req, dailyTrainTicket);
+
+    // Final seat list
+    List<DailyTrainSeat> finalSeatList = new ArrayList<>();
+    // Calculate offsets relative to the first seat
+    // For example, if the selected seats are C1 and D2 (ACDF), the offsets are: [0, 5]
+    // For example, if the selected seats are A1, B1, and C1 (ABCDF), the offsets are: [0, 1, 2]
+    ConfirmOrderTicketReq ticketReq0 = tickets.get(0);
+    if(StrUtil.isNotBlank(ticketReq0.getSeat())) {
+      LOG.info("This order requires seat selection");
+      // Determine which columns are included in the seat type for this selection, to calculate each selected seat’s offset relative to the first seat
+      List<SeatColEnum> colEnumList = SeatColEnum.getColsByType(ticketReq0.getSeatTypeCode());
+      LOG.info("Seat Columns included in seat type for this order: {}", colEnumList);
+
+      // Build a reference seat list matching the two-row seat-selection layout on the front end, e.g. referSeatList = {A1, C1, D1, F1, A2, C2, D2, F2}
+      List<String> referSeatList = new ArrayList<>();
+      for (int i = 1; i <= 2; i++) {
+        for (SeatColEnum seatColEnum : colEnumList) {
+          referSeatList.add(seatColEnum.getCode() + i);
+        }
+      }
+      LOG.info("Reference two-row seat list: {}", referSeatList);
+
+      List<Integer> offsetList = new ArrayList<>();
+      // Absolute offset value, i.e., the position within the reference seat list
+      List<Integer> aboluteOffsetList = new ArrayList<>();
+      for (ConfirmOrderTicketReq ticketReq : tickets) {
+        int index = referSeatList.indexOf(ticketReq.getSeat());
+        aboluteOffsetList.add(index);
+      }
+      LOG.info("Absolute offset value for all seats: {}", aboluteOffsetList);
+      for (Integer index : aboluteOffsetList) {
+        int offset = index - aboluteOffsetList.get(0);
+        offsetList.add(offset);
+      }
+      LOG.info("Calculate the relative offset values of all seats relative to the first seat: {}", offsetList);
+
+      getSeat(
+          finalSeatList,
+          date,
+          trainCode,
+          ticketReq0.getSeatTypeCode(),
+          ticketReq0.getSeat().split("")[0], // A1 -> A
+          offsetList,
+          dailyTrainTicket.getStartIndex(),
+          dailyTrainTicket.getEndIndex()
+      );
+
+    } else {
+      LOG.info("This order does not require seat selection");
+
+      for (ConfirmOrderTicketReq ticketReq : tickets) {
+        getSeat(
+            finalSeatList,
+            date,
+            trainCode,
+            ticketReq.getSeatTypeCode(),
+            null,
+            null,
+            dailyTrainTicket.getStartIndex(),
+            dailyTrainTicket.getEndIndex()
+        );
+      }
+    }
+
+    LOG.info("Final seat list: {}", finalSeatList);
+
+    // After seats are selected, process the transaction:
+    // - Update seat table sell status
+    // - Update remaining tickets in the ticket-detail table
+    // - Add a purchase record for the member
+    // - Update the confirmation order status to "success"
+    try {
+      afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets, confirmOrder);
+    } catch (Exception e) {
+      LOG.error("fail to store ticket info", e);
+      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
+    }
+  }
+
+    private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
     List<DailyTrainSeat> getSeatList = new ArrayList<>();
     List<DailyTrainCarriage> carriageList = dailyTrainCarriageService.selectBySeatType(date, trainCode, seatType);
     LOG.info("Find {} matching carriages", carriageList.size());
