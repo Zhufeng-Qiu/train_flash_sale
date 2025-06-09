@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,42 +122,43 @@ public class ConfirmOrderService {
       throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
     }
 
-    // Purchase ticket
+    // Purchase ticket lock
     String lockKey = RedisKeyPreEnum.CONFIRM_ORDER + "-" + DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
-//    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
-//    if (setIfAbsent) {
-//      LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);
-//    } else {
-//      // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
-//      LOG.info("Unfortunately, failed to acquire the lock! lockKey：{}", lockKey);
-//      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
-//    }
+    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 10, TimeUnit.SECONDS);
+    if (setIfAbsent) {
+      LOG.info("Congratulation, got the lock! lockKey：{}", lockKey);
+    } else {
+      // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
+      LOG.info("Unfortunately, failed to acquire the lock! lockKey：{}", lockKey);
+      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+    }
 
-    RLock lock = null;
+//    RLock lock = null;
 
     try {
       // Use redisson built-in watchdog
-      lock = redissonClient.getLock(lockKey);
-      /**
-        waitTime: the maximum time to acquire the lock
-        leaseTime: lease time
-        timeUnit: time unit
-       */
-      // boolean tryLock = lock.tryLock(30, 10, TimeUnit.SECONDS); // without watchdog
-      boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS); // with watchdog
-      if (tryLock) {
-        LOG.info("Congratulation, got the lock!");
-         // Test redisson watchdog
-//         for (int i = 0; i < 30; i++) {
-//             Long expire = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
-//             LOG.info("Lock expire time: {}", expire);
-//             Thread.sleep(1000);
-//         }
-      } else {
-        // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
-        LOG.info("Unfortunately, failed to acquire the lock!");
-        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
-      }
+//      lock = redissonClient.getLock(lockKey);
+//      /**
+//        waitTime: the maximum time to acquire the lock
+//        leaseTime: lease time
+//        timeUnit: time unit
+//       */
+//      // boolean tryLock = lock.tryLock(30, 10, TimeUnit.SECONDS); // without watchdog
+//      boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS); // with watchdog
+//      if (tryLock) {
+//        LOG.info("Congratulation, got the lock!");
+//         // Test redisson watchdog
+////         for (int i = 0; i < 30; i++) {
+////             Long expire = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
+////             LOG.info("Lock expire time: {}", expire);
+////             Thread.sleep(1000);
+////         }
+//      } else {
+//        // It just means the lock was not acquired, and do not know if tickets are sold out, so the prompt is "please try again shortly."
+//        LOG.info("Unfortunately, failed to acquire the lock!");
+//        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+//      }
+
       // Business data validation omitted, e.g.: verifying train existence, ticket availability, train within valid period, tickets.length > 0, and preventing the same passenger from buying on the same train twice TO-DO
 
       Date date = req.getDate();
@@ -269,13 +269,15 @@ public class ConfirmOrderService {
 
 //      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
 //      redisTemplate.delete(lockKey);
-    } catch (InterruptedException e) {
-      LOG.error("Purchase exception", e);
+//    } catch (InterruptedException e) {
+//      LOG.error("Purchase exception", e);
     } finally {
-      LOG.info("Purchase process completed, release lock!");
-      if (null != lock && lock.isHeldByCurrentThread()) {
-        lock.unlock();
-      }
+      LOG.info("Purchase process completed, release lock! lockKey：{}", lockKey);
+      redisTemplate.delete(lockKey);
+//      LOG.info("Purchase process completed, release lock!");
+//      if (null != lock && lock.isHeldByCurrentThread()) {
+//        lock.unlock();
+//      }
     }
   }
 
@@ -452,7 +454,7 @@ public class ConfirmOrderService {
    * @param e
    */
   public void doConfirmBlock(ConfirmOrderDoReq req, BlockException e) {
-    LOG.info("Ticket purchase requests are being rate limited: {}", req);
+    LOG.info("Ticket purchase requests are being flow limited: {}", req);
     throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_FLOW_EXCEPTION);
   }
 }
