@@ -6,3 +6,8 @@ GET http://localhost:8000/batch/hello
 Accept: application/json
 
 ###
+
+GET http://47.251.175.96/batch/hello
+Accept: application/json
+
+###
