@@ -2,6 +2,7 @@ package com.zephyr.train.common.util;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.crypto.GlobalBouncyCastleProvider;
 import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTPayload;
@@ -21,6 +22,8 @@ public class JwtUtil {
   private static final String key = "zephyr123456";
 
   public static String createToken(Long id, String mobile) {
+    LOG.info("Start to generate JWT token, id: {}, mobile: {}", id, mobile);
+    GlobalBouncyCastleProvider.setUseBouncyCastle(false);
     DateTime now = DateTime.now();
     DateTime expTime = now.offsetNew(DateField.HOUR, 24);
     Map<String, Object> payload = new HashMap<>();
@@ -39,14 +42,17 @@ public class JwtUtil {
   }
 
   public static boolean validate(String token) {
+    LOG.info("Start JWT token validation, token: {}", token);
+    GlobalBouncyCastleProvider.setUseBouncyCastle(false);
     JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
-    // validate包含了verify
+    // validate includes verify
     boolean validate = jwt.validate(0);
     LOG.info("Check JWT token：{}", validate);
     return validate;
   }
 
   public static JSONObject getJSONObject(String token) {
+    GlobalBouncyCastleProvider.setUseBouncyCastle(false);
     JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
     JSONObject payloads = jwt.getPayloads();
     payloads.remove(JWTPayload.ISSUED_AT);
