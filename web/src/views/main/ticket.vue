@@ -1,7 +1,7 @@
 <template>
   <p>
     <a-space>
-      <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="Please select date"></a-date-picker>
+      <a-date-picker v-model:value="params.date" :disabled-date="disabledDate" valueFormat="YYYY-MM-DD" placeholder="Please select date"></a-date-picker>
       <station-select-view v-model="params.start" width="200px"></station-select-view>
       <station-select-view v-model="params.end" width="200px"></station-select-view>
       <a-button type="primary" @click="handleQuery()">Search</a-button>
@@ -15,7 +15,7 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
-          <a-button type="primary" @click="toOrder(record)">Order</a-button>
+          <a-button type="primary" @click="toOrder(record)" :disabled="isExpire(record)">{{isExpire(record) ? "Expired" : "Order"}}</a-button>
           <router-link :to="{
             path: '/seat',
             query: {
@@ -291,6 +291,24 @@ export default defineComponent({
       });
     };
 
+    // Disable the date earlier than today or more than two weeks in the future.
+    const disabledDate = current => {
+      return current && (current <= dayjs().add(-1, 'day') || current > dayjs().add(14, 'day'));
+    };
+
+    // Check whether the date is expired
+    const isExpire = (record) => {
+      // Standard time: 2000/01/01 00:00:00
+      let startDateTimeString = record.date.replace(/-/g, "/") + " " + record.startTime;
+      let startDateTime = new Date(startDateTimeString);
+
+      // Current time
+      let now = new Date();
+
+      console.log(startDateTime)
+      return now.valueOf() >= startDateTime.valueOf();
+    };
+
     onMounted(() => {
       params.value = SessionStorage.get(SESSION_TICKET_PARAMS) || {};
       if (Tool.isNotEmpty(params.value)) {
@@ -314,7 +332,9 @@ export default defineComponent({
       calDuration,
       toOrder,
       showStation,
-      stations
+      stations,
+      disabledDate,
+      isExpire
     };
   },
 });
