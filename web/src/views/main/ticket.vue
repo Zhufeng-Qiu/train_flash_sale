@@ -14,7 +14,10 @@
            :loading="loading">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
-        <a-button type="primary" @click="toOrder(record)">Order</a-button>
+        <a-space>
+          <a-button type="primary" @click="toOrder(record)">Order</a-button>
+          <a-button type="primary" @click="showStation(record)">En-route stations</a-button>
+        </a-space>
       </template>
       <template v-else-if="column.dataIndex === 'station'">
         DEP: {{record.startPinyin}}<br/>
@@ -71,6 +74,29 @@
       </template>
     </template>
   </a-table>
+
+  <!-- Stations en route -->
+  <a-modal style="top: 30px" v-model:visible="visible" :title="null" :footer="null" :closable="false">
+    <a-table :data-source="stations" :pagination="false">
+      <a-table-column key="index" title="Station Index" data-index="index" />
+      <a-table-column key="name" title="Station Name" data-index="name" />
+      <a-table-column key="inTime" title="Arrival Time" data-index="inTime">
+        <template #default="{ record }">
+          {{record.index === 0 ? '-' : record.inTime}}
+        </template>
+      </a-table-column>
+      <a-table-column key="outTime" title="Departure Time" data-index="outTime">
+        <template #default="{ record }">
+          {{record.index === (stations.length - 1) ? '-' : record.outTime}}
+        </template>
+      </a-table-column>
+      <a-table-column key="stopTime" title="Dwell Duration" data-index="stopTime">
+        <template #default="{ record }">
+          {{record.index === 0 || record.index === (stations.length - 1) ? '-' : record.stopTime}}
+        </template>
+      </a-table-column>
+    </a-table>
+  </a-modal>
 </template>
 
 <script>
@@ -233,6 +259,25 @@ export default defineComponent({
       router.push("/order")
     };
 
+    // ---------------------- Stations en route ----------------------
+    const stations = ref([]);
+    const showStation = record => {
+      visible.value = true;
+      axios.get("/business/daily-train-station/query-by-train-code", {
+        params: {
+          date: record.date,
+          trainCode: record.trainCode
+        }
+      }).then((response) => {
+        let data = response.data;
+        if (data.success) {
+          stations.value = data.content;
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
     onMounted(() => {
       params.value = SessionStorage.get(SESSION_TICKET_PARAMS) || {};
       if (Tool.isNotEmpty(params.value)) {
@@ -254,7 +299,9 @@ export default defineComponent({
       loading,
       params,
       calDuration,
-      toOrder
+      toOrder,
+      showStation,
+      stations
     };
   },
 });

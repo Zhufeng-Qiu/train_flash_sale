@@ -95,9 +95,9 @@
         <div style="color: #999999">Note: you can choose {{tickets.length}} seats</div>
       </div>
 <!--      <br/>-->
-<!--      最终购票：{{tickets}}-->
+<!--      Final tickets: {{tickets}}-->
 <!--      <br/>-->
-<!--      最终选座：{{chooseSeatObj}}-->
+<!--      Final seats: {{chooseSeatObj}}-->
     </div>
   </a-modal>
 
@@ -147,7 +147,7 @@
       </div>
     </div>
     <br/>
-    <a-button type="danger" @click="onCancelOrder">取消购票</a-button>
+    <a-button type="danger" @click="onCancelOrder">Cancel Queueing</a-button>
   </a-modal>
 </template>
 
