@@ -15,7 +15,7 @@ public class SeatSellResp {
   /**
    * Column|Enum[SeatColEnum]
    */
-  private String column;
+  private String col;
 
   /**
    * Seat Type|Enum[SeatTypeEnum]
@@ -43,12 +43,12 @@ public class SeatSellResp {
     this.row = row;
   }
 
-  public String getColumn() {
-    return column;
+  public String getCol() {
+    return col;
   }
 
-  public void setColumn(String column) {
-    this.column = column;
+  public void setCol(String col) {
+    this.col = col;
   }
 
   public String getSeatType() {
@@ -75,7 +75,7 @@ public class SeatSellResp {
     sb.append("Hash = ").append(hashCode());
     sb.append(", carriageIndex=").append(carriageIndex);
     sb.append(", row=").append(row);
-    sb.append(", column=").append(column);
+    sb.append(", col=").append(col);
     sb.append(", seatType=").append(seatType);
     sb.append(", sell=").append(sell);
     sb.append("]");

@@ -34,6 +34,7 @@
       </a-form-item>
       <a-form-item label="Station Index">
         <a-input v-model:value="trainStation.index" />
+        <span style="color: red">IMPORTANT: the index of first station must be 0; otherwise, the Seating chart feature would be affected</span>
       </a-form-item>
       <a-form-item label="Station">
         <station-select-view v-model="trainStation.name"></station-select-view>

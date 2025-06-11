@@ -21,9 +21,9 @@
             query: {
               date: record.date,
               trainCode: record.trainCode,
-              start: record.start,
+              startPinyin: record.startPinyin,
               startIndex: record.startIndex,
-              end: record.end,
+              endPinyin: record.endPinyin,
               endIndex: record.endIndex
             }
           }">
