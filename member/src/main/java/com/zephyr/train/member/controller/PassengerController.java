@@ -49,4 +49,10 @@ public class PassengerController {
     List<PassengerQueryResp> list = passengerService.queryMine();
     return new CommonResp<>(list);
   }
+
+  @GetMapping("/init")
+  public CommonResp<Object> init() {
+    passengerService.init();
+    return new CommonResp<>();
+  }
 }

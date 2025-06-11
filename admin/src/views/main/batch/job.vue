@@ -83,7 +83,7 @@
           <div class="ant-alert ant-alert-success">
             Execute every 5 seconds: 0/5 * * * * ?
             <br>
-            Execute every 5 minutes: * 0/5 * * * ?
+            Execute every 5 minutes: 0 0/5 * * * ?
           </div>
         </a-form-item>
       </a-form>
