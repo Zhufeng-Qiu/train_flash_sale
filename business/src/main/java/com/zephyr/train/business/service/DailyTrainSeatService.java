@@ -15,7 +15,9 @@ import com.zephyr.train.business.domain.TrainStation;
 import com.zephyr.train.business.mapper.DailyTrainSeatMapper;
 import com.zephyr.train.business.req.DailyTrainSeatQueryReq;
 import com.zephyr.train.business.req.DailyTrainSeatSaveReq;
+import com.zephyr.train.business.req.SeatSellReq;
 import com.zephyr.train.business.resp.DailyTrainSeatQueryResp;
+import com.zephyr.train.business.resp.SeatSellResp;
 import com.zephyr.train.common.resp.PageResp;
 import com.zephyr.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
@@ -148,5 +150,20 @@ public class DailyTrainSeatService {
         .andTrainCodeEqualTo(trainCode)
         .andCarriageIndexEqualTo(carriageIndex);
     return dailyTrainSeatMapper.selectByExample(example);
+  }
+
+  /**
+   * Query all seats for specific train and date
+   */
+  public List<SeatSellResp> querySeatSell(SeatSellReq req) {
+    Date date = req.getDate();
+    String trainCode = req.getTrainCode();
+    LOG.info("Seat sales info of train[{}] for date[{}]", trainCode, DateUtil.formatDate(date));
+    DailyTrainSeatExample dailyTrainSeatExample = new DailyTrainSeatExample();
+    dailyTrainSeatExample.setOrderByClause("`carriage_index` asc, carriage_seat_index asc");
+    dailyTrainSeatExample.createCriteria()
+        .andDateEqualTo(date)
+        .andTrainCodeEqualTo(trainCode);
+    return BeanUtil.copyToList(dailyTrainSeatMapper.selectByExample(dailyTrainSeatExample), SeatSellResp.class);
   }
 }

@@ -38,7 +38,7 @@
       </template>
       <template v-else-if="column.dataIndex === 'ydz'">
         <div v-if="record.ydz >= 0">
-          ${{record.ydzPrice}}
+          ${{record.ydzPrice}}<br/>
           {{record.ydz}} seats left<br/>
         </div>
         <div v-else>
@@ -47,8 +47,8 @@
       </template>
       <template v-else-if="column.dataIndex === 'edz'">
         <div v-if="record.edz >= 0">
+          ${{record.edzPrice}}<br/>
           {{record.edz}} seats left<br/>
-          ${{record.edzPrice}}
         </div>
         <div v-else>
           --

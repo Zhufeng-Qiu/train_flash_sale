@@ -1,3 +1,154 @@
+GET http://localhost:8000/business/seat-sell/query?date=2025-06-01&trainCode=G2
+Accept: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDk2NjUyODAsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDk3NTE2ODAsImlhdCI6MTc0OTY2NTI4MH0.wrlJlmQbVlU0MFvnA46EHwhpF87HTciQuX7bB7qRgWs
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-11T110805.200.json
+
+###
+
+POST http://localhost:8000/member/member/login
+Content-Type: application/json
+Content-Length: 50
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "mobile": "206-123-4567",
+  "code": "123456"
+}
+
+<> 2025-06-11T110800.200.json
+
+###
+
+GET http://localhost:8000/business/seat-sell/query?date=2025-06-01&trainCode=G2
+Accept: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDk2NjUxODUsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDk3NTE1ODUsImlhdCI6MTc0OTY2NTE4NX0.XUbBEVuWaS0rYRk7Gle9jlcyOB-CFLZVKXLWqxEdKio
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-11T110628.503.json
+
+###
+
+POST http://localhost:8000/member/member/login
+Content-Type: application/json
+Content-Length: 50
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "mobile": "206-123-4567",
+  "code": "123456"
+}
+
+<> 2025-06-11T110625.200.json
+
+###
+
+GET http://localhost:8000/business/seat-sell/query?date=2025-06-01&trainCode=G2
+Accept: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDk2NjUwNzcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDk3NTE0NzcsImlhdCI6MTc0OTY2NTA3N30.hG0ZRVbz-i2Us4DjLD1FKaNzBiB-9r_KENTNc6kMIsM
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-11T110617.503.json
+
+###
+
+GET http://localhost:8000/business/seat-sell/query?date=2025-06-01&trainCode=G2
+Accept: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDk2NjUwNzcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDk3NTE0NzcsImlhdCI6MTc0OTY2NTA3N30.hG0ZRVbz-i2Us4DjLD1FKaNzBiB-9r_KENTNc6kMIsM
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-11T110540.503.json
+
+###
+
+POST http://localhost:8000/member/member/send-code
+Content-Type: application/json
+Content-Length: 30
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "mobile": "206-670-8647"
+}
+
+<> 2025-06-11T110531.200.json
+
+###
+
+GET http://localhost:8000/business/seat-sell/query?date=2025-06-01&trainCode=G2
+Accept: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDk2NjUwNzcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDk3NTE0NzcsImlhdCI6MTc0OTY2NTA3N30.hG0ZRVbz-i2Us4DjLD1FKaNzBiB-9r_KENTNc6kMIsM
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-11T110517.500.json
+
+###
+
+GET http://localhost:8000/business/seat-sell/query?date=2023-06-01&trainCode=G2
+Accept: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDk2NjUwNzcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDk3NTE0NzcsImlhdCI6MTc0OTY2NTA3N30.hG0ZRVbz-i2Us4DjLD1FKaNzBiB-9r_KENTNc6kMIsM
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-11T110459.404.json
+
+###
+
+GET http://localhost:8000/business/seat-sell/query?date=2023-06-01&trainCode=G2
+Accept: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDk2NjUwNzcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDk3NTE0NzcsImlhdCI6MTc0OTY2NTA3N30.hG0ZRVbz-i2Us4DjLD1FKaNzBiB-9r_KENTNc6kMIsM
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-11T110453.404.json
+
+###
+
+GET http://localhost:8000/business/seat-sell/query?date=2023-06-01&trainCode=G1
+Accept: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3NDk2NjUwNzcsIm1vYmlsZSI6IjIwNi0xMjMtNDU2NyIsImlkIjoxOTE4OTI2MTg3MDU3NTE2NTQ0LCJleHAiOjE3NDk3NTE0NzcsImlhdCI6MTc0OTY2NTA3N30.hG0ZRVbz-i2Us4DjLD1FKaNzBiB-9r_KENTNc6kMIsM
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2025-06-11T110444.404.json
+
+###
+
+POST http://localhost:8000/member/member/login
+Content-Type: application/json
+Content-Length: 50
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "mobile": "206-123-4567",
+  "code": "123456"
+}
+
+<> 2025-06-11T110438.200.json
+
+###
+
 GET http://47.251.175.96/member/hello
 Accept: application/json
 Connection: Keep-Alive
@@ -449,126 +600,6 @@ User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2025-05-24T054244.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list3?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T054030.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T053940.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list2?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T053934.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T051951.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T051943.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T051922.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T051839.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T050825.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T050759.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T050758.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T050757.200.json
-
-###
-
-GET http://localhost:8000/business/admin/daily-train-ticket/query-list?page=1&size=5&trainCode=G2&start=Seattle&end=New York City
-Content-Type: application/json
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.13 (Java/17.0.5)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2025-05-24T050756.200.json
 
 ###
 
