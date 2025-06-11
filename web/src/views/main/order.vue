@@ -146,6 +146,8 @@
 
       </div>
     </div>
+    <br/>
+    <a-button type="danger" @click="onCancelOrder">取消购票</a-button>
   </a-modal>
 </template>
 
@@ -484,6 +486,28 @@ export default defineComponent({
       }
     };
 
+    /**
+     * Cancel queueing
+     */
+    const onCancelOrder = () => {
+      axios.get("/business/confirm-order/cancel/" + confirmOrderId.value).then((response) => {
+        let data = response.data;
+        if (data.success) {
+          let result = data.content;
+          if (result === 1) {
+            notification.success({description: "Cacel syccessfully!"});
+            // After cancelling queueing, do not query result continuously
+            clearInterval(queryLineCountInterval);
+            lineModalVisible.value = false;
+          } else {
+            notification.error({description: "Fail to cancel!"});
+          }
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
     onMounted(() => {
       handleQueryPassenger();
     });
@@ -516,7 +540,8 @@ export default defineComponent({
       validFirstImageCode,
       lineModalVisible,
       confirmOrderId,
-      confirmOrderLineCount
+      confirmOrderLineCount,
+      onCancelOrder
     };
   },
 });
