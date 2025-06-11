@@ -16,7 +16,20 @@
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
           <a-button type="primary" @click="toOrder(record)">Order</a-button>
-          <a-button type="primary" @click="showStation(record)">En-route stations</a-button>
+          <router-link :to="{
+            path: '/seat',
+            query: {
+              date: record.date,
+              trainCode: record.trainCode,
+              start: record.start,
+              startIndex: record.startIndex,
+              end: record.end,
+              endIndex: record.endIndex
+            }
+          }">
+            <a-button type="primary">Seating Chart</a-button>
+          </router-link>
+          <a-button type="primary" @click="showStation(record)">En-route Stations</a-button>
         </a-space>
       </template>
       <template v-else-if="column.dataIndex === 'station'">

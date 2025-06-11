@@ -40,6 +40,11 @@
           <idcard-outlined /> &nbsp; My Tickets
         </router-link>
       </a-menu-item>
+      <a-menu-item key="/seat">
+        <router-link to="/seat">
+          <usergroup-add-outlined /> &nbsp; Seating Chart
+        </router-link>
+      </a-menu-item>
     </a-menu>
   </a-layout-header>
 </template>
