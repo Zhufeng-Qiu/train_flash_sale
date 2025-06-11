@@ -42,50 +42,56 @@ public class BeforeConfirmOrderService {
 
   @SentinelResource(value = "beforeDoConfirm", blockHandler = "beforeDoConfirmBlock")
   public Long beforeDoConfirm(ConfirmOrderDoReq req) {
-    req.setMemberId(LoginMemberContext.getId());
+    Long id = null;
+    // Loop based on number of users in queue
+    for (int i = 0; i < req.getLineNumber() + 1; i++) {
+      req.setMemberId(LoginMemberContext.getId());
 
-    // Check remaining token
-    boolean validSkToken = skTokenService.validSkToken(req.getDate(), req.getTrainCode(), LoginMemberContext.getId());
-    if (validSkToken) {
-      LOG.info("Validation of remaining token passed");
-    } else {
-      LOG.info("Validation of remaining token failed");
-      throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
+      // Check remaining token
+      boolean validSkToken = skTokenService.validSkToken(req.getDate(), req.getTrainCode(),
+          LoginMemberContext.getId());
+      if (validSkToken) {
+        LOG.info("Validation of remaining token passed");
+      } else {
+        LOG.info("Validation of remaining token failed");
+        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
+      }
+
+      Date date = req.getDate();
+      String trainCode = req.getTrainCode();
+      String start = req.getStart();
+      String end = req.getEnd();
+      List<ConfirmOrderTicketReq> tickets = req.getTickets();
+
+      // Save the confirmation order record with initial status
+      DateTime now = DateTime.now();
+      ConfirmOrder confirmOrder = new ConfirmOrder();
+      confirmOrder.setId(SnowUtil.getSnowflakeNextId());
+      confirmOrder.setCreateTime(now);
+      confirmOrder.setUpdateTime(now);
+      confirmOrder.setMemberId(req.getMemberId());
+      confirmOrder.setDate(date);
+      confirmOrder.setTrainCode(trainCode);
+      confirmOrder.setStart(start);
+      confirmOrder.setEnd(end);
+      confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
+      confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
+      confirmOrder.setTickets(JSON.toJSONString(tickets));
+      confirmOrderMapper.insert(confirmOrder);
+
+      // Send MQ to queue up for purchasing
+      ConfirmOrderMQDto confirmOrderMQDto = new ConfirmOrderMQDto();
+      confirmOrderMQDto.setDate(req.getDate());
+      confirmOrderMQDto.setTrainCode(req.getTrainCode());
+      confirmOrderMQDto.setLogId(MDC.get("LOG_ID"));
+      String reqJson = JSON.toJSONString(confirmOrderMQDto);
+      //    LOG.info("Queue up for purchasing ticket, sending MQ starts, message: {} ", reqJson);
+      //    rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(), reqJson);
+      //    LOG.info("Queue up for purchasing ticket, sending MQ ends");
+      confirmOrderService.doConfirm(confirmOrderMQDto);
+      id = confirmOrder.getId();
     }
-
-    Date date = req.getDate();
-    String trainCode = req.getTrainCode();
-    String start = req.getStart();
-    String end = req.getEnd();
-    List<ConfirmOrderTicketReq> tickets = req.getTickets();
-
-    // Save the confirmation order record with initial status
-    DateTime now = DateTime.now();
-    ConfirmOrder confirmOrder = new ConfirmOrder();
-    confirmOrder.setId(SnowUtil.getSnowflakeNextId());
-    confirmOrder.setCreateTime(now);
-    confirmOrder.setUpdateTime(now);
-    confirmOrder.setMemberId(req.getMemberId());
-    confirmOrder.setDate(date);
-    confirmOrder.setTrainCode(trainCode);
-    confirmOrder.setStart(start);
-    confirmOrder.setEnd(end);
-    confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
-    confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
-    confirmOrder.setTickets(JSON.toJSONString(tickets));
-    confirmOrderMapper.insert(confirmOrder);
-
-    // Send MQ to queue up for purchasing
-    ConfirmOrderMQDto confirmOrderMQDto = new ConfirmOrderMQDto();
-    confirmOrderMQDto.setDate(req.getDate());
-    confirmOrderMQDto.setTrainCode(req.getTrainCode());
-    confirmOrderMQDto.setLogId(MDC.get("LOG_ID"));
-    String reqJson = JSON.toJSONString(confirmOrderMQDto);
-//    LOG.info("Queue up for purchasing ticket, sending MQ starts, message: {} ", reqJson);
-//    rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(), reqJson);
-//    LOG.info("Queue up for purchasing ticket, sending MQ ends");
-    confirmOrderService.doConfirm(confirmOrderMQDto);
-    return confirmOrder.getId();
+    return id;
   }
 
   /**

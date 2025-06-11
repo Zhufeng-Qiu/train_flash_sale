@@ -68,6 +68,11 @@ public class ConfirmOrderDoReq {
     @NotBlank(message = "[CAPTCHA] illegal parameter")
     private String imageCodeToken;
 
+    /**
+     * Number of users in queue for ticket Queue Simulation:
+     */
+    private int lineNumber;
+
     public Long getMemberId() {
         return memberId;
     }
@@ -148,6 +153,14 @@ public class ConfirmOrderDoReq {
         this.logId = logId;
     }
 
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
+    }
+
     @Override
     public String toString() {
         return "ConfirmOrderDoReq{" +
@@ -161,6 +174,7 @@ public class ConfirmOrderDoReq {
             ", imageCode='" + imageCode + '\'' +
             ", imageCodeToken='" + imageCodeToken + '\'' +
             ", logId='" + logId + '\'' +
+            ", lineNumber=" + lineNumber +
             '}';
     }
 }

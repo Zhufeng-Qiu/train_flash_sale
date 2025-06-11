@@ -94,6 +94,11 @@
         </div>
         <div style="color: #999999">Note: you can choose {{tickets.length}} seats</div>
       </div>
+      <br>
+      <div style="color: red">
+        Ticket Queue Simulation(add multiple people ahead of you in the queue):
+        <a-input-number v-model:value="lineNumber" :min="0" :max="20" />
+      </div>
 <!--      <br/>-->
 <!--      Final tickets: {{tickets}}-->
 <!--      <br/>-->
@@ -208,6 +213,7 @@ export default defineComponent({
     const lineModalVisible = ref(false);
     const confirmOrderId = ref();
     const confirmOrderLineCount = ref(-1);
+    const lineNumber = ref(5);
 
     // Check or uncheck a passenger then add or remove a record
     watch(() => passengerChecks.value, (newVal, oldVal)=>{
@@ -378,6 +384,7 @@ export default defineComponent({
         tickets: tickets.value,
         imageCodeToken: imageCodeToken.value,
         imageCode: imageCode.value,
+        lineNumber: lineNumber.value
       }).then((response) => {
         let data = response.data;
         if (data.success) {
@@ -541,7 +548,8 @@ export default defineComponent({
       lineModalVisible,
       confirmOrderId,
       confirmOrderLineCount,
-      onCancelOrder
+      onCancelOrder,
+      lineNumber
     };
   },
 });
