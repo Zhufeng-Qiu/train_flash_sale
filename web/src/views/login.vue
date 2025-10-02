@@ -40,14 +40,12 @@
     <a-col :span="12" :offset="6">
       <div style="margin-top: 20px; color: gray;">
         <p>
+          To access Admin panel, visit: <a href="http://tfs-admin.zhufqiu.com" target="_blank" style="color: #1890ff; text-decoration: none;">tfs-admin.zhufqiu.com</a><br><br>
           ⚠️ This is a demo project focused on the ticket-related feature, so
           <strong>SMS verification is not functional</strong> by default.<br><br>
           The backend verification value is preset to
           <code>'123456'</code>, so that when you click the <strong>"Send Code"</strong> button, the code is automatically filled as
           <code>'123456'</code> to pass the validation. Using any other value will trigger a failure notification.<br><br>
-          To enable real SMS verification, update the
-          <code><strong>TO-DO: Generate verification code</strong></code> section in the backend logic.<br><br>
-          Another option is to modify <code><strong>register</strong></code> and <code><strong>login</strong></code> function in <code><strong>MemberService</strong></code> class to implement any custom or third-party login component.
         </p>
       </div>
     </a-col>
