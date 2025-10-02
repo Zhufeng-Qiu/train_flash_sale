@@ -1,6 +1,6 @@
 <template>
   <div v-if="!param.date">
-    Please select a train first in <strong>Ticket Search</strong>,
+    Please select a train in <strong>Ticket Search</strong> page first,
     <router-link to="/ticket">
       navigate to Ticket Search page
     </router-link>

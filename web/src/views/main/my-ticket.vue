@@ -135,6 +135,11 @@ export default defineComponent({
       dataIndex: 'seatType',
       key: 'seatType',
     },
+    {
+      title: 'Order Time',
+      dataIndex: 'createTime',
+      key: 'createTime',
+    },
     ];
 
 

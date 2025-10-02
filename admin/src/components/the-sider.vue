@@ -13,7 +13,7 @@
       </a-menu-item>
       <a-menu-item key="/about">
         <router-link to="/about">
-          <user-outlined /> &nbsp; About
+          <InfoCircleOutlined /> &nbsp; About
         </router-link>
       </a-menu-item>
       <a-sub-menu key="member">
@@ -38,37 +38,37 @@
         </template>
         <a-menu-item key="/business/confirm-order">
           <router-link to="/business/confirm-order">
-            <user-outlined /> &nbsp; Order Management
+            <MenuUnfoldOutlined /> &nbsp; Order Management
           </router-link>
         </a-menu-item>
         <a-menu-item key="/business/sk-token">
           <router-link to="/business/sk-token">
-            <user-outlined /> &nbsp; Token Management
+            <MenuUnfoldOutlined /> &nbsp; Token Management
           </router-link>
         </a-menu-item>
         <a-menu-item key="/business/daily-train-ticket">
           <router-link to="/business/daily-train-ticket">
-            <user-outlined /> &nbsp; Daily Remaining Ticket
+            <MenuUnfoldOutlined /> &nbsp; Daily Remaining Ticket
           </router-link>
         </a-menu-item>
         <a-menu-item key="/business/daily-train">
           <router-link to="/business/daily-train">
-            <user-outlined /> &nbsp; Daily Train Management
+            <MenuUnfoldOutlined /> &nbsp; Daily Train Management
           </router-link>
         </a-menu-item>
         <a-menu-item key="/business/daily-train-station">
           <router-link to="/business/daily-train-station">
-            <user-outlined /> &nbsp; Daily Train-Station
+            <MenuUnfoldOutlined /> &nbsp; Daily Train-Station
           </router-link>
         </a-menu-item>
         <a-menu-item key="/business/daily-train-carriage">
           <router-link to="/business/daily-train-carriage">
-            <user-outlined /> &nbsp; Daily Train-Carriage
+            <MenuUnfoldOutlined /> &nbsp; Daily Train-Carriage
           </router-link>
         </a-menu-item>
         <a-menu-item key="/business/daily-train-seat">
           <router-link to="/business/daily-train-seat">
-            <user-outlined /> &nbsp; Daily Train-Seat
+            <MenuUnfoldOutlined /> &nbsp; Daily Train-Seat
           </router-link>
         </a-menu-item>
       </a-sub-menu>
@@ -81,27 +81,27 @@
         </template>
         <a-menu-item key="/base/station">
           <router-link to="/base/station">
-            <user-outlined /> &nbsp; Station Management
+            <MenuUnfoldOutlined /> &nbsp; Station Management
           </router-link>
         </a-menu-item>
         <a-menu-item key="/base/train">
           <router-link to="/base/train">
-            <user-outlined /> &nbsp; Train Management
+            <MenuUnfoldOutlined /> &nbsp; Train Management
           </router-link>
         </a-menu-item>
         <a-menu-item key="/base/train-station">
           <router-link to="/base/train-station">
-            <user-outlined /> &nbsp; Train-Station
+            <MenuUnfoldOutlined /> &nbsp; Train-Station
           </router-link>
         </a-menu-item>
         <a-menu-item key="/base/train-carriage">
           <router-link to="/base/train-carriage">
-            <user-outlined /> &nbsp; Train-Carriage
+            <MenuUnfoldOutlined /> &nbsp; Train-Carriage
           </router-link>
         </a-menu-item>
         <a-menu-item key="/base/train-seat">
           <router-link to="/base/train-seat">
-            <user-outlined /> &nbsp; Train-Seat
+            <MenuUnfoldOutlined /> &nbsp; Train-Seat
           </router-link>
         </a-menu-item>
       </a-sub-menu>
