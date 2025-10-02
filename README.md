@@ -7,8 +7,8 @@ A high-concurrency train ticket booking system, featuring flash sale capabilitie
 This project is a personal practice project based on core ticketing functionality, incorporating microservices and high-concurrency technologies to implement flash sale ticket purchasing. The system handles scenarios like 100,000 people competing for 1,000 tickets using advanced distributed technologies.
 
 ### Live Demo
-- **User Portal**: [train-flash-sale.zhufqiu.com](https://train-flash-sale.zhufqiu.com)
-- **Admin Panel**: [tfs-admin.zhufqiu.com](https://tfs-admin.zhufqiu.com)
+- **User Portal**: [train-flash-sale.zhufqiu.com](http://train-flash-sale.zhufqiu.com)
+- **Admin Panel**: [tfs-admin.zhufqiu.com](http://tfs-admin.zhufqiu.com)
 
 ## System Architecture
 
